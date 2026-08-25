@@ -1,8 +1,18 @@
 # Karibu Maoré — mode d'emploi technique
 
+**En ligne : https://djamadarsaindou-dot.github.io/karibu-maore/**
+
 Application web (PWA) qui répertorie ce qu'il y a à faire à Mayotte et prépare les demandes
 de réservation. **Statique : aucun serveur, aucune base de données, aucun npm, aucun build.**
 On édite un fichier, on enregistre, on pousse.
+
+Sur téléphone, le menu du navigateur propose « Ajouter à l'écran d'accueil » : l'application
+s'installe et fonctionne ensuite **sans réseau**.
+
+> ⚠️ **Le contact n'est pas encore activé.** Tant que `contactWhatsApp` vaut le numéro
+> d'exemple, l'application n'ouvre jamais WhatsApp : elle prépare le message et l'affiche.
+> C'est délibéré — un numéro factice peut appartenir à quelqu'un. Voir « Mettre le vrai
+> numéro WhatsApp » plus bas : c'est une ligne à changer, puis `git push`.
 
 ---
 
@@ -178,19 +188,22 @@ voir la table `INDICES` en haut de `ui.js`.
 
 ---
 
-## Mettre en ligne (GitHub Pages)
+## Mise en ligne
 
-Même procédure que le site de la fédération de Doujani, le compte `gh` est déjà authentifié :
+C'est fait. Le dépôt public est <https://github.com/djamadarsaindou-dot/karibu-maore>,
+servi par GitHub Pages en HTTPS sur
+<https://djamadarsaindou-dot.github.io/karibu-maore/>.
 
-```bash
-cd "C:/Users/djama/Documents/Karibu-Maore" && git init && git add -A && git commit -m "Karibu Maore v0.1" && gh repo create karibu-maore --public --source=. --push
-```
+Vérifié le 25 août 2026 : les onze fichiers sont servis avec le bon type MIME, le service
+worker s'enregistre et met tout en cache, la page est bien contrôlée par lui — donc le mode
+hors connexion fonctionne réellement.
 
-Puis activer Pages sur la branche `main` dans les réglages du dépôt. Le site sera servi en
-HTTPS, ce qui est **obligatoire** pour le mode hors connexion et l'installation sur l'écran
-d'accueil.
+**Ce que le dépôt public ne contient PAS**, volontairement (voir `.gitignore`) :
+`CONCEPT.md` (votre stratégie et vos chiffres d'affaires) et `RECHERCHE.md` (le dossier de
+recherche interne). Ils restent sur votre disque. Si vous voulez les publier un jour, il
+suffit de les retirer du `.gitignore`.
 
-Pour les mises à jour suivantes :
+Pour publier une mise à jour :
 
 ```bash
 cd "C:/Users/djama/Documents/Karibu-Maore" && git add -A && git commit -m "maj contenu" && git push
