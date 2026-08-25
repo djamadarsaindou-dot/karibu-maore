@@ -1,0 +1,12 @@
+# Documents internes — ne pas publier sur un dépôt public
+CONCEPT.md
+RECHERCHE.md
+
+# Fichiers assemblés par `node paquet.js` — régénérables
+karibu-maore-partage.html
+karibu-maore-artifact.html
+
+# Divers
+*.bak
+.DS_Store
+Thumbs.db

@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Karibu Maoré — que faire à Mayotte</title>
+<meta name="description" content="Tout ce qu'il y a à faire à Mayotte, et comment le réserver. Marées, saisons, conseils de terrain. Pour les visiteurs comme pour les Mahorais. Fonctionne hors connexion.">
+<meta name="theme-color" content="#0e9aa7" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#08151a" media="(prefers-color-scheme: dark)">
+<meta name="color-scheme" content="light dark">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Karibu Maoré">
+<meta property="og:title" content="Karibu Maoré — que faire à Mayotte">
+<meta property="og:description" content="Le carnet de l'île : activités, marées, saisons, conseils de terrain, et le bon numéro à appeler.">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="fr_FR">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icone.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icone.svg">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<a class="saut-contenu" href="#vue">Aller au contenu</a>
+
+<header class="topbar" id="topbar">
+  <button class="topbar__marque" id="marque" aria-label="Retour à l'accueil">
+    <span id="logo-slot"></span><span>Karibu Maoré</span>
+  </button>
+  <span class="topbar__espace"></span>
+  <button class="icone-btn" id="btn-recherche" aria-expanded="false" aria-controls="recherche"
+          aria-label="Rechercher"></button>
+</header>
+
+<div class="recherche" id="recherche" hidden>
+  <div class="recherche__champ">
+    <span id="loupe-slot"></span>
+    <input id="q" type="search" placeholder="Baleines, Choungui, mataba, sans voiture…"
+           autocomplete="off" aria-label="Rechercher une activité, un lieu, une envie">
+    <button class="icone-btn" id="btn-vider" aria-label="Effacer la recherche"
+            style="width:1.9rem;height:1.9rem;box-shadow:none;border:0;background:none"></button>
+  </div>
+</div>
+
+<main id="vue" tabindex="-1"></main>
+
+<nav class="onglets" aria-label="Navigation principale">
+  <a class="onglet" href="#/"            data-r="/"           ><span class="ico"></span>Aujourd'hui</a>
+  <a class="onglet" href="#/explorer"    data-r="/explorer"   ><span class="ico"></span>Explorer</a>
+  <a class="onglet" href="#/itineraires" data-r="/itineraires"><span class="ico"></span>Journées</a>
+  <a class="onglet" href="#/agenda"      data-r="/agenda"     ><span class="ico"></span>Agenda</a>
+  <a class="onglet" href="#/carnet"      data-r="/carnet"     ><span class="ico"></span>Carnet</a>
+</nav>
+
+<div id="annonce" class="sr" role="status" aria-live="polite"></div>
+
+<noscript>
+  <div style="padding:2rem;text-align:center">
+    Cette application a besoin de JavaScript pour fonctionner. Tout se passe sur votre téléphone :
+    aucune donnée n'est envoyée à un serveur.
+  </div>
+</noscript>
+
+<script src="data.js"></script>
+<script src="data-resa.js"></script>
+<script src="marees.js"></script>
+<script src="ui.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

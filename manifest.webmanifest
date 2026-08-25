@@ -1,0 +1,25 @@
+{
+  "id": "/karibu-maore/",
+  "name": "Karibu Maoré — que faire à Mayotte",
+  "short_name": "Karibu Maoré",
+  "description": "Tout ce qu'il y a à faire à Mayotte et comment le réserver : activités, marées, saisons, conseils de terrain. Fonctionne hors connexion.",
+  "lang": "fr",
+  "dir": "ltr",
+  "categories": ["travel", "lifestyle", "navigation"],
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui", "browser"],
+  "orientation": "portrait",
+  "background_color": "#fbfaf7",
+  "theme_color": "#0e9aa7",
+  "icons": [
+    { "src": "icone.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "icone-masque.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Aujourd'hui", "short_name": "Aujourd'hui", "url": "./#/", "description": "Ce qui colle avec l'heure et la marée" },
+    { "name": "Explorer", "short_name": "Explorer", "url": "./#/explorer", "description": "Toutes les activités" },
+    { "name": "Mon carnet", "short_name": "Carnet", "url": "./#/carnet", "description": "Mes envies et mes demandes" }
+  ]
+}

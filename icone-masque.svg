@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Karibu Maoré">
+  <!-- Version « maskable » : le motif tient dans la zone sûre (80 % centrés),
+       pour ne pas être rogné par les masques ronds d'Android. -->
+  <defs>
+    <linearGradient id="lag" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#3ec2ce"/><stop offset="1" stop-color="#0a626c"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" fill="url(#lag)"/>
+  <g transform="translate(256 268) scale(.66) translate(-256 -268)">
+    <circle cx="256" cy="268" r="168" fill="none" stroke="#a9f0f4" stroke-width="10" opacity=".5"/>
+    <path fill="#f7f1e3" d="M212 148c30-14 58 2 66 30 8 30 34 34 40 62 7 33-10 62-36 82-27 21-40 48-70 46
+      -33-2-52-30-58-62-6-31 6-52 14-80 9-30 16-64 44-78z"/>
+    <circle cx="352" cy="210" r="34" fill="#f7f1e3"/>
+    <circle cx="352" cy="210" r="14" fill="#e8a317"/>
+  </g>
+</svg>

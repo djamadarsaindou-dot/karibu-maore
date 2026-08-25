@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "karibu",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["-m", "http.server", "8787", "--directory", "C:/Users/djama/Documents/Karibu-Maore"],
+      "port": 8787
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Karibu Maoré">
+  <defs>
+    <linearGradient id="lag" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#12b3c2"/><stop offset="1" stop-color="#0b6f7a"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="url(#lag)"/>
+  <!-- lagon : double barrière stylisée -->
+  <circle cx="256" cy="270" r="168" fill="none" stroke="#7fe3ea" stroke-width="10" opacity=".55"/>
+  <circle cx="256" cy="270" r="134" fill="none" stroke="#a9f0f4" stroke-width="7" opacity=".45"/>
+  <!-- silhouette de l'île, deux masses (Grande-Terre / Petite-Terre) -->
+  <path d="M212 150c30-14 58 2 66 30 8 30 34 34 40 62 7 33-10 62-36 82-27 21-40 48-70 46-33-2-52-30-58-62-6-31 6-52 14-80 9-30 16-64 44-78z"
+        fill="#f7f1e3"/>
+  <circle cx="352" cy="212" r="30" fill="#f7f1e3"/>
+  <!-- fleur d'ylang-ylang -->
+  <g transform="translate(352,212)" fill="#e0a80f">
+    <path d="M0-22c5 9 5 15 0 24-5-9-5-15 0-24zM19-11c-7 8-13 10-23 8 8-7 14-9 23-8zM19 11c-9 1-15-1-23-8 10-2 16 0 23 8zM0 22c-5-9-5-15 0-24 5 9 5 15 0 24zM-19 11c7-8 13-10 23-8-8 7-14 9-23 8zM-19-11c9-1 15 1 23 8-10 2-16 0-23-8z"/>
+  </g>
+</svg>
