@@ -99,3 +99,23 @@ nommément ici. Tant que cette commande n'a pas eu lieu, la place reste vide.
 
 La palette évite délibérément le bleu, le rouge et le jaune du blason de Mayotte,
 pour ne créer aucune confusion avec une communication institutionnelle.
+
+---
+
+## Carte
+
+| Donnée | Source | Licence |
+|---|---|---|
+| Contours des 17 communes, trait de côte | [geo.api.gouv.fr](https://geo.api.gouv.fr) (contours IGN) | Licence Ouverte / Etalab 2.0 |
+| Double barrière de corail | [OpenStreetMap](https://www.openstreetmap.org) via Overpass | **ODbL 1.0** |
+
+L'attribution « © les contributeurs d'OpenStreetMap » est affichée **en permanence
+sur la carte** dans l'application : c'est une obligation de l'ODbL, pas une politesse.
+
+La carte est une œuvre produite (*Produced Work*) à partir de ces bases : un rendu
+vectoriel simplifié, pas une redistribution de la base de données elle-même.
+
+Fabriquée par `C:\pdtmp\kgeo\carte.py` — projection équirectangulaire corrigée par
+cos(latitude), simplification de Douglas-Peucker. 56 Ko pour l'île entière, sans
+une seule tuile : c'est la seule façon d'avoir une carte qui fonctionne vraiment
+hors connexion.

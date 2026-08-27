@@ -270,6 +270,10 @@ function vueAccueil() {
         <span class="rang__cle">Shimaoré</span>
         <span class="rang__val">Parler à l'accueil<small>Vingt mots qui changent tout</small></span>
       </button>
+      <button class="rang" data-action="aller" data-route="/agenda">
+        <span class="rang__cle">L'année</span>
+        <span class="rang__val">Le calendrier mahorais<small>Baleines, mariages, mangues, saison des pluies</small></span>
+      </button>
       <button class="rang" data-action="aller" data-route="/apropos">
         <span class="rang__cle">À propos</span>
         <span class="rang__val">D'où vient l'information<small>Sources, limites, comment signaler une erreur</small></span>
@@ -437,6 +441,55 @@ function vueExplorer(params) {
   ${horsSaison ? `<p class="section__note" style="margin-top:var(--s4)">
     ${horsSaison} proposition${horsSaison > 1 ? "s" : ""} ${horsSaison > 1 ? "sont" : "est"} hors
     de sa meilleure saison en ${MOIS[mois - 1]} : la fiche vous le dira.</p>` : ""}
+  ${pied()}`;
+}
+
+
+/* ------------------------------------------------------------ VUE : CARTE
+   L'île entière, dessinée hors ligne. Toucher un point ouvre un aperçu en bas
+   d'écran ; le toucher à nouveau ouvre la fiche. L'attribution OpenStreetMap
+   est affichée en permanence : c'est une obligation de l'ODbL. */
+let carteSel = null;
+
+function vueCarte(params) {
+  if (params.get("lieu")) carteSel = params.get("lieu");
+  const catActive = params.get("cat") || filtres.cat;
+  const liste = catActive ? LIEUX.filter(l => l.cat === catActive) : LIEUX;
+  const sel = carteSel && liste.find(l => l.id === carteSel) ? lieu(carteSel) : null;
+
+  return `
+  <section class="section section--serree">
+    <h2 class="section__titre">La carte</h2>
+    <p class="section__note">${liste.length} lieu${liste.length > 1 ? "x" : ""} sur l'île.
+      Touchez un point pour l'aperçu.</p>
+  </section>
+
+  <div class="filtres" role="group" aria-label="Filtrer la carte par catégorie">
+    <button class="filtre" data-action="carte-cat" data-val=""
+      aria-pressed="${!catActive}">Tout</button>
+    ${CATEGORIES.map(c => `<button class="filtre" data-action="carte-cat" data-val="${c.id}"
+      aria-pressed="${catActive === c.id}">${ico(c.ico)} ${esc(c.nom)}</button>`).join("")}
+  </div>
+
+  <div class="carte-cadre">
+    ${UI.carte(liste, { selection: sel ? sel.id : null })}
+    <p class="carte__credit">Fond de carte : contours IGN ·
+      récif © les contributeurs d'<a href="https://www.openstreetmap.org/copyright"
+      target="_blank" rel="noopener">OpenStreetMap</a></p>
+  </div>
+
+  ${sel ? `
+  <div class="carte-apercu apparait">
+    <div class="carte-apercu__art">${UI.illustration(sel.id, sel.cat, { indice: sel.nom + " " + sel.resume })}</div>
+    <div class="carte-apercu__txt">
+      <h3>${esc(sel.nom)}</h3>
+      <p>${ico("epingle")} ${esc(sel.commune)}</p>
+      <p class="carte-apercu__res">${esc(sel.resume)}</p>
+    </div>
+    <button class="btn" data-action="aller" data-route="/lieu/${sel.id}">Ouvrir la fiche</button>
+  </div>` : `
+  <p class="section__note" style="text-align:center;margin-top:var(--s4)">
+    Aucun lieu sélectionné.</p>`}
   ${pied()}`;
 }
 
@@ -1182,6 +1235,7 @@ function rendre(sansScroll) {
   switch (seg[0]) {
     case undefined:     html = vueAccueil();            titre = "Aujourd'hui"; break;
     case "explorer":    html = vueExplorer(params);     titre = "Explorer"; break;
+    case "carte":       html = vueCarte(params);        titre = "La carte"; break;
     case "lieu":        html = vueLieu(seg[1]);         titre = lieu(seg[1])?.nom || "Fiche"; break;
     case "resa":        html = vueResa(seg[1]);         titre = "Réserver"; break;
     case "itineraires": html = vueItineraires();        titre = "Journées"; break;
@@ -1243,6 +1297,10 @@ document.addEventListener("click", e => {
   else if (a === "favori")       { e.preventDefault(); e.stopPropagation(); basculeFav(el.dataset.id); }
   else if (a === "retour")       { (history.state && history.state.n > 0) ? history.back()
                                      : go(PARENT[(location.hash.slice(2).split("/")[0])] || "/"); }
+  else if (a === "carte-point") { const id = el.dataset.id;
+                                   if (carteSel === id) { go("/lieu/" + id); }
+                                   else { carteSel = id; rendre(true); } }
+  else if (a === "carte-cat")   { filtres.cat = el.dataset.val || null; carteSel = null; rendre(true); }
   else if (a === "filtre")       { const c = el.dataset.champ, v = el.dataset.val;
                                    filtres[c] = (!v || filtres[c] === v) ? null : v; majListe(); }
   else if (a === "reset-filtres"){ filtres = { cat:null, zone:null, budget:null, tag:null, q:"" };
@@ -1389,7 +1447,7 @@ $("#logo-slot").innerHTML = UI.logo();
 $("#btn-recherche").innerHTML = UI.icone("loupe");
 $("#loupe-slot").innerHTML = UI.icone("loupe");
 $("#btn-vider").innerHTML = UI.icone("croix");
-const ICONES_ONGLETS = ["accueil", "boussole", "carte", "agenda", "sac"];
+const ICONES_ONGLETS = ["accueil", "boussole", "livre", "carte", "sac"];
 $$(".onglet .ico").forEach((s, i) => { s.innerHTML = UI.icone(ICONES_ONGLETS[i]); });
 
 if ("scrollRestoration" in history) history.scrollRestoration = "manual";

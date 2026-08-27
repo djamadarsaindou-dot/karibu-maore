@@ -542,6 +542,64 @@ const UI = (() => {
   /* Compatibilité : l'ancien nom reste appelé par les journées et l'agenda. */
   const vignette = cartouche;
 
+
+  /* --------------------------------------------------------------- CARTE
+     La carte de Mayotte, dessinée à partir de la géométrie embarquée dans
+     carte.js. Aucune tuile, aucune requête : l'île entière pèse 56 Ko et
+     s'affiche hors connexion, ce qu'aucune carte à tuiles ne sait faire.
+
+     Sept fiches partagent des coordonnées avec une autre (l'atelier cuisine et
+     le marché sont au même endroit) : on décale les doublons en spirale pour
+     qu'aucun point n'en cache un autre.                                      */
+
+  function projeter(lat, lon) {
+    const k = Math.cos(CARTE.lat0 * Math.PI / 180);
+    return {
+      x: ((lon - CARTE.lon0) * k - CARTE.minx) * CARTE.ech,
+      y: (-(lat - CARTE.lat0) - CARTE.miny) * CARTE.ech
+    };
+  }
+
+  /* Décale les points qui se superposent, en spirale, pour qu'ils restent
+     tous cliquables. */
+  function eclater(points) {
+    const vus = new Map();
+    return points.map(p => {
+      const cle = Math.round(p.x / 6) + "|" + Math.round(p.y / 6);
+      const n = vus.get(cle) || 0;
+      vus.set(cle, n + 1);
+      if (!n) return p;
+      const a = n * 2.4, r = 9 + n * 3;
+      return { ...p, x: p.x + Math.cos(a) * r, y: p.y + Math.sin(a) * r, decale: true };
+    });
+  }
+
+  function carte(lieux, opt = {}) {
+    const sel = opt.selection;
+    const pts = eclater(lieux.map(l => ({ ...projeter(l.gps[0], l.gps[1]), l })));
+
+    const marques = pts.map(p => {
+      const actif = sel === p.l.id;
+      const c = CARTOUCHE[p.l.cat] || CARTOUCHE.pratique;
+      return `<g class="pt${actif ? " pt--actif" : ""}" data-action="carte-point" data-id="${p.l.id}"
+        transform="translate(${p.x.toFixed(1)},${p.y.toFixed(1)})" role="button" tabindex="0"
+        aria-label="${(p.l.nom + ", " + p.l.commune).replace(/"/g, "&quot;")}">
+        <circle class="pt__halo" r="${actif ? 26 : 0}"/>
+        <circle class="pt__zone" r="20" fill="transparent"/>
+        <circle class="pt__rond" r="${actif ? 11 : 7.5}" fill="${c.fond}"/>
+        <circle class="pt__coeur" r="${actif ? 4 : 2.8}" fill="${c.trait}"/>
+      </g>`;
+    }).join("");
+
+    return `<svg class="carte" viewBox="${CARTE.viewBox}" role="img"
+      aria-label="Carte de Mayotte avec ${lieux.length} lieux">
+      <rect class="carte__mer" x="-40" y="-40" width="1080" height="1420"/>
+      <path class="carte__recif" d="${CARTE.recif}"/>
+      <path class="carte__terre" d="${CARTE.terre}"/>
+      <g class="carte__points">${marques}</g>
+    </svg>`;
+  }
+
   /* ------------------------------------------------------- COURBE DE MARÉE
      `profil` (facultatif) est la vraie courbe calculée par le moteur
      harmonique : [{t: heures locales, h: mètres}]. À défaut, on retombe sur
@@ -698,5 +756,5 @@ const UI = (() => {
   }
 
   return { icone, cartouche, vignette, illustration, courbeMaree, saison, ile, logo,
-           graine, claustra, sceau };
+           graine, claustra, sceau, carte, projeter };
 })();

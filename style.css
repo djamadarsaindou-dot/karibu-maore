@@ -952,3 +952,50 @@ body{font-weight:420;font-synthesis-weight:none}
 .heros__jour{color:#cfe4ef}
 .stat{background:rgba(0,0,0,.22);border-color:rgba(244,237,226,.35)}
 .stat__cle,.stat__sous{color:#dbe9f1}
+
+/* ============================== LA CARTE =================================
+   L'île entière en vectoriel, 56 Ko, sans une seule tuile : c'est la seule
+   façon d'avoir une carte qui marche vraiment hors connexion. */
+.carte-cadre{
+  position:relative;margin:var(--s3) 0;
+  border-radius:var(--r-l);overflow:hidden;
+  background:var(--passe);box-shadow:var(--e2);
+}
+.carte{display:block;width:100%;height:auto;touch-action:manipulation}
+.carte__mer{fill:var(--passe)}
+.carte__recif{fill:none;stroke:var(--platier);stroke-width:2.2;opacity:.55;
+  stroke-linecap:round;stroke-linejoin:round}
+.carte__terre{fill:var(--sable);stroke:#c9bca6;stroke-width:1;stroke-opacity:.55}
+
+.pt{cursor:pointer}
+.pt__rond{stroke:var(--sable);stroke-width:2;transition:r var(--t-rapide)}
+.pt__coeur{transition:r var(--t-rapide)}
+.pt__halo{fill:var(--signature);opacity:.28;transition:r var(--t-normal)}
+.pt:focus-visible{outline:none}
+.pt:focus-visible .pt__rond{stroke:var(--signature);stroke-width:3.5}
+@media (hover:hover){ .pt:hover .pt__rond{r:10} }
+@media (prefers-reduced-motion:reduce){ .pt__rond,.pt__coeur,.pt__halo{transition:none} }
+
+/* L'attribution OpenStreetMap est une obligation de l'ODbL, pas une mention
+   de courtoisie : elle reste lisible et permanente. */
+.carte__credit{
+  position:absolute;left:0;right:0;bottom:0;margin:0;
+  padding:var(--s1) var(--s3);
+  font-size:var(--fs-2xs);line-height:1.4;color:#e8f0f4;
+  background:linear-gradient(transparent,rgba(10,58,87,.85) 45%);
+  text-align:right;
+}
+.carte__credit a{color:#bfe9ea}
+
+.carte-apercu{
+  display:grid;grid-template-columns:5.5rem 1fr;gap:var(--s3);
+  align-items:center;
+  background:var(--surface);border:1px solid var(--line);
+  border-radius:var(--r-l);padding:var(--s3);box-shadow:var(--e2);
+}
+.carte-apercu__art{width:5.5rem;height:4rem;border-radius:var(--r-m);overflow:hidden}
+.carte-apercu__txt h3{margin:0;font-size:var(--fs-md);font-family:var(--police);font-weight:650}
+.carte-apercu__txt p{margin:.1rem 0 0;font-size:var(--fs-xs);color:var(--muted)}
+.carte-apercu__res{margin-top:var(--s1) !important;color:var(--ink-2) !important;
+  font-size:var(--fs-sm) !important}
+.carte-apercu .btn{grid-column:1 / -1;margin-top:var(--s2)}
