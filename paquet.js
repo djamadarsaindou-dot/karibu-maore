@@ -28,11 +28,18 @@ html = html.replace(
   "<style>\n" + lire("style.css") + "\n</style>"
 );
 
-/* 2. les scripts en ligne, dans l'ordre de dépendance */
-const scripts = ["data.js", "data-resa.js", "marees.js", "ui.js", "app.js"];
+/* 2. les scripts en ligne, dans l'ordre de dépendance.
+   photos.js est neutralisé : le fichier unique n'embarque pas le dossier
+   photos/ (1,4 Mo, impossible à envoyer par WhatsApp), et un <img> qui ne
+   charge pas laisserait apparaître son texte de remplacement. On repart donc
+   proprement sur les illustrations dessinées, qui sont déjà le repli prévu. */
+const scripts = ["data.js", "data-resa.js", "photos.js", "marees.js", "ui.js", "app.js"];
 for (const s of scripts) {
-  html = html.replace(`<script src="${s}"></script>`, () =>
-    "<script>\n" + lire(s) + "\n</script>");
+  html = html.replace(`<script src="${s}"></script>`, () => {
+    let code = lire(s);
+    if (s === "photos.js") code = code.replace(/const PHOTOS = \{[\s\S]*?\n\};/, "const PHOTOS = {};");
+    return "<script>\n" + code + "\n</script>";
+  });
 }
 
 /* 3. on retire ce qui exige des fichiers séparés */
