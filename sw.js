@@ -20,13 +20,17 @@
    réponse 200, même origine, et type de contenu conforme à l'extension.
    ========================================================================== */
 
-const CACHE = "karibu-maore-v7";
+const CACHE = "karibu-maore-v8";
 const CACHE_PHOTOS = "karibu-maore-photos-v1";
 
 const FICHIERS = [
   "./", "./index.html", "./style.css",
   "./data.js", "./data-resa.js", "./photos.js", "./marees.js", "./ui.js", "./app.js",
-  "./manifest.webmanifest", "./icone.svg", "./icone-masque.svg"
+  "./manifest.webmanifest", "./icone.svg", "./icone-masque.svg",
+  /* Les polices sont précachées : sans elles l'application s'ouvrirait dans
+     une police de repli au premier lancement hors connexion, et la mise en
+     page sauterait au chargement suivant. 63 Ko à deux. */
+  "./assets/fonts/karibu-sans.woff2", "./assets/fonts/youngserif.woff2"
 ];
 
 /* Une réponse mérite-t-elle d'être mise en cache ? */
@@ -43,6 +47,7 @@ function fiable(requete, reponse) {
   if (/\.css$/.test(url.pathname) && !/text\/css/.test(type)) return false;
   if (/\.webmanifest$/.test(url.pathname) && !/json|manifest/.test(type)) return false;
   if (/\.(webp|png|jpe?g|svg)$/.test(url.pathname) && !/^image\//.test(type)) return false;
+  if (/\.woff2$/.test(url.pathname) && !/font|octet-stream/.test(type)) return false;
   return true;
 }
 

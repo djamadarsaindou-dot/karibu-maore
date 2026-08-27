@@ -12,40 +12,64 @@ const UI = (() => {
   /* ---------------------------------------------------------------- ICÔNES
      Dessinées sur une grille 24, tracées au trait. Taille par défaut 1em pour
      qu'une icône glissée dans un texte ne prenne jamais toute la place.      */
+  /* Tracés repris de Lucide (ISC), Tabler (MIT) et Simple Icons (CC0).
+     Grille 24, trait 2, bouts et jonctions ronds — la géométrie native de
+     Lucide, qui est exactement celle qu'attend icone(). Les crédits
+     obligatoires sont dans LICENCES.md. */
   const D = {
-    accueil:   '<path d="M3 10.5 12 3l9 7.5V21a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/>',
-    loupe:     '<circle cx="11" cy="11" r="7"/><path d="M20.5 20.5 16.7 16.7"/>',
-    coeur:     '<path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 1 0-7.8 7.8l1.1 1L12 21l7.7-7.6 1.1-1a5.5 5.5 0 0 0 0-7.8z"/>',
-    epingle:   '<path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 1 1 18 0z"/><circle cx="12" cy="10" r="3"/>',
-    horloge:   '<circle cx="12" cy="12" r="9.5"/><path d="M12 6.5V12l3.5 2"/>',
-    agenda:    '<rect x="3" y="4.5" width="18" height="17" rx="2.5"/><path d="M3 9.5h18M8 2.5v4M16 2.5v4"/>',
-    boussole:  '<circle cx="12" cy="12" r="9.5"/><path d="m15.5 8.5-2 5-5 2 2-5z"/>',
-    vagues:    '<path d="M2 8.5c2.2-2 4.4-2 6.6 0s4.4 2 6.6 0 4.4-2 6.8 0"/><path d="M2 14c2.2-2 4.4-2 6.6 0s4.4 2 6.6 0 4.4-2 6.8 0"/><path d="M2 19.5c2.2-2 4.4-2 6.6 0s4.4 2 6.6 0 4.4-2 6.8 0"/>',
-    soleil:    '<circle cx="12" cy="12" r="4.2"/><path d="M12 2v2.5M12 19.5V22M4.2 4.2l1.8 1.8M18 18l1.8 1.8M2 12h2.5M19.5 12H22M4.2 19.8 6 18M18 6l1.8-1.8"/>',
-    lune:      '<path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/>',
-    alerte:    '<path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4.5"/><circle cx="12" cy="17" r=".7" fill="currentColor" stroke="none"/>',
-    info:      '<circle cx="12" cy="12" r="9.5"/><path d="M12 11v5.5"/><circle cx="12" cy="7.8" r=".8" fill="currentColor" stroke="none"/>',
-    valide:    '<path d="M21.5 11.1V12a9.5 9.5 0 1 1-5.6-8.7"/><path d="m8.8 11.6 3 3 9-9"/>',
-    message:   '<path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 8.5 8.5 0 0 1-3.9-.9L3 21l1.9-5a8.4 8.4 0 0 1-.9-3.9 8.5 8.5 0 0 1 8.4-9h.5a8.5 8.5 0 0 1 8 8z"/>',
-    partager:  '<circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.6 10.6 6.8-4M8.6 13.4l6.8 4"/>',
-    sortir:    '<path d="M18 13.5V20a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6.5"/><path d="M15 2h7v7M22 2 11 13"/>',
-    fleche:    '<path d="M15 18 9 12l6-6"/>',
-    croix:     '<path d="M18 6 6 18M6 6l12 12"/>',
-    carte:     '<path d="M1 6 8 3l8 3 7-3v15l-7 3-8-3-7 3z"/><path d="M8 3v15M16 6v15"/>',
-    livre:     '<path d="M2 4.5h6a3.5 3.5 0 0 1 3.5 3.5v12A2.6 2.6 0 0 0 9 18H2z"/><path d="M22 4.5h-6A3.5 3.5 0 0 0 12.5 8v12A2.6 2.6 0 0 1 15 18h7z"/>',
-    sac:       '<rect x="3" y="7.5" width="18" height="13.5" rx="3"/><path d="M8 7.5V6a4 4 0 0 1 8 0v1.5M3 12.5h18"/>',
-    gens:      '<path d="M16 20v-1.6a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4V20"/><circle cx="9" cy="7" r="3.4"/><path d="M22 20v-1.6a4 4 0 0 0-3-3.8"/><path d="M16.5 3.6a4 4 0 0 1 0 6.8"/>',
-    goutte:    '<path d="M12 2.7 6.9 8.6a7 7 0 1 0 10.2 0z"/>',
-    copie:     '<rect x="8.5" y="8.5" width="12.5" height="12.5" rx="2.5"/><path d="M5.5 15.5H4.5a2 2 0 0 1-2-2v-9a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>',
-    imprimer:  '<path d="M6 9V2.5h12V9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="7.5" rx="1.5"/>',
-    drapeau:   '<path d="M4 22V3.5M4 4.5h13l-2.5 4L17 12.5H4"/>',
-    plus:      '<path d="M12 5v14M5 12h14"/>',
-    etoile:    '<path d="m12 2.8 2.9 5.9 6.5.9-4.7 4.6 1.1 6.5-5.8-3-5.8 3 1.1-6.5L2.6 9.6l6.5-.9z"/>',
-    feuille:   '<path d="M11 20A7 7 0 0 1 4 13c0-6 6-9.5 16-10 0 10-4 17-9 17z"/><path d="M4.5 20.5c2-4 5-7 9.5-9.5"/>'
+    accueil:     { d: '<path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8" /> <path d="M3 10a2 2 0 0 1 .709-1.528l7-6a2 2 0 0 1 2.582 0l7 6A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />' },  // lucide/house
+    loupe:       { d: '<path d="m21 21-4.34-4.34" /> <circle cx="11" cy="11" r="8" />' },  // lucide/search
+    boussole:    { d: '<circle cx="12" cy="12" r="10" /> <path d="m16.24 7.76-1.804 5.411a2 2 0 0 1-1.265 1.265L7.76 16.24l1.804-5.411a2 2 0 0 1 1.265-1.265z" />' },  // lucide/compass
+    carte:       { d: '<path d="M14.106 5.553a2 2 0 0 0 1.788 0l3.659-1.83A1 1 0 0 1 21 4.619v12.764a1 1 0 0 1-.553.894l-4.553 2.277a2 2 0 0 1-1.788 0l-4.212-2.106a2 2 0 0 0-1.788 0l-3.659 1.83A1 1 0 0 1 3 19.381V6.618a1 1 0 0 1 .553-.894l4.553-2.277a2 2 0 0 1 1.788 0z" /> <path d="M15 5.764v15" /> <path d="M9 3.236v15" />' },  // lucide/map
+    sac:         { d: '<path d="M4 10a4 4 0 0 1 4-4h8a4 4 0 0 1 4 4v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z" /> <path d="M8 10h8" /> <path d="M8 18h8" /> <path d="M8 22v-6a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v6" /> <path d="M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2" />' },  // lucide/backpack
+    agenda:      { d: '<path d="M8 2v3" /> <path d="M16 2v3" /> <rect x="3" y="3" width="18" height="18" rx="2" /> <path d="M3 9h18" /> <path d="M8 13h.01" /> <path d="M12 13h.01" /> <path d="M16 13h.01" /> <path d="M8 17h.01" /> <path d="M12 17h.01" /> <path d="M16 17h.01" />' },  // lucide/calendar-days
+    coeur:       { d: '<path d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5" />' },  // lucide/heart
+    partager:    { d: '<circle cx="18" cy="5" r="3" /> <circle cx="6" cy="12" r="3" /> <circle cx="18" cy="19" r="3" /> <line x1="8.59" x2="15.42" y1="13.51" y2="17.49" /> <line x1="15.41" x2="8.59" y1="6.51" y2="10.49" />' },  // lucide/share-2
+    sortir:      { d: '<path d="M15 3h6v6" /> <path d="M10 14 21 3" /> <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />' },  // lucide/external-link
+    fleche:      { d: '<path d="m15 18-6-6 6-6" />' },  // lucide/chevron-left
+    croix:       { d: '<path d="M18 6 6 18" /> <path d="m6 6 12 12" />' },  // lucide/x
+    plus:        { d: '<path d="M5 12h14" /> <path d="M12 5v14" />' },  // lucide/plus
+    copie:       { d: '<rect width="14" height="14" x="8" y="8" rx="2" ry="2" /> <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" />' },  // lucide/copy
+    imprimer:    { d: '<path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" /> <path d="M6 9V3a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v6" /> <rect x="6" y="14" width="12" height="8" rx="1" />' },  // lucide/printer
+    drapeau:     { d: '<path d="M4 22V4a1 1 0 0 1 .4-.8A6 6 0 0 1 8 2c3 0 5 2 7.333 2q2 0 3.067-.8A1 1 0 0 1 20 4v10a1 1 0 0 1-.4.8A6 6 0 0 1 16 16c-3 0-5-2-8-2a6 6 0 0 0-4 1.528" />' },  // lucide/flag
+    message:     { d: '<path d="M2.992 16.342a2 2 0 0 1 .094 1.167l-1.065 3.29a1 1 0 0 0 1.236 1.168l3.413-.998a2 2 0 0 1 1.099.092 10 10 0 1 0-4.777-4.719" />' },  // lucide/message-circle
+    whatsapp:    { d: '<path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>', plein:true },  // simple/whatsapp
+    telephone:   { d: '<path d="M13.832 16.568a1 1 0 0 0 1.213-.303l.355-.465A2 2 0 0 1 17 15h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2A18 18 0 0 1 2 4a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v3a2 2 0 0 1-.8 1.6l-.468.351a1 1 0 0 0-.292 1.233 14 14 0 0 0 6.392 6.384" />' },  // lucide/phone
+    info:        { d: '<circle cx="12" cy="12" r="10" /> <path d="M12 16v-4" /> <path d="M12 8h.01" />' },  // lucide/info
+    alerte:      { d: '<path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3" /> <path d="M12 9v4" /> <path d="M12 17h.01" />' },  // lucide/triangle-alert
+    valide:      { d: '<circle cx="12" cy="12" r="10" /> <path d="m9 12 2 2 4-4" />' },  // lucide/circle-check
+    etoile:      { d: '<path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z" />' },  // lucide/star
+    horloge:     { d: '<circle cx="12" cy="12" r="10" /> <path d="M12 6v6l4 2" />' },  // lucide/clock
+    livre:       { d: '<path d="M12 5v16" /> <path d="M20.001 19A2 2 0 0022 17V5a2 2 0 00-1.999-2L16 3.002A5 5 0 0012 5a5 5 0 00-4-2H4a2 2 0 00-2 2v12a2 2 0 001.999 2H8a5 5 0 014 2 5 5 0 014-2z" />' },  // lucide/book-open
+    gens:        { d: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /> <path d="M16 3.128a4 4 0 0 1 0 7.744" /> <path d="M22 21v-2a4 4 0 0 0-3-3.87" /> <circle cx="9" cy="7" r="4" />' },  // lucide/users
+    epingle:     { d: '<path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0" /> <circle cx="12" cy="10" r="3" />' },  // lucide/map-pin
+    vagues:      { d: '<path d="M2 12q2.5 2 5 0t5 0 5 0 5 0" /> <path d="M2 19q2.5 2 5 0t5 0 5 0 5 0" /> <path d="M2 5q2.5 2 5 0t5 0 5 0 5 0" />' },  // lucide/waves-horizontal
+    goutte:      { d: '<path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z" />' },  // lucide/droplet
+    soleil:      { d: '<circle cx="12" cy="12" r="4" /> <path d="M12 2v2" /> <path d="M12 20v2" /> <path d="m4.93 4.93 1.41 1.41" /> <path d="m17.66 17.66 1.41 1.41" /> <path d="M2 12h2" /> <path d="M20 12h2" /> <path d="m6.34 17.66-1.41 1.41" /> <path d="m19.07 4.93-1.41 1.41" />' },  // lucide/sun
+    lune:        { d: '<path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401" />' },  // lucide/moon
+    feuille:     { d: '<path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z" /> <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12" />' },  // lucide/leaf
+    montagne:    { d: '<path d="m8 3 4 8 5-5 5 15H2L8 3z" />' },  // lucide/mountain
+    palmier:     { d: '<path d="M13 8c0-2.76-2.46-5-5.5-5S2 5.24 2 8h2l1-1 1 1h4" /> <path d="M13 7.14A5.82 5.82 0 0 1 16.5 6c3.04 0 5.5 2.24 5.5 5h-3l-1-1-1 1h-3" /> <path d="M5.89 9.71c-2.15 2.15-2.3 5.47-.35 7.43l4.24-4.25.7-.7.71-.71 2.12-2.12c-1.95-1.96-5.27-1.8-7.42.35" /> <path d="M11 15.5c.5 2.5-.17 4.5-1 6.5h4c2-5.5-.5-12-1-14" />' },  // lucide/tree-palm
+    poisson:     { d: '<path d="M6.5 12c.94-3.46 4.94-6 8.5-6 3.56 0 6.06 2.54 7 6-.94 3.47-3.44 6-7 6s-7.56-2.53-8.5-6Z" /> <path d="M18 12v.5" /> <path d="M16 17.93a9.77 9.77 0 0 1 0-11.86" /> <path d="M7 10.67C7 8 5.58 5.97 2.73 5.5c-1 1.5-1 5 .23 6.5-1.24 1.5-1.24 5-.23 6.5C5.58 18.03 7 16 7 13.33" /> <path d="M10.46 7.26C10.2 5.88 9.17 4.24 8 3h5.8a2 2 0 0 1 1.98 1.67l.23 1.4" /> <path d="m16.01 17.93-.23 1.4A2 2 0 0 1 13.8 21H9.5a5.96 5.96 0 0 0 1.49-3.98" />' },  // lucide/fish
+    voilier:     { d: '<path d="M10 2v15" /> <path d="M7 22a4 4 0 0 1-4-4 1 1 0 0 1 1-1h16a1 1 0 0 1 1 1 4 4 0 0 1-4 4z" /> <path d="M9.159 2.46a1 1 0 0 1 1.521-.193l9.977 8.98A1 1 0 0 1 20 13H4a1 1 0 0 1-.824-1.567z" />' },  // lucide/sailboat
+    empreintes:  { d: '<path d="M4 16v-2.38C4 11.5 2.97 10.5 3 8c.03-2.72 1.49-6 4.5-6C9.37 2 10 3.8 10 5.5c0 3.11-2 5.66-2 8.68V16a2 2 0 1 1-4 0Z" /> <path d="M20 20v-2.38c0-2.12 1.03-3.12 1-5.62-.03-2.72-1.49-6-4.5-6C14.63 6 14 7.8 14 9.5c0 3.11 2 5.66 2 8.68V20a2 2 0 1 0 4 0Z" /> <path d="M16 17h4" /> <path d="M4 13h4" />' },  // lucide/footprints
+    plage:       { d: '<path d="M17.553 16.75a7.5 7.5 0 0 0 -10.606 0" /> <path d="M18 3.804a6 6 0 0 0 -8.196 2.196l10.392 6a6 6 0 0 0 -2.196 -8.196" /> <path d="M16.732 10c1.658 -2.87 2.225 -5.644 1.268 -6.196c-.957 -.552 -3.075 1.326 -4.732 4.196" /> <path d="M15 9l-3 5.196" /> <path d="M3 19.25a2.4 2.4 0 0 1 1 -.25a2.4 2.4 0 0 1 2 1a2.4 2.4 0 0 0 2 1a2.4 2.4 0 0 0 2 -1a2.4 2.4 0 0 1 2 -1a2.4 2.4 0 0 1 2 1a2.4 2.4 0 0 0 2 1a2.4 2.4 0 0 0 2 -1a2.4 2.4 0 0 1 2 -1a2.4 2.4 0 0 1 1 .25" />' },  // tabler/beach
+    mosquee:     { d: '<path d="M3 21h7v-2a2 2 0 1 1 4 0v2h7" /> <path d="M4 21v-10" /> <path d="M20 21v-10" /> <path d="M4 16h3v-3h10v3h3" /> <path d="M17 13a5 5 0 0 0 -10 0" /> <path d="M21 10.5c0 -.329 -.077 -.653 -.224 -.947l-.776 -1.553l-.776 1.553a2.118 2.118 0 0 0 -.224 .947a.5 .5 0 0 0 .5 .5h1a.5 .5 0 0 0 .5 -.5" /> <path d="M5 10.5c0 -.329 -.077 -.653 -.224 -.947l-.776 -1.553l-.776 1.553a2.118 2.118 0 0 0 -.224 .947a.5 .5 0 0 0 .5 .5h1a.5 .5 0 0 0 .5 -.5" /> <path d="M12 2a2 2 0 1 0 2 2" /> <path d="M12 6v2" />' },  // tabler/building-mosque
+    couverts:    { d: '<path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2" /> <path d="M7 2v20" /> <path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7" />' },  // lucide/utensils
+    voiture:     { d: '<path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2" /> <circle cx="7" cy="17" r="2" /> <path d="M9 17h6" /> <circle cx="17" cy="17" r="2" />' },  // lucide/car
+    bus:         { d: '<path d="M8 6v6" /> <path d="M15 6v6" /> <path d="M2 12h19.6" /> <path d="M18 18h3s.5-1.7.8-2.8c.1-.4.2-.8.2-1.2 0-.4-.1-.8-.2-1.2l-1.4-5C20.1 6.8 19.1 6 18 6H4a2 2 0 0 0-2 2v10h3" /> <circle cx="7" cy="18" r="2" /> <path d="M9 18h5" /> <circle cx="16" cy="18" r="2" />' },  // lucide/bus
+    appareil:    { d: '<path d="M13.997 4a2 2 0 0 1 1.76 1.05l.486.9A2 2 0 0 0 18.003 7H20a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h1.997a2 2 0 0 0 1.759-1.048l.489-.904A2 2 0 0 1 10.004 4z" /> <circle cx="12" cy="13" r="3" />' },  // lucide/camera
+    vent:        { d: '<path d="M12.8 19.6A2 2 0 1 0 14 16H2" /> <path d="M17.5 8a2.5 2.5 0 1 1 2 4H2" /> <path d="M9.8 4.4A2 2 0 1 1 11 8H2" />' },  // lucide/wind
   };
 
+
   function icone(nom, cls = "") {
-    const d = D[nom] || D.info;
+    const e = D[nom] || D.info;
+    if (e.plein) {
+      return `<svg class="i${cls ? " " + cls : ""}" width="1em" height="1em" viewBox="0 0 24 24"
+        fill="currentColor" stroke="none" aria-hidden="true" focusable="false">${e.d}</svg>`;
+    }
+    const d = e.d;
     return `<svg class="i${cls ? " " + cls : ""}" width="1em" height="1em" viewBox="0 0 24 24"
       fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"
       stroke-linejoin="round" aria-hidden="true" focusable="false">${d}</svg>`;
@@ -411,24 +435,112 @@ const UI = (() => {
     return { v, pal };
   }
 
-  /* -------------------------------------------------------------- VIGNETTE */
-  function vignette(id, categorie, opt = {}) {
-    const w = 320, h = opt.haut ? 160 : 140;
-    const famille = PAL[categorie] ? categorie : "pratique";
-    const r = dé(graine(id + "|" + famille));
-    const { v, pal } = variante(famille, opt.indice, id);
-    const p = PAL[famille][pal];
-    const gid = "g" + graine(id + famille).toString(36);
-    const scene = SCENES[famille](p, r, w, h, v);
-    return `<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="xMidYMid slice"
-      aria-hidden="true" focusable="false" role="presentation">
-      <defs><linearGradient id="${gid}" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0" stop-color="${p.ciel[0]}"/><stop offset="1" stop-color="${p.ciel[1]}"/>
-      </linearGradient></defs>
-      <rect width="${w}" height="${h}" fill="url(#${gid})"/>
-      ${scene}
+
+  /* ---------------------------------------------------------- LA TRAME
+     Claustra — inspirée des parpaings ajourés et des garde-corps des façades
+     mahoraises contemporaines (DAC Mayotte / ministère de la Culture,
+     « Patrimoine du XXe siècle. Une architecture mahoraise »).
+     On écrit « inspiré des claustras », jamais « motif traditionnel » : il
+     n'existe aucun corpus normé, ce sont des modèles industriels et des
+     variations locales.
+     Deux losanges imbriqués, EN TRAITS DROITS UNIQUEMENT : aucun arc, aucune
+     niche, aucune forme d'arche, pour qu'aucune lecture de mihrab ne soit
+     possible. Le mihrab indique la direction de la prière ; ce n'est pas une
+     forme disponible. Opacité 5 à 7 %, jamais au-delà : au-delà c'est un décor. */
+  function claustra() {
+    return `<svg width="0" height="0" aria-hidden="true" focusable="false"
+      style="position:absolute"><defs>
+      <pattern id="km-claustra" width="48" height="48" patternUnits="userSpaceOnUse">
+        <g fill="none" stroke="currentColor" stroke-width="1.25" stroke-linejoin="miter">
+          <path d="M24 0 L48 24 L24 48 L0 24 Z"/>
+          <path d="M24 13 L35 24 L24 35 L13 24 Z"/>
+          <path d="M0 0 L6 6 M48 0 L42 6 M0 48 L6 42 M48 48 L42 42"/>
+        </g>
+      </pattern></defs></svg>`;
+  }
+
+  /* ----------------------------------------------------------- LE SCEAU
+     Le double arc inégal : la double barrière récifale, que moins d'une
+     dizaine de sites au monde possèdent. Ce n'est PAS un motif répété — c'est
+     un sceau, une fois par écran au maximum. */
+  function sceau(cls = "") {
+    return `<svg class="sceau${cls ? " " + cls : ""}" viewBox="0 0 120 40"
+      aria-hidden="true" focusable="false" fill="none" stroke="currentColor"
+      stroke-linecap="round">
+      <path d="M4 33 C 34 5, 86 5, 116 33" stroke-width="3"/>
+      <path d="M20 36 C 44 21, 76 21, 100 36" stroke-width="1.5" opacity=".7"/>
     </svg>`;
   }
+
+  /* ------------------------------------------------------------- CARTOUCHE
+     Ce qui s'affiche sur une fiche qui n'a pas de photographie.
+
+     D'OÙ ÇA VIENT. Un aplat de la couleur de la catégorie, parcouru de lignes
+     gravées parallèles, décalées et fondues. Le vocabulaire est repris du
+     DÉCOR D'INCISIONS ET DE STRIES de la poterie traditionnelle de Mayotte,
+     inscrite à l'inventaire national du patrimoine culturel immatériel (2024).
+
+     POURQUOI C'EST DÉFENDABLE. On ne cite aucun motif : on reprend un PROCÉDÉ
+     de décor — inciser, strier — que la fiche officielle décrit effectivement,
+     là où elle ne décrit aucun répertoire de motifs nommés. Il n'y a ici ni
+     visage, ni symbole religieux, ni forme d'arche. Le profil est dérivé d'un
+     hachage du nom de la fiche : unique, stable, reproductible.
+
+     CE QU'ON NE FAIT PAS. Aucune trame dérivée du m'sindzano. Le geste existe
+     et il est documenté, mais il n'appartient pas à un corpus : il appartient
+     aux femmes qui l'inventent. La seule façon propre serait de commander la
+     trame à une praticienne mahoraise, de la rémunérer et de la créditer
+     nommément. Tant que cette commande n'a pas eu lieu, la case reste vide.  */
+
+  const CARTOUCHE = {
+    mer:      { fond: "#0a3a57", trait: "#1da9a2", sceau: true  },
+    plage:    { fond: "#0a3a57", trait: "#1da9a2", sceau: true  },
+    nature:   { fond: "#2f5d3a", trait: "#c4b63e", sceau: false },
+    culture:  { fond: "#241f1d", trait: "#c4b63e", sceau: false },
+    food:     { fond: "#a9502b", trait: "#f4ede2", sceau: false },
+    famille:  { fond: "#a9502b", trait: "#f4ede2", sceau: false },
+    pratique: { fond: "#f4ede2", trait: "#5e5a51", sceau: false }
+  };
+
+  /* Profil déterministe : même nom de fiche → même gravure, pour toujours. */
+  function profilGrave(cle, points = 9, larg = 320, base = 96, amp = 15) {
+    let h = graine(cle), d = "";
+    const pas = larg / (points - 1);
+    for (let i = 0; i < points; i++) {
+      h = (h * 1103515245 + 12345) & 0x7fffffff;      // générateur reproductible
+      const y = base + ((h % 2001) / 1000 - 1) * amp; // ± amp autour de la ligne
+      d += (i ? " L" : "M") + Math.round(-8 + i * pas * 1.05) + " " + Math.round(y);
+    }
+    return d;
+  }
+
+  function cartouche(id, categorie, opt = {}) {
+    const h = opt.haut ? 160 : 140;
+    const c = CARTOUCHE[categorie] || CARTOUCHE.pratique;
+    const p = profilGrave(id + "|" + categorie);
+    /* Sept strates au maximum, jamais animées : un cartouche doit se lire
+       comme une matière, pas comme une infographie. */
+    const strates = [.95, .8, .65, .5, .36, .24, .14]
+      .map((o, i) => `<g opacity="${o}" transform="translate(0,${i * 11})"><path d="${p}"/></g>`)
+      .join("");
+    /* Le sceau du double arc — la double barrière récifale — n'apparaît que
+       sur les fiches du lagon, et une seule fois. */
+    const sceau = c.sceau ? `
+      <g transform="translate(250,18) scale(.42)" fill="none" stroke="#c4b63e" stroke-linecap="round">
+        <path d="M4 33 C 34 5, 86 5, 116 33" stroke-width="4"/>
+        <path d="M20 36 C 44 21, 76 21, 100 36" stroke-width="2.5" opacity=".7"/>
+      </g>` : "";
+    return `<svg class="cartouche" viewBox="0 0 320 ${h}" preserveAspectRatio="xMidYMid slice"
+      aria-hidden="true" focusable="false">
+      <rect width="320" height="${h}" fill="${c.fond}"/>
+      <rect width="320" height="${h}" fill="url(#km-claustra)" color="${c.trait}" opacity=".07"/>
+      <g fill="none" stroke="${c.trait}" stroke-width="1.5" stroke-linejoin="round"
+         transform="translate(0,${opt.haut ? 0 : -12})">${strates}</g>${sceau}
+    </svg>`;
+  }
+
+  /* Compatibilité : l'ancien nom reste appelé par les journées et l'agenda. */
+  const vignette = cartouche;
 
   /* ------------------------------------------------------- COURBE DE MARÉE
      `profil` (facultatif) est la vraie courbe calculée par le moteur
@@ -436,7 +548,7 @@ const UI = (() => {
      une interpolation en cosinus entre les étales. */
   function courbeMaree(evts, heureCourante, mareeRequise, profil) {
     if (!evts || !evts.length) return "";
-    const W = 320, H = 118, mg = 16, hautCourbe = 30, base = 62, amp = 26;
+    const W = 320, H = 150, mg = 16, hautCourbe = 38, base = 82, amp = 30;
     const x = t => mg + (t / 24) * (W - mg * 2);
 
     let y;
@@ -469,15 +581,15 @@ const UI = (() => {
       const px = x(e.brut), haute = e.type === "haute";
       const py = y(e.brut);
       return `<circle cx="${px.toFixed(1)}" cy="${py.toFixed(1)}" r="3.4"
-          fill="${haute ? "var(--lagon-500)" : "var(--ylang)"}" stroke="var(--surface)" stroke-width="1.5"/>
-        <text x="${px.toFixed(1)}" y="${(py + (haute ? -10 : 16)).toFixed(1)}" text-anchor="middle"
-          font-size="13" font-weight="700" fill="${haute ? "var(--txt-haute)" : "var(--txt-basse)"}"
+          fill="${haute ? "var(--platier-grave)" : "var(--signature)"}" stroke="var(--surface)" stroke-width="1.5"/>
+        <text x="${px.toFixed(1)}" y="${(py + (haute ? -11 : 18)).toFixed(1)}" text-anchor="middle"
+          font-size="12.5" font-weight="700" fill="${haute ? "var(--txt-haute)" : "var(--txt-basse)"}"
           >${e.heure.replace(" h ", ":")}</text>
-        ${e.hauteur != null ? `<text x="${px.toFixed(1)}" y="${(py + (haute ? -21 : 27)).toFixed(1)}"
-          text-anchor="middle" font-size="11" fill="var(--muted)">${e.hauteur.toFixed(2)} m</text>` : ""}`;
+        ${e.hauteur != null ? `<text x="${px.toFixed(1)}" y="${(py + (haute ? -24 : 31)).toFixed(1)}"
+          text-anchor="middle" font-size="10.5" fill="var(--muted)">${e.hauteur.toFixed(2)} m</text>` : ""}`;
     }).join("");
 
-    const axe = [0, 6, 12, 18, 24].map(t =>
+    const axe = [0, 12, 24].map(t =>
       `<line x1="${x(t).toFixed(1)}" y1="${base + amp + 8}" x2="${x(t).toFixed(1)}" y2="${base + amp + 12}"
          stroke="var(--line-fort)" stroke-width="1"/>
        <text x="${x(t).toFixed(1)}" y="${H - 3}" text-anchor="middle" font-size="11"
@@ -490,18 +602,19 @@ const UI = (() => {
         " à " + e.heure.replace(" h ", " heures ") +
         (e.hauteur != null ? ", " + e.hauteur.toFixed(2).replace(".", ",") + " mètre" : "")).join(" ; ")}">
       ${fenetres}
-      <path d="${aire}" fill="var(--lagon-500)" opacity=".10"/>
+      <path d="${aire}" fill="var(--platier)" opacity=".12"/>
       <line x1="${mg}" y1="${base}" x2="${W - mg}" y2="${base}" stroke="var(--line-fort)"
         stroke-width="1" stroke-dasharray="3 5" opacity=".6"/>
-      <path d="${d}" fill="none" stroke="var(--lagon-500)" stroke-width="2.6"
+      <path d="${d}" fill="none" stroke="var(--platier-grave)" stroke-width="2.6"
         stroke-linecap="round" stroke-linejoin="round"/>
       ${reperes}
       <line x1="${xn.toFixed(1)}" y1="${hautCourbe - 6}" x2="${xn.toFixed(1)}" y2="${base + amp + 8}"
-        stroke="var(--terre)" stroke-width="1.6" stroke-dasharray="2 3"/>
-      <circle cx="${xn.toFixed(1)}" cy="${yn.toFixed(1)}" r="5" fill="var(--terre)"
+        stroke="var(--chaud)" stroke-width="1.6" stroke-dasharray="2 3"/>
+      <circle cx="${xn.toFixed(1)}" cy="${yn.toFixed(1)}" r="5" fill="var(--chaud)"
         stroke="var(--surface)" stroke-width="2.2"/>
-      <text x="${xn.toFixed(1)}" y="${hautCourbe - 11}" text-anchor="middle" font-size="12"
-        font-weight="700" fill="var(--terre)">maintenant</text>
+      <text x="${Math.min(W - mg - 2, Math.max(mg + 2, xn)).toFixed(1)}" y="${hautCourbe - 13}"
+        text-anchor="${xn > W * .72 ? "end" : xn < W * .28 ? "start" : "middle"}"
+        font-size="11.5" font-weight="700" fill="var(--chaud)">maintenant</text>
       <line x1="${mg}" y1="${base + amp + 8}" x2="${W - mg}" y2="${base + amp + 8}"
         stroke="var(--line-fort)" stroke-width="1"/>
       ${axe}
@@ -584,5 +697,6 @@ const UI = (() => {
     </div>`;
   }
 
-  return { icone, vignette, illustration, courbeMaree, saison, ile, logo, graine };
+  return { icone, cartouche, vignette, illustration, courbeMaree, saison, ile, logo,
+           graine, claustra, sceau };
 })();

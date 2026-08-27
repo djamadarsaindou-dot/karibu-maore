@@ -24,21 +24,28 @@
 const APP = {
   nom: "Karibu Maoré",
   baseline: "Tout ce qu'il y a à faire à Mayotte — et comment le réserver",
-  version: "0.4.0",
-  maj: "2026-08-27",
+  version: "0.5.0",
+  maj: "2026-08-28",
   // Numéro de contact, format international sans + ni espaces (0639 40 69 48)
   contactWhatsApp: "262639406948",
   contactMail: "djamadar.saindou@gmail.com"
 };
 
+/* Les catégories portent un nom shimaoré quand il en existe un ATTESTÉ.
+   La règle : le shimaoré nomme ce qui existe à Mayotte, le français conduit
+   l'action. Un mot n'est repris que s'il est confirmé — on ne forge pas de
+   vocabulaire. « sh » vide = pas de terme validé, le français suffit.
+   Pièges évités : « shanza » n'est pas « village » (c'est la cour privée
+   d'une famille), « banga » désigne aussi l'habitat précaire, et « fady »
+   est malgache, pas shimaoré. */
 const CATEGORIES = [
-  { id: "nature",   nom: "Nature & rando",        emoji: "🥾", couleur: "#2f8f5b" },
-  { id: "plage",    nom: "Plages & îlots",        emoji: "🏖️", couleur: "#0e9aa7" },
-  { id: "mer",      nom: "Lagon & sorties mer",   emoji: "🐋", couleur: "#1c6ea4" },
-  { id: "culture",  nom: "Culture & patrimoine",  emoji: "🕌", couleur: "#9b5de5" },
-  { id: "food",     nom: "Manger mahorais",       emoji: "🍛", couleur: "#e07a1f" },
-  { id: "famille",  nom: "Avec des enfants",      emoji: "👨‍👩‍👧", couleur: "#d94f70" },
-  { id: "pratique", nom: "Se déplacer",           emoji: "🧭", couleur: "#6b7280" }
+  { id: "nature",   nom: "Nature & rando",       sh: "Mlima",    ico: "montagne",  fr: "les reliefs" },
+  { id: "plage",    nom: "Plages & îlots",       sh: "Mutsanga", ico: "plage",     fr: "le sable" },
+  { id: "mer",      nom: "Lagon & sorties mer",  sh: "Bahari",   ico: "vagues",    fr: "la mer" },
+  { id: "culture",  nom: "Culture & patrimoine", sh: "",         ico: "mosquee",   fr: "" },
+  { id: "food",     nom: "Manger mahorais",      sh: "",         ico: "couverts",  fr: "" },
+  { id: "famille",  nom: "Avec des enfants",     sh: "",         ico: "gens",      fr: "" },
+  { id: "pratique", nom: "Se déplacer",          sh: "",         ico: "boussole",  fr: "" }
 ];
 
 const LIEUX = [

@@ -89,7 +89,7 @@ const ITINERAIRES = [
   {
     id: "it-petite-terre", nom: "Une journée en Petite-Terre, sans voiture",
     pour: "Escale, week-end court, ou pas de location de voiture",
-    duree: "1 journée", emoji: "⛴️",
+    duree: "1 journée", ico: "voilier",
     etapes: [
       { h: "6 h 30", lieu: "dziani",  quoi: "Lever de soleil sur le lac Dziani" },
       { h: "9 h 00", lieu: "muma",    quoi: "Musée de Mayotte, pour comprendre l'île" },
@@ -102,7 +102,7 @@ const ITINERAIRES = [
   {
     id: "it-sud", nom: "Le grand sud en une journée",
     pour: "Ceux qui ont une voiture et veulent la carte postale",
-    duree: "1 journée", emoji: "🚗",
+    duree: "1 journée", ico: "voiture",
     etapes: [
       { h: "6 h 00", lieu: "choungui", quoi: "Montée du Mont Choungui à la fraîche" },
       { h: "10 h 00", lieu: "ngouja",  quoi: "Snorkeling avec les tortues à N'Gouja" },
@@ -115,7 +115,7 @@ const ITINERAIRES = [
   {
     id: "it-lagon", nom: "Le lagon en grand",
     pour: "Le meilleur de Mayotte vu de l'eau",
-    duree: "2 à 3 jours", emoji: "🐋",
+    duree: "2 à 3 jours", ico: "poisson",
     etapes: [
       { h: "Jour 1", lieu: "ilot-sable", quoi: "Îlot de sable blanc, calé sur la marée basse" },
       { h: "Jour 2", lieu: "baleines",   quoi: "Sortie baleines le matin (juillet-octobre)" },
@@ -127,7 +127,7 @@ const ITINERAIRES = [
   {
     id: "it-culture", nom: "Immersion culturelle",
     pour: "Comprendre l'île plutôt que la photographier",
-    duree: "2 jours", emoji: "🕌",
+    duree: "2 jours", ico: "mosquee",
     etapes: [
       { h: "Jour 1 matin", lieu: "marche-mamoudzou", quoi: "Marché couvert de Mamoudzou" },
       { h: "Jour 1 midi",  lieu: "atelier-cuisine",  quoi: "Atelier de cuisine mahoraise" },
@@ -141,7 +141,7 @@ const ITINERAIRES = [
   {
     id: "it-enfants", nom: "Avec des enfants",
     pour: "Des journées courtes, à l'ombre, sans marche interminable",
-    duree: "3 jours", emoji: "👨‍👩‍👧",
+    duree: "3 jours", ico: "gens",
     etapes: [
       { h: "Jour 1", lieu: "sakouli",     quoi: "Plage de Sakouli et pêche à pied sur le platier" },
       { h: "Jour 2", lieu: "ngouja",      quoi: "Tortues à N'Gouja (masque et tuba dès 6 ans)" },
@@ -154,7 +154,7 @@ const ITINERAIRES = [
   {
     id: "it-week-end-local", nom: "Le week-end du Mahorais",
     pour: "Les habitants de l'île qui tournent en rond le samedi",
-    duree: "1 week-end", emoji: "🏝️",
+    duree: "1 week-end", ico: "plage",
     etapes: [
       { h: "Samedi matin", lieu: "marche-coconi", quoi: "Courses au marché paysan" },
       { h: "Samedi aprem", lieu: "voule",         quoi: "Voulé sur la plage avec la famille" },

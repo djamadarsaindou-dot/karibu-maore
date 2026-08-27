@@ -38,7 +38,7 @@ let demandes = Store.get("demandes", []);
 let filtres  = { cat: null, zone: null, budget: null, tag: null, q: "" };
 
 /* ------------------------------------------------------------ 2. RACCOURCIS */
-const cat     = id => CATEGORIES.find(c => c.id === id) || { id, nom: id, emoji: "•" };
+const cat     = id => CATEGORIES.find(c => c.id === id) || { id, nom: id, ico: "info", sh: "" };
 const lieu    = id => LIEUX.find(l => l.id === id);
 const presta  = id => PRESTATAIRES.find(p => p.id === id);
 const esc     = s => String(s ?? "").replace(/[&<>"']/g, c =>
@@ -101,7 +101,7 @@ function carteLieu(l) {
   <article class="fiche-carte">
     <div class="fiche-carte__art">
       ${UI.illustration(l.id, l.cat, { indice: l.nom + " " + l.resume })}
-      <span class="fiche-carte__cat">${c.emoji} ${esc(c.nom)}</span>
+      <span class="fiche-carte__cat">${ico(c.ico)} ${esc(c.nom)}</span>
       <button class="coeur" data-action="favori" data-id="${l.id}" aria-pressed="${fav}"
               aria-label="${fav ? "Retirer" : "Ajouter"} ${attr(l.nom)} ${fav ? "du" : "au"} carnet">
         ${ico("coeur")}
@@ -180,7 +180,7 @@ function vueAccueil() {
           ? ` · ${prochaine.type} à ${esc(prochaine.heure)}` : ""}</span>
       </div>
       <div class="stat">
-        <span class="stat__cle">Marnage ${phase.emoji}</span>
+        <span class="stat__cle">Marnage</span>
         <span class="stat__val">${etat.indic ? etat.indic.marnage + " m" : "—"}</span>
         <span class="stat__sous">${etat.indic ? esc(etat.indic.regime) : ""}</span>
       </div>
@@ -250,8 +250,9 @@ function vueAccueil() {
       ${CATEGORIES.map(c => {
         const n = LIEUX.filter(l => l.cat === c.id).length;
         return `<button class="tuile" data-action="aller" data-route="/explorer?cat=${c.id}">
-          <span class="tuile__icone" aria-hidden="true" style="font-size:1.35rem">${c.emoji}</span>
+          <span class="tuile__icone" aria-hidden="true">${ico(c.ico)}</span>
           <span class="tuile__nom">${esc(c.nom)}</span>
+          ${c.sh ? `<span class="tuile__sh" lang="swb">${esc(c.sh)}</span>` : ""}
           <span class="tuile__nb">${n} fiche${n > 1 ? "s" : ""}</span>
         </button>`;
       }).join("")}
@@ -398,9 +399,10 @@ function vueExplorer(params) {
   const horsSaison = liste.filter(l => !enSaison(l, mois)).length;
   const actifs = ["cat","zone","budget","tag"].filter(k => filtres[k]).length + (filtres.q ? 1 : 0);
 
-  const bouton = (label, champ, val) => `
+  /* `html` : le libellé contient déjà une icône SVG, on ne l'échappe pas. */
+  const bouton = (label, champ, val, html) => `
     <button class="filtre" data-action="filtre" data-champ="${champ}" data-val="${val}"
-      aria-pressed="${filtres[champ] === val}">${esc(label)}</button>`;
+      aria-pressed="${filtres[champ] === val}">${html ? label : esc(label)}</button>`;
 
   return `
   <section class="section">
@@ -412,7 +414,7 @@ function vueExplorer(params) {
   <div class="filtres" role="group" aria-label="Filtrer par catégorie">
     <button class="filtre" data-action="filtre" data-champ="cat" data-val=""
       aria-pressed="${!filtres.cat}">Tout</button>
-    ${CATEGORIES.map(c => bouton(c.emoji + " " + c.nom, "cat", c.id)).join("")}
+    ${CATEGORIES.map(c => bouton(ico(c.ico) + " " + c.nom, "cat", c.id, true)).join("")}
   </div>
   <div class="filtres" role="group" aria-label="Autres filtres">
     ${bouton("Grande-Terre", "zone", "grande-terre")}
@@ -479,7 +481,7 @@ function vueLieu(id) {
   <article class="fiche">
     <header class="fiche__entete">
       <div class="fiche__art">${UI.illustration(l.id, l.cat, { haut: true, prioritaire: true, indice: l.nom + " " + l.resume })}</div>
-      <span class="fiche__cat">${c.emoji} ${esc(c.nom)}</span>
+      <span class="fiche__cat">${ico(c.ico)} ${esc(c.nom)}</span>
     </header>
     <h1 class="fiche__titre">${esc(l.nom)}</h1>
     <p class="fiche__sous">${ico("epingle")} ${esc(l.commune)} · ${esc(zoneNom(l.zone))}</p>
@@ -698,7 +700,7 @@ function vueItineraires() {
     ${ITINERAIRES.map(i => `
       <article class="fiche-carte">
         <div class="fiche-carte__art">${UI.vignette(i.id, categorieItineraire(i), { indice: i.nom })}
-          <span class="fiche-carte__cat">${i.emoji} ${esc(i.duree)}</span></div>
+          <span class="fiche-carte__cat">${ico(i.ico || "carte")} ${esc(i.duree)}</span></div>
         <div class="fiche-carte__corps">
           <h3 class="fiche-carte__titre"><button class="fiche-carte__lien"
             data-action="aller" data-route="/itineraire/${i.id}">${esc(i.nom)}</button></h3>
@@ -726,7 +728,7 @@ function vueItineraire(id) {
   return `
   <button class="retour" data-action="retour">${ico("fleche")} Retour</button>
   <section class="section">
-    <h2 class="section__titre">${i.emoji} ${esc(i.nom)}</h2>
+    <h2 class="section__titre">${esc(i.nom)}</h2>
     <p class="section__note">${esc(i.pour)} · ${esc(i.duree)}${total ? ` · environ ${total} h d'activités` : ""}</p>
   </section>
   <div class="bloc">
@@ -1382,6 +1384,7 @@ window.addEventListener("scroll", () => {
 }, { passive: true });
 
 /* --------------------------------------------------------- 16. DÉMARRAGE */
+$("#km-defs").innerHTML = UI.claustra();
 $("#logo-slot").innerHTML = UI.logo();
 $("#btn-recherche").innerHTML = UI.icone("loupe");
 $("#loupe-slot").innerHTML = UI.icone("loupe");

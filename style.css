@@ -1,64 +1,124 @@
 /* =============================================================================
    KARIBU MAORÉ — système de design
    -----------------------------------------------------------------------------
-   Palette tirée de l'île : le turquoise du lagon, le bleu profond du canal,
-   le jaune de l'ylang-ylang, l'ocre de la latérite, le blanc cassé du sable.
-   Aucune police externe (l'appli doit fonctionner hors connexion), aucune image
-   externe : toutes les illustrations sont des SVG générés dans ui.js.
+   L'identité repose sur trois choses, dans cet ordre : LA LANGUE, LA COULEUR,
+   LE DESSIN GÉNÉRÉ DES FICHES. Volontairement pas sur un motif « traditionnel »
+   emprunté — la recherche n'a trouvé aucun répertoire codifié à citer, et
+   fabriquer du patrimoine aurait été pire que de s'en passer.
+
+   LA PALETTE est ancrée dans des observations documentées de Mayotte :
+     sable blanc corallien · sable noir basaltique · bleu des passes ·
+     turquoise de platier · terre cuite de poterie · ylang mûr · mangrove.
+   Elle évite délibérément le bleu, le rouge et le jaune du blason de Mayotte
+   (#38549D, #E42322, #F5E60A) pour ne créer aucune confusion institutionnelle.
+   Le rouge N'EST PAS « la couleur des padzas » : le padza est une érosion
+   aggravée par l'homme, dont les sédiments envasent le lagon. On ne fait pas
+   une couleur de marque d'une plaie environnementale. Le rouge vient de la
+   poterie et de la brique — charge positive, et documentée à l'inventaire
+   national du patrimoine culturel immatériel.
+
+   ⚠️ Ces valeurs sont provisoires : elles dérivent de descriptions écrites, pas
+   de mesures. La bonne façon de les figer est d'échantillonner les teintes sur
+   vos propres rushes (platier à marée basse, poterie, fleur d'ylang, palétuviers,
+   sable de Sakouli, sable de Trévani). Penser à tone-mapper les rushes drone en
+   HLG avant d'échantillonner, sinon les teintes sortent délavées.
+
+   TYPOGRAPHIE : Karibu Sans (texte) + Young Serif (grands titres), embarquées.
+   Sur vingt polices inspectées dans leur table cmap, seules trois possèdent les
+   ɓ (U+0253) et ɗ (U+0257) du shimaoré. Young Serif ne les a PAS : un mot
+   shimaoré ne doit donc jamais être composé en Young Serif — d'où la classe
+   .sh, qui force Inter.
    ========================================================================== */
+
+/* ------------------------------------------------------------- 0. POLICES
+   Fichiers sous-ensemblés (latin + français + ɓ ɗ + espace fine insécable).
+   Karibu Sans 40 Ko, Young Serif 23 Ko. Aucune requête réseau : tout est embarqué et
+   précaché par le service worker. */
+@font-face{
+  font-family:"Karibu Sans";     /* Inter sous-ensemblée, instanciée et renommée.
+                                    L'auteur d'Inter déclare son nom réservé dans
+                                    le README du projet : on renomme, ça ferme la
+                                    question pour douze lignes de Python. */
+  src:url("assets/fonts/karibu-sans.woff2") format("woff2");
+  font-weight:100 900;          /* c'est cette plage qui active l'axe variable */
+  font-style:normal;
+  font-display:swap;
+}
+@font-face{
+  font-family:"Young Serif";
+  src:url("assets/fonts/youngserif.woff2") format("woff2");
+  font-weight:400;
+  font-style:normal;
+  font-display:swap;
+}
 
 /* ---------------------------------------------------------------- 1. JETONS */
 :root{
-  /* — couleurs de marque — */
-  --lagon-100:#e6f7f8;
-  --lagon-200:#bceaee;
-  --lagon-400:#3ec2ce;
-  --lagon-500:#0e9aa7;
-  --lagon-600:#0b7d89;
-  --lagon-700:#0a626c;
-  --lagon-900:#083b42;
-  --ylang:#e8a317;
-  --ylang-fonce:#a3700a;
-  --terre:#c0552a;
-  --corail:#e4572e;
-  --vert:#2f8f5b;
-  --vert-clair:#e6f6ec;
-  --violet:#7b5ea7;
+  /* — les couleurs de Mayotte, chacune ancrée dans une observation —
+     (contraste calculé sur le fond sable, seuil AA = 4,5:1)            */
+  --sable:#f4ede2;        /* débris coralliens — îlot de Sable Blanc          */
+  --sable-clair:#fbf7f0;  /* surface de carte                                */
+  --sable-2:#eae0d0;      /* surface enfoncée                                */
+  --basalte:#241f1d;      /* sable noir de Trévani, Longoni — 14,0:1         */
+  --passe:#0a3a57;        /* passes du lagon, −60 m — 10,3:1                 */
+  --passe-clair:#14587f;
+  --platier:#1da9a2;      /* platier découvert — APLATS SEULEMENT (2,5:1)    */
+  --platier-grave:#0f6f6b;/* même teinte assombrie — texte et liens, 5,2:1   */
+  --terre-cuite:#a9502b;  /* engobe de Sohoa, poterie de Bandrélé — 4,7:1    */
+  --terre-claire:#d9825a; /* version éclaircie pour le thème sombre          */
+  --ylang:#c4b63e;        /* la fleur mûre est jaune-VERT, pas jaune d'or    */
+  --mangrove:#2f5d3a;     /* palétuviers                                     */
+  --mangrove-clair:#6fa97c;
+  --vase:#5e5a51;         /* vasières — texte secondaire, 5,4:1              */
 
-  /* — surfaces & texte (thème clair) — */
-  --bg:#fbfaf7;
-  --surface:#ffffff;
-  --surface-2:#f4f1ea;
-  --surface-3:#eae5da;
-  --ink:#0f2a33;
-  --ink-2:#3d5a64;
-  --muted:#556c76;   /* assombri pour passer le seuil AA (4,5:1) sur --bg et --surface */
-  --line:#e3e6e2;
-  --line-fort:#cfd6d4;
-  --accent:var(--lagon-600);
-  --accent-doux:var(--lagon-100);
+  /* — rôles, thème clair — */
+  --bg:var(--sable);
+  --surface:var(--sable-clair);
+  --surface-2:#f2e8da;
+  --surface-3:var(--sable-2);
+  --ink:var(--basalte);
+  --ink-2:#3d3833;
+  --muted:var(--vase);
+  --line:#e0d5c4;
+  --line-fort:#c9bca6;
+  --accent:var(--platier-grave);
+  --accent-aplat:var(--platier);
+  --accent-doux:#e2f2f1;
   --sur-accent:#ffffff;
-  /* libellés de la courbe de marée : doivent rester lisibles dans les 2 thèmes */
-  --txt-haute:#0a626c;
+  --sur-aplat:var(--basalte);      /* texte posé SUR le turquoise : 5,6:1 */
+  --signature:var(--ylang);
+  --chaud:var(--terre-cuite);
+  --vert:var(--mangrove);
+  --vert-clair:#e4efe6;
+  --corail:#a9302b;
+  --txt-haute:var(--passe);
   --txt-basse:#8a5b06;
 
-  /* — élévation — */
-  --e1:0 1px 2px rgba(15,42,51,.06), 0 1px 3px rgba(15,42,51,.05);
-  --e2:0 2px 4px rgba(15,42,51,.05), 0 8px 20px rgba(15,42,51,.07);
-  --e3:0 8px 16px rgba(15,42,51,.08), 0 24px 48px rgba(15,42,51,.10);
+  /* — élévation : deux ombres, pas cinq — */
+  --e1:0 1px 2px rgba(36,31,29,.05), 0 1px 3px rgba(36,31,29,.04);
+  --e2:0 2px 6px rgba(36,31,29,.06), 0 10px 24px rgba(36,31,29,.07);
+  --e3:0 10px 20px rgba(36,31,29,.10), 0 28px 56px rgba(36,31,29,.12);
 
-  /* — rythme — */
+  /* — rythme : échelle de 4, une seule, à respecter partout — */
   --s1:.25rem; --s2:.5rem;  --s3:.75rem; --s4:1rem;
   --s5:1.5rem; --s6:2rem;   --s7:3rem;
 
-  /* — rayons — */
-  --r-s:8px; --r-m:14px; --r-l:20px; --r-xl:28px; --r-pill:999px;
+  /* — rayons : quatre valeurs, pas treize — */
+  --r-s:6px; --r-m:12px; --r-l:18px; --r-xl:24px; --r-pill:999px;
 
-  /* — typographie — */
-  --police:ui-sans-serif,system-ui,-apple-system,"Segoe UI Variable Text","Segoe UI",
-           Roboto,"Helvetica Neue",Arial,sans-serif;
-  --fs-2xs:.75rem;   --fs-xs:.8125rem; --fs-sm:.875rem;  --fs-base:1rem;
-  --fs-md:1.0625rem; --fs-lg:1.25rem; --fs-xl:1.5rem;   --fs-2xl:1.875rem;
+  /* — typographie —
+     Échelle mobile base 16 px. Le corps est à la graisse 420 plutôt que 400 :
+     l'axe variable le permet gratuitement et ça se lit mieux en plein soleil. */
+  --police:"Karibu Sans",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --police-titre:"Young Serif","Iowan Old Style",Georgia,serif;
+  --fs-2xs:.6875rem; /* surtitre en capitales, +0,06em */
+  --fs-xs:.8125rem;  /* méta : durée, budget, commune  */
+  --fs-sm:.875rem;   /* texte secondaire               */
+  --fs-base:1rem;    /* corps                          */
+  --fs-md:1.0625rem; /* h3                             */
+  --fs-lg:1.25rem;   /* h2                             */
+  --fs-xl:1.625rem;  /* h1                             */
+  --fs-2xl:1.875rem; /* display (Young Serif)          */
 
   /* — mouvement — */
   --t-rapide:120ms cubic-bezier(.2,.8,.3,1);
@@ -69,48 +129,58 @@
   color-scheme:light dark;
 }
 
+/* — thème sombre : le fond est le sable noir basaltique, pas un gris neutre —
+   Trois couleurs doivent être éclaircies pour rester lisibles dessus. */
 @media (prefers-color-scheme:dark){
-  :root:not([data-theme="light"]){--bg:#08151a;
-    --surface:#0f2229;
-    --surface-2:#16303a;
-    --surface-3:#1e3d48;
-    --ink:#e9f2f4;
-    --ink-2:#bcd2d9;
-    --muted:#8fa9b2;
-    --line:#1c3742;
-    --line-fort:#28505d;
-    --accent:var(--lagon-400);
-    --accent-doux:#0c2b32;
-    --sur-accent:#04191d;
+  :root:not([data-theme="light"]){
+    --bg:var(--basalte);
+    --surface:#322b27;
+    --surface-2:#3d352f;
+    --surface-3:#4a413a;
+    --ink:var(--sable);
+    --ink-2:#d8cfc2;
+    --muted:#8c877b;              /* 4,6:1 sur le basalte */
+    --line:#453c35;
+    --line-fort:#5c5147;
+    --accent:var(--platier);      /* 5,6:1 */
+    --accent-aplat:var(--platier);
+    --accent-doux:#123536;
+    --sur-accent:var(--basalte);
+    --chaud:var(--terre-claire);  /* 5,7:1 */
+    --vert:var(--mangrove-clair); /* 5,9:1 */
+    --vert-clair:#1a2e20;
+    --corail:#e08b7f;
     --txt-haute:#7fd8e2;
-    --txt-basse:#f0c76a;
-    --vert-clair:#0f2c1e;
+    --txt-basse:#e8c46a;
     --e1:0 1px 2px rgba(0,0,0,.5);
-    --e2:0 2px 4px rgba(0,0,0,.4), 0 8px 20px rgba(0,0,0,.35);
-    --e3:0 8px 16px rgba(0,0,0,.45), 0 24px 48px rgba(0,0,0,.5);}
+    --e2:0 2px 6px rgba(0,0,0,.45), 0 10px 24px rgba(0,0,0,.4);
+    --e3:0 10px 20px rgba(0,0,0,.5), 0 28px 56px rgba(0,0,0,.55);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:var(--basalte); --surface:#322b27; --surface-2:#3d352f; --surface-3:#4a413a;
+  --ink:var(--sable); --ink-2:#d8cfc2; --muted:#8c877b;
+  --line:#453c35; --line-fort:#5c5147;
+  --accent:var(--platier); --accent-aplat:var(--platier); --accent-doux:#123536;
+  --sur-accent:var(--basalte); --chaud:var(--terre-claire); --vert:var(--mangrove-clair);
+  --vert-clair:#1a2e20; --corail:#e08b7f; --txt-haute:#7fd8e2; --txt-basse:#e8c46a;
+  --e1:0 1px 2px rgba(0,0,0,.5);
+  --e2:0 2px 6px rgba(0,0,0,.45), 0 10px 24px rgba(0,0,0,.4);
+  --e3:0 10px 20px rgba(0,0,0,.5), 0 28px 56px rgba(0,0,0,.55);
 }
 
-/* même jeu de couleurs quand le thème sombre est choisi explicitement
-   (le visualiseur d'Artifact et certains navigateurs posent data-theme) */
-  :root[data-theme="dark"]{--bg:#08151a;
-    --surface:#0f2229;
-    --surface-2:#16303a;
-    --surface-3:#1e3d48;
-    --ink:#e9f2f4;
-    --ink-2:#bcd2d9;
-    --muted:#8fa9b2;
-    --line:#1c3742;
-    --line-fort:#28505d;
-    --accent:var(--lagon-400);
-    --accent-doux:#0c2b32;
-    --sur-accent:#04191d;
-    --txt-haute:#7fd8e2;
-    --txt-basse:#f0c76a;
-    --vert-clair:#0f2c1e;
-    --e1:0 1px 2px rgba(0,0,0,.5);
-    --e2:0 2px 4px rgba(0,0,0,.4), 0 8px 20px rgba(0,0,0,.35);
-    --e3:0 8px 16px rgba(0,0,0,.45), 0 24px 48px rgba(0,0,0,.5);}
-
+/* ------------------------------------------------- 1 bis. LA LANGUE
+   Le shimaoré nomme ce qui existe à Mayotte, le français conduit l'action.
+   Traitement constant : une graisse, une couleur. C'est cela qui fait système —
+   pas la forme des lettres. Et toujours en Inter : Young Serif n'a pas les
+   consonnes implosives. */
+.sh{
+  font-family:var(--police);
+  font-weight:600;
+  color:var(--accent);
+  font-style:normal;
+}
+.sh--sur-image{color:inherit}
 
 /* ------------------------------------------------------------- 2. SOCLE */
 *,*::before,*::after{box-sizing:border-box}
@@ -122,7 +192,6 @@ body{
   line-height:1.6;
   color:var(--ink);
   background:var(--bg);
-  -webkit-font-smoothing:antialiased;
   text-rendering:optimizeLegibility;
   padding-bottom:calc(4.5rem + env(safe-area-inset-bottom));
   padding-inline:env(safe-area-inset-left) env(safe-area-inset-right);
@@ -136,7 +205,7 @@ img,svg{max-width:100%;display:block}
 svg.i{width:1em;height:1em;flex:0 0 auto;display:inline-block;vertical-align:-.125em}
 a{color:var(--accent);text-underline-offset:.2em}
 button{font:inherit;color:inherit}
-::selection{background:var(--lagon-200);color:var(--lagon-900)}
+::selection{background:var(--accent-doux);color:var(--passe)}
 
 :where(a,button,input,select,textarea,[tabindex]):focus-visible{
   outline:2.5px solid var(--accent);
@@ -229,7 +298,7 @@ main:focus{outline:none}
 .heros{
   position:relative;overflow:hidden;
   border-radius:var(--r-xl);
-  background:linear-gradient(160deg,var(--lagon-600) 0%,var(--lagon-700) 45%,var(--lagon-900) 100%);
+  background:linear-gradient(160deg,var(--platier-grave) 0%,var(--passe) 45%,var(--passe) 100%);
   color:#fff;padding:var(--s5) var(--s4) var(--s4);
   box-shadow:var(--e2);
 }
@@ -349,7 +418,7 @@ main:focus{outline:none}
   background:var(--surface-2);color:var(--ink-2);border:1px solid var(--line);
   white-space:nowrap;
 }
-.puce--maree{background:var(--lagon-100);color:var(--lagon-700);border-color:var(--lagon-200)}
+.puce--maree{background:var(--accent-doux);color:var(--passe);border-color:var(--accent-doux)}
 .puce--ok{background:var(--vert-clair);color:#1a6b40;border-color:#bfe6cd}
 .puce--alerte{background:#fdeceb;color:#96271b;border-color:#f5c9c4}
 .puce--or{background:#fdf3dc;color:#7a5606;border-color:#f0dfae}
@@ -535,7 +604,7 @@ main:focus{outline:none}
 .parcours{position:relative;padding-left:var(--s5)}
 .parcours::before{
   content:"";position:absolute;left:.42rem;top:.6rem;bottom:.6rem;width:2px;
-  background:linear-gradient(var(--lagon-400),var(--lagon-200));border-radius:2px;
+  background:linear-gradient(var(--platier),var(--accent-doux));border-radius:2px;
 }
 .etape{position:relative;padding-bottom:var(--s4);cursor:pointer;background:none;border:0;
   text-align:left;width:100%;display:block}
@@ -543,7 +612,7 @@ main:focus{outline:none}
 .etape::before{
   content:"";position:absolute;left:calc(var(--s5) * -1 + .1rem);top:.42rem;
   width:.75rem;height:.75rem;border-radius:50%;
-  background:var(--surface);border:2.5px solid var(--lagon-500);
+  background:var(--surface);border:2.5px solid var(--platier);
 }
 .etape__h{font-size:var(--fs-2xs);font-weight:700;text-transform:uppercase;
   letter-spacing:.08em;color:var(--accent)}
@@ -677,7 +746,7 @@ a.rang .rang__cle{text-decoration:underline;text-underline-offset:.15em}
 .bandeau-maj span{flex:1}
 .btn--mini{
   padding:.45rem .8rem;border-radius:var(--r-pill);border:0;cursor:pointer;
-  background:var(--lagon-400);color:#04191d;font-weight:650;font-size:var(--fs-sm);
+  background:var(--platier);color:#04191d;font-weight:650;font-size:var(--fs-sm);
   min-height:2.25rem;
 }
 @keyframes monte{from{transform:translateY(1rem);opacity:0}to{transform:none;opacity:1}}
@@ -824,5 +893,62 @@ body[data-vue="lieu"]{padding-bottom:calc(8.4rem + env(safe-area-inset-bottom))}
 /* Le liseré coloré rend les avertissements distinguables au premier coup d'œil */
 .note{border-left:4px solid transparent}
 .note--ok{border-left-color:var(--vert)}
-.note--attention{border-left-color:var(--ylang-fonce)}
+.note--attention{border-left-color:var(--chaud)}
 .note--danger{border-left-color:var(--corail)}
+
+/* =========================================================================
+   REFONTE VISUELLE — identité mahoraise
+   ========================================================================= */
+
+/* Les titres en Young Serif. Jamais de shimaoré dedans : la police n'a ni ɓ
+   ni ɗ. Les grands titres sont en français, le shimaoré passe en .sh. */
+.heros__salut, .fiche__titre, .section__titre, h1{
+  font-family:var(--police-titre);
+  font-weight:400;
+  letter-spacing:-.015em;
+  line-height:1.18;
+}
+.fiche__titre{font-size:var(--fs-xl)}
+.heros__salut{font-size:var(--fs-2xl);line-height:1.15}
+.section__titre{font-size:var(--fs-lg);line-height:1.25}
+body{font-weight:420;font-synthesis-weight:none}
+
+/* Les chiffres qui se lisent en colonne : heures de marée, hauteurs, durées. */
+.stat__val,.rang__cle,.etape__h,.maree-graph text,.puce{font-variant-numeric:tabular-nums}
+
+/* Le cartouche gravé remplit sa zone comme le ferait une photographie. */
+.cartouche{display:block;width:100%;height:100%;object-fit:cover}
+
+/* Le sceau du double arc : une fois par écran au maximum. */
+.sceau{display:block;width:4.5rem;height:1.5rem;color:var(--signature);opacity:.9}
+
+/* Le mot shimaoré sur une tuile ou une carte : jamais criard, jamais décoratif. */
+.tuile__sh{display:block;font-size:var(--fs-2xs);letter-spacing:.06em;
+  text-transform:uppercase;color:var(--accent);font-weight:600;margin-top:.1rem}
+.tuile__icone{display:flex;align-items:center;justify-content:center;
+  font-size:1.35rem;color:var(--accent);margin-bottom:var(--s1)}
+.tuile__icone svg{width:1.35rem;height:1.35rem;stroke-width:1.75}
+
+/* Les libellés de catégorie deviennent des icônes + texte, plus des emojis. */
+.fiche-carte__cat svg,.fiche__cat svg{width:.95em;height:.95em;vertical-align:-.12em;
+  margin-right:.28em;stroke-width:2}
+.filtre svg{width:1em;height:1em;vertical-align:-.14em;margin-right:.3em;stroke-width:2}
+
+/* La trame claustra : fonds d'écrans vides et bandeaux de section, jamais
+   derrière du texte courant, jamais au-delà de 7 %. */
+.trame{position:relative;isolation:isolate}
+.trame::before{
+  content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;
+  background-image:var(--trame-img);opacity:.06;
+}
+@media (prefers-color-scheme:dark){ .trame::before{opacity:.09} }
+
+/* Le bandeau d'accueil : un aplat profond, plus de dégradé turquoise. */
+.heros{
+  background:var(--passe);
+  color:var(--sable);
+  border-radius:var(--r-l);
+}
+.heros__jour{color:#cfe4ef}
+.stat{background:rgba(0,0,0,.22);border-color:rgba(244,237,226,.35)}
+.stat__cle,.stat__sous{color:#dbe9f1}
