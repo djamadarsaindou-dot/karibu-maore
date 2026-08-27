@@ -20,13 +20,15 @@
    réponse 200, même origine, et type de contenu conforme à l'extension.
    ========================================================================== */
 
-const CACHE = "karibu-maore-v9";
+const CACHE = "karibu-maore-v10";
 const CACHE_PHOTOS = "karibu-maore-photos-v1";
 
 const FICHIERS = [
   "./", "./index.html", "./style.css",
-  "./data.js", "./data-resa.js", "./photos.js", "./carte.js", "./marees.js", "./ui.js", "./app.js",
+  "./data.js", "./data-resa.js", "./photos.js", "./carte.js", "./astro.js", "./marees.js", "./ui.js", "./app.js",
   "./manifest.webmanifest", "./icone.svg", "./icone-masque.svg",
+  "./icone-192.png", "./icone-512.png", "./icone-maskable-512.png",
+  "./apple-touch-icon.png", "./favicon-32.png",
   /* Les polices sont précachées : sans elles l'application s'ouvrirait dans
      une police de repli au premier lancement hors connexion, et la mise en
      page sauterait au chargement suivant. 63 Ko à deux. */

@@ -185,6 +185,27 @@ function vueAccueil() {
         <span class="stat__sous">${etat.indic ? esc(etat.indic.regime) : ""}</span>
       </div>
       <div class="stat">
+        <span class="stat__cle">Soleil</span>
+        ${(() => {
+          const s = jourSolaire(), m = h * 60 + now.getMinutes() / 60 * 0;
+          const mn = h * 60;
+          /* Avant le lever, l'information utile est l'heure du lever — pas
+             « il reste 17 h de jour » à une heure du matin. */
+          if (mn < s.lever) return `<span class="stat__val">${SOLEIL.min2h(s.lever)}</span>
+            <span class="stat__sous">lever du soleil</span>`;
+          if (mn > s.civil) return `<span class="stat__val">${SOLEIL.min2h(s.lever)}</span>
+            <span class="stat__sous">lever demain · nuit noire</span>`;
+          const r = (s.civil - mn) / 60;
+          const reste = r > 1 ? `encore ${Math.floor(r)} h ${String(Math.round((r % 1) * 60)).padStart(2, "0")} de jour`
+                     : r > .1 ? `plus que ${Math.round(r * 60)} min de jour`
+                     : "la nuit tombe";
+          const doree = mn >= s.doreeDebut - 45 && mn <= s.coucher
+            ? ` · dorée ${SOLEIL.min2h(s.doreeDebut)}` : "";
+          return `<span class="stat__val">${SOLEIL.min2h(s.coucher)}</span>
+            <span class="stat__sous">${reste}${doree}</span>`;
+        })()}
+      </div>
+      <div class="stat">
         <span class="stat__cle">Saison</span>
         <span class="stat__val">${mois >= 5 && mois <= 10 ? "sèche" : "des pluies"}</span>
         <span class="stat__sous">${mois >= 7 && mois <= 10 ? "baleines dans le lagon" : "chaud et humide"}</span>
@@ -287,6 +308,16 @@ function vueAccueil() {
 /* Le calcul de marée somme 28 ondes par minute de la journée. Le refaire à
    chaque rendu, c'est ~125 000 cosinus sur le fil principal d'un téléphone
    d'entrée de gamme. On le garde en mémoire pour la journée en cours. */
+/* Le soleil du jour, calculé une fois : classer() l'interroge pour chacune des
+   43 fiches, et journee() enchaîne dix résolutions d'événement. */
+const _cacheSoleil = { cle: "", v: null };
+function jourSolaire(date) {
+  const d = date || new Date();
+  const L = SOLEIL.local(d), cle = `${L.a}-${L.m}-${L.j}`;
+  if (_cacheSoleil.cle !== cle) { _cacheSoleil.cle = cle; _cacheSoleil.v = SOLEIL.journee(d); }
+  return _cacheSoleil.v;
+}
+
 const _cacheMaree = new Map();
 function mareeDuJour() {
   const L = MAREES.local(new Date());
@@ -312,8 +343,11 @@ function classer(liste, now, soir) {
       if (l.saison.includes(mois)) s += 3;
       const href = soir ? 7 : h;
       if (href < 9 && /matin|aube|lever/i.test(l.quand)) s += 3;
-      if (!soir && h >= 16 && /coucher|fin d'après-midi|soir/i.test(l.quand)) s += 3;
-      const restant = soir ? 11 : Math.max(0, 18 - h);
+      // L'heure dorée dure ici 28 à 31 minutes, pas une heure : on la calcule.
+      if (!soir && h * 60 >= jourSolaire().doreeDebut - 90 &&
+          /coucher|fin d'après-midi|soir/i.test(l.quand)) s += 3;
+      // Ce qu'il reste de jour utile, au crépuscule civil et non à « 18 h ».
+      const restant = soir ? 11 : Math.max(0, jourSolaire().civil / 60 - h);
       if (l.duree > restant) s -= 6;
       if (favoris.includes(l.id)) s += 2;
       s += (UI.graine(l.id + now.getDate()) % 100) / 100;   // rotation douce d'un jour à l'autre
@@ -1178,7 +1212,13 @@ async function partager(id) {
     text: `${l.nom} (${l.commune}) : ${l.resume}`,
     url: location.href
   };
-  if (navigator.share) { try { await navigator.share(donnees); return; } catch { return; } }
+  /* AbortError = l'utilisateur a fermé la feuille de partage, c'est normal.
+     Toute autre erreur signifie que RIEN n'est parti : on ne peut pas laisser
+     croire le contraire, on retombe sur la copie. */
+  if (navigator.share) {
+    try { await navigator.share(donnees); return; }
+    catch (e) { if (e && e.name === "AbortError") return; }
+  }
   try {
     await navigator.clipboard.writeText(`${donnees.text}\n${donnees.url}`);
     feuille({ titre: "Copié", texte: "Prêt à coller dans WhatsApp ou un message." });
@@ -1418,7 +1458,20 @@ function panne(err) {
 }
 
 function rendreSur() {
-  try { rendre(); } catch (e) { console.error(e); panne(e); }
+  /* La transition de vue native est ce qui distingue le plus nettement une
+     application d'une page web : l'écran glisse au lieu d'être remplacé.
+     Repli automatique et complet si le navigateur ne la connaît pas, si
+     l'utilisateur a demandé moins d'animations, ou si l'interrupteur des
+     réglages est sur « sobre ». */
+  const anime = document.startViewTransition
+    && !matchMedia("(prefers-reduced-motion: reduce)").matches
+    && document.documentElement.dataset.anim !== "off";
+  if (!anime) { try { rendre(); } catch (e) { console.error(e); panne(e); } return; }
+  try {
+    document.startViewTransition(() => {
+      try { rendre(); } catch (e) { console.error(e); panne(e); }
+    });
+  } catch (e) { try { rendre(); } catch (e2) { console.error(e2); panne(e2); } }
 }
 
 /* attrape aussi l'échec de chargement d'un <script> lui-même */

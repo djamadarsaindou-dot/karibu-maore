@@ -119,3 +119,18 @@ Fabriquée par `C:\pdtmp\kgeo\carte.py` — projection équirectangulaire corrig
 cos(latitude), simplification de Douglas-Peucker. 56 Ko pour l'île entière, sans
 une seule tuile : c'est la seule façon d'avoir une carte qui fonctionne vraiment
 hors connexion.
+
+---
+
+## Calculs solaires
+
+`astro.js` implémente les séries de la **NOAA Solar Calculator** (domaine public),
+d'après Jean Meeus, *Astronomical Algorithms*. Aucune donnée n'est embarquée :
+tout est calculé sur l'appareil.
+
+Précision vérifiée par l'autotest (`node astro.js`) contre les sorties de la NOAA
+elle-même : **lever et coucher à la seconde**, midi solaire à 5 secondes.
+
+> Ne pas contrôler contre sunrise-sunset.org ni les calendriers grand public :
+> leur seuil effectif est −1,12° au lieu de −0,833°, ils dérivent d'une à deux
+> minutes.

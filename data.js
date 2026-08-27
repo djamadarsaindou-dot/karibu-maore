@@ -24,7 +24,7 @@
 const APP = {
   nom: "Karibu Maoré",
   baseline: "Tout ce qu'il y a à faire à Mayotte — et comment le réserver",
-  version: "0.6.0",
+  version: "0.7.0",
   maj: "2026-08-28",
   // Numéro de contact, format international sans + ni espaces (0639 40 69 48)
   contactWhatsApp: "262639406948",
@@ -556,7 +556,7 @@ const LIEUX = [
     tags: ["famille"],
     conseils: [
       "Se prévient dans la journée pour que le poisson soit acheté.",
-      "Prévoir une lampe : pas d'éclairage sur les plages, et la nuit tombe d'un coup vers 18 h."
+      "Prévoir une lampe : il n'y a aucun éclairage sur les plages, et le crépuscule est court sous ces latitudes — l'appli vous donne l'heure exacte du coucher et ce qu'il reste de jour."
     ],
     presta: ["resto-plage"], gps: [-12.9083, 45.1667]
   },

@@ -999,3 +999,29 @@ body{font-weight:420;font-synthesis-weight:none}
 .carte-apercu__res{margin-top:var(--s1) !important;color:var(--ink-2) !important;
   font-size:var(--fs-sm) !important}
 .carte-apercu .btn{grid-column:1 / -1;margin-top:var(--s2)}
+
+/* ====================== TRANSITIONS DE VUE ===============================
+   L'écran glisse au lieu d'être remplacé d'un bloc. C'est le geste qui
+   distingue le plus nettement une application d'une page web, et il ne coûte
+   que quelques lignes : le navigateur fait tout le travail.
+   Tout est sous @supports et sous prefers-reduced-motion — sans support,
+   l'appli se comporte exactement comme avant. */
+@supports (view-transition-name: none){
+  @media (prefers-reduced-motion: no-preference){
+    ::view-transition-old(root),
+    ::view-transition-new(root){ animation-duration:.22s;
+      animation-timing-function:cubic-bezier(.2,.8,.3,1) }
+    ::view-transition-old(root){ animation-name:vt-sortie }
+    ::view-transition-new(root){ animation-name:vt-entree }
+    @keyframes vt-sortie{ to{ opacity:0; transform:translateY(-6px) } }
+    @keyframes vt-entree{ from{ opacity:0; transform:translateY(10px) } }
+
+    /* La barre du haut et les onglets ne bougent pas : ce sont les repères
+       fixes de l'application, les faire glisser donnerait le mal de mer. */
+    .topbar, .onglets, .barre-fiche{ view-transition-name:none }
+  }
+}
+
+/* La carte est lourde à peindre : on ne la dessine que lorsqu'elle approche
+   de l'écran, et on réserve sa place pour que rien ne sautille. */
+.carte-cadre{ content-visibility:auto; contain-intrinsic-size:auto 480px }
