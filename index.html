@@ -44,6 +44,15 @@
 
 <main id="vue" tabindex="-1"></main>
 
+<!-- Barre d'action de la fiche : hors de #vue pour ne pas être reconstruite,
+     affichée par le CSS uniquement quand body[data-vue="lieu"] -->
+<div class="barre-fiche" id="barre-fiche"></div>
+
+<!-- Feuille qui monte du bas : remplace alert()/confirm(). Une boîte système
+     s'annonce au nom du domaine — c'est le signal le plus net qu'on est sur
+     une page web — elle tronque les longs textes et ne se sélectionne pas. -->
+<dialog class="feuille" id="feuille" aria-labelledby="feuille-titre"></dialog>
+
 <nav class="onglets" aria-label="Navigation principale">
   <a class="onglet" href="#/"            data-r="/"           ><span class="ico"></span>Aujourd'hui</a>
   <a class="onglet" href="#/explorer"    data-r="/explorer"   ><span class="ico"></span>Explorer</a>
@@ -63,6 +72,7 @@
 
 <script src="data.js"></script>
 <script src="data-resa.js"></script>
+<script src="photos.js"></script>
 <script src="marees.js"></script>
 <script src="ui.js"></script>
 <script src="app.js"></script>

@@ -57,13 +57,14 @@
   /* — typographie — */
   --police:ui-sans-serif,system-ui,-apple-system,"Segoe UI Variable Text","Segoe UI",
            Roboto,"Helvetica Neue",Arial,sans-serif;
-  --fs-2xs:.6875rem; --fs-xs:.75rem;  --fs-sm:.8125rem; --fs-base:.9375rem;
+  --fs-2xs:.75rem;   --fs-xs:.8125rem; --fs-sm:.875rem;  --fs-base:1rem;
   --fs-md:1.0625rem; --fs-lg:1.25rem; --fs-xl:1.5rem;   --fs-2xl:1.875rem;
 
   /* — mouvement — */
   --t-rapide:120ms cubic-bezier(.2,.8,.3,1);
   --t-normal:220ms cubic-bezier(.2,.8,.3,1);
 
+  --h-topbar:calc(3.25rem + env(safe-area-inset-top));
   --largeur:min(100% - 2rem, 44rem);
   color-scheme:light dark;
 }
@@ -124,6 +125,7 @@ body{
   -webkit-font-smoothing:antialiased;
   text-rendering:optimizeLegibility;
   padding-bottom:calc(4.5rem + env(safe-area-inset-bottom));
+  padding-inline:env(safe-area-inset-left) env(safe-area-inset-right);
   overflow-x:hidden;
 }
 h1,h2,h3,h4{margin:0;line-height:1.25;letter-spacing:-.018em;font-weight:650}
@@ -159,7 +161,7 @@ button{font:inherit;color:inherit}
   display:flex;align-items:center;gap:var(--s2);
   padding:var(--s2) var(--s3);
   padding-top:calc(var(--s2) + env(safe-area-inset-top));
-  min-height:3.25rem;
+  min-height:var(--h-topbar);
   background:color-mix(in srgb, var(--bg) 82%, transparent);
   backdrop-filter:saturate(180%) blur(14px);
   -webkit-backdrop-filter:saturate(180%) blur(14px);
@@ -188,7 +190,7 @@ button{font:inherit;color:inherit}
 
 /* recherche */
 .recherche{
-  position:sticky;top:3.25rem;z-index:39;
+  position:sticky;top:var(--h-topbar);z-index:39;
   padding:0 var(--s3) var(--s3);
   background:color-mix(in srgb, var(--bg) 82%, transparent);
   backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
@@ -227,7 +229,7 @@ main:focus{outline:none}
 .heros{
   position:relative;overflow:hidden;
   border-radius:var(--r-xl);
-  background:linear-gradient(160deg,var(--lagon-500) 0%,var(--lagon-700) 55%,var(--lagon-900) 100%);
+  background:linear-gradient(160deg,var(--lagon-600) 0%,var(--lagon-700) 45%,var(--lagon-900) 100%);
   color:#fff;padding:var(--s5) var(--s4) var(--s4);
   box-shadow:var(--e2);
 }
@@ -235,21 +237,21 @@ main:focus{outline:none}
   position:absolute;right:-1.5rem;top:50%;transform:translateY(-50%);
   width:11rem;opacity:.22;pointer-events:none;
 }
-.heros__jour{font-size:var(--fs-sm);opacity:.85;letter-spacing:.02em}
+.heros__jour{font-size:var(--fs-sm);color:#eafcfd;letter-spacing:.02em}
 .heros__salut{font-size:var(--fs-xl);margin:var(--s1) 0 var(--s3);max-width:16ch;text-wrap:balance}
 .heros__stats{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--s2)}
 .stat{
   min-width:0;
-  background:rgba(255,255,255,.14);
-  border:1px solid rgba(255,255,255,.18);
+  background:rgba(0,0,0,.20);
+  border:1px solid rgba(255,255,255,.45);
   border-radius:var(--r-m);padding:var(--s2) var(--s3);
   backdrop-filter:blur(6px);
 }
-.stat__cle{display:block;font-size:var(--fs-2xs);text-transform:uppercase;letter-spacing:.06em;
-  opacity:.8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.stat__val{display:block;font-size:var(--fs-sm);font-weight:700;letter-spacing:-.01em;
+.stat__cle{display:block;font-size:var(--fs-xs);text-transform:uppercase;letter-spacing:.06em;
+  color:#d6f5f8;overflow:hidden;text-overflow:ellipsis}
+.stat__val{display:block;font-size:var(--fs-md);font-weight:700;color:#fff;letter-spacing:-.01em;
   text-wrap:balance;margin:.1rem 0}
-.stat__sous{display:block;font-size:var(--fs-2xs);opacity:.8;line-height:1.35}
+.stat__sous{display:block;font-size:var(--fs-xs);color:#d6f5f8;line-height:1.35}
 @media(min-width:26rem){
   .stat__val{font-size:var(--fs-md)}
   .stat__sous{font-size:var(--fs-xs)}
@@ -632,3 +634,195 @@ a.rang .rang__cle{text-decoration:underline;text-underline-offset:.15em}
   body{padding:0;background:#fff;color:#000}
   .bloc,.fiche-carte{break-inside:avoid;box-shadow:none;border-color:#ccc}
 }
+
+/* =========================================================================
+   ILLUSTRATIONS — photographie quand elle existe, dessin sinon
+   ========================================================================= */
+.illus{position:relative;width:100%;height:100%;overflow:hidden;background:var(--sable)}
+.illus svg{display:block;width:100%;height:100%;object-fit:cover}
+.illus__fond{position:absolute;inset:0}
+/* Pas de fondu : l'image apparaît dès qu'elle est décodée. Un <img> sans données
+   ne peint rien, donc le dessin SVG reste visible derrière pendant le chargement —
+   il n'y a jamais de trou, et rien ne peut rester bloqué en transparence. */
+.illus img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+
+/* Le crédit reste lisible sur n'importe quelle photo : ombre portée, pas de
+   pavé opaque qui masquerait l'image. Obligatoire pour les licences BY/BY-SA. */
+.illus__credit{
+  position:absolute;right:.4rem;bottom:.3rem;z-index:2;
+  font-size:.62rem;line-height:1.3;color:#fff;opacity:.88;
+  text-shadow:0 1px 3px rgba(0,0,0,.85),0 0 10px rgba(0,0,0,.5);
+  max-width:80%;text-align:right;pointer-events:none;
+}
+
+/* Page des crédits */
+.credit-photo{display:flex;gap:var(--s3);align-items:flex-start;padding:var(--s3) 0;
+  border-bottom:1px solid var(--line)}
+.credit-photo:last-child{border-bottom:0}
+.credit-photo__img{flex:0 0 68px;height:52px;border-radius:8px;overflow:hidden;background:var(--sable)}
+.credit-photo__img img{width:100%;height:100%;object-fit:cover;display:block}
+.credit-photo__txt{flex:1;min-width:0;font-size:var(--fs-sm)}
+.credit-photo__txt b{display:block}
+.credit-photo__txt small{color:var(--muted);display:block;line-height:1.45}
+
+/* Bandeau de mise à jour — discret, au-dessus des onglets, jamais bloquant */
+.bandeau-maj{
+  position:fixed;left:var(--s3);right:var(--s3);
+  bottom:calc(4rem + env(safe-area-inset-bottom));z-index:46;
+  display:flex;align-items:center;gap:var(--s3);
+  padding:var(--s3) var(--s4);border-radius:var(--r-m);
+  background:var(--ink);color:var(--bg);box-shadow:var(--e3);
+  font-size:var(--fs-sm);animation:monte .25s ease both;
+}
+.bandeau-maj span{flex:1}
+.btn--mini{
+  padding:.45rem .8rem;border-radius:var(--r-pill);border:0;cursor:pointer;
+  background:var(--lagon-400);color:#04191d;font-weight:650;font-size:var(--fs-sm);
+  min-height:2.25rem;
+}
+@keyframes monte{from{transform:translateY(1rem);opacity:0}to{transform:none;opacity:1}}
+
+/* ------------------------------------------------------- FICHE : EN-TÊTE
+   Objectif : que le verdict et le début de la description tiennent au-dessus
+   de la ligne de flottaison d'un écran de 360 × 640. La bannière passe donc
+   de 16/7 à 16/5, et les quatre cases « faits » (qui répétaient les puces de
+   la carte d'où l'on vient) deviennent une simple ligne de puces. */
+.fiche__entete{aspect-ratio:16/5}
+.fiche__puces{display:flex;flex-wrap:wrap;gap:var(--s2);margin:var(--s3) 0}
+
+.verdict{
+  display:flex;align-items:center;gap:var(--s2);
+  margin:var(--s3) 0;padding:var(--s3) var(--s4);
+  border-radius:var(--r-m);font-weight:650;font-size:var(--fs-md);
+  line-height:1.35;
+}
+.verdict svg{flex:0 0 auto;width:1.15em;height:1.15em}
+.verdict--ok{background:var(--vert-clair);color:#1c6b3d}
+.verdict--attention{background:#fdf3df;color:#7a5406}
+.verdict--danger{background:#fdeaea;color:#a02020}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]) .verdict--ok{background:#0f2c1e;color:#7fd6a0}
+  :root:not([data-theme="light"]) .verdict--attention{background:#33280c;color:#f0c76a}
+  :root:not([data-theme="light"]) .verdict--danger{background:#3a1414;color:#f0a0a0}
+}
+:root[data-theme="dark"] .verdict--ok{background:#0f2c1e;color:#7fd6a0}
+:root[data-theme="dark"] .verdict--attention{background:#33280c;color:#f0c76a}
+:root[data-theme="dark"] .verdict--danger{background:#3a1414;color:#f0a0a0}
+
+/* ------------------------------------------- FICHE : BARRE D'ACTION FIXE
+   L'action principale était à 3,2 écrans du haut, et le cœur à 4,5 écrans.
+   Elle reste désormais sous le pouce en permanence, au-dessus des onglets. */
+.barre-fiche{
+  position:fixed;left:0;right:0;
+  bottom:calc(3.6rem + env(safe-area-inset-bottom));z-index:44;
+  display:none;align-items:center;gap:var(--s2);
+  padding:var(--s2) var(--s3);
+  background:color-mix(in srgb, var(--surface) 92%, transparent);
+  backdrop-filter:saturate(180%) blur(14px);
+  -webkit-backdrop-filter:saturate(180%) blur(14px);
+  border-top:1px solid var(--line);
+}
+body[data-vue="lieu"] .barre-fiche{display:flex}
+body[data-vue="lieu"]{padding-bottom:calc(8.4rem + env(safe-area-inset-bottom))}
+.barre-fiche .btn{flex:1;margin:0;min-height:2.9rem}
+.barre-fiche .icone-btn{flex:0 0 auto;width:2.9rem;height:2.9rem}
+.barre-fiche .icone-btn[aria-pressed="true"]{background:var(--accent);color:var(--sur-accent);
+  border-color:var(--accent)}
+.barre-fiche .icone-btn[aria-pressed="true"] svg{fill:currentColor}
+
+/* =========================================================================
+   CORRECTIONS D'ACCESSIBILITÉ
+   Usage réel : dehors, en plein soleil, à une main, sur un Android d'entrée
+   de gamme, parfois les doigts mouillés. Les valeurs ci-dessous viennent d'un
+   audit chiffré (cibles mesurées, contrastes calculés selon la formule WCAG).
+   ========================================================================= */
+
+/* Cibles tactiles portées à 44 px minimum. Le retour est le bouton le plus
+   utilisé après les onglets ; le pied de page est la seule voie vers Infos,
+   Shimaoré et À propos. */
+.retour{min-height:2.75rem;padding:.5rem .75rem;margin-left:-.75rem;font-size:var(--fs-base)}
+.pied{display:flex;flex-wrap:wrap;justify-content:center;gap:var(--s1) var(--s2)}
+.pied a{display:inline-flex;align-items:center;min-height:2.75rem;padding:0 var(--s3)}
+.champ input,.champ select,.champ textarea{padding:.85rem}
+
+/* Le cœur : 44 px de dessin, 56 px de zone sensible, et déplacé en bas à
+   droite de l'illustration — plus près du pouce, hors de la trajectoire de
+   lecture du titre. Un appui manqué ouvrait la fiche à la place. */
+.coeur{top:auto;bottom:var(--s2)}
+.coeur::before{content:"";position:absolute;inset:-6px;border-radius:inherit}
+.coeur[aria-pressed="true"]{background:var(--terre);color:#fff;border-color:var(--terre)}
+.coeur[aria-pressed="true"] svg{fill:currentColor}
+
+/* La barre d'onglets ne doit pas perdre son contraste selon ce qui défile
+   dessous : on la rend franchement opaque et on assombrit le libellé. */
+.onglets{
+  background:var(--surface);
+  padding-inline:env(safe-area-inset-left) env(safe-area-inset-right);
+}
+.onglet{color:var(--ink-2);font-size:var(--fs-xs)}
+
+/* Paysage : sans ça, le bandeau et la bannière mangent tout l'écran. */
+@media (orientation:landscape) and (max-height:30rem){
+  .fiche__entete{aspect-ratio:auto;height:7rem}
+  .heros{padding:var(--s3)}
+  .heros__salut{font-size:var(--fs-lg)}
+  .heros__ile{display:none}
+}
+
+/* Du contenu ne doit jamais être présenté comme un bouton désactivé : il
+   sortirait de l'ordre de tabulation et serait grisé par le navigateur. */
+.etape--fixe{cursor:default}
+
+/* Le cœur vit dans la zone d'illustration : son coin bas-droit est celui de
+   l'image, et il ne recouvre plus la ligne de puces de la carte. */
+.fiche-carte__art{position:relative}
+.coeur{position:absolute;right:var(--s2);bottom:var(--s2);top:auto;z-index:3}
+
+/* Un élément masqué doit l'être quoi qu'en dise sa classe : sans ça, un
+   .btn en display:flex reste visible malgré l'attribut hidden. */
+[hidden]{display:none !important}
+
+/* ============================ FEUILLE (remplace alert / confirm) ==========
+   Une boîte système s'annonce au nom du domaine — le signal le plus net qu'on
+   est sur une page web — elle tronque les longs textes, ne défile pas de façon
+   fiable et ne se sélectionne pas. Celle-ci monte du bas, reste dans le tiers
+   accessible au pouce, et son texte est sélectionnable. */
+.feuille{
+  position:fixed;inset:auto 0 0 0;width:100%;max-width:none;
+  margin:0;padding:0;border:0;background:transparent;
+}
+.feuille::backdrop{background:rgba(6,20,25,.55);backdrop-filter:blur(2px)}
+.feuille__corps{
+  background:var(--surface);color:var(--ink);
+  border-radius:var(--r-xl) var(--r-xl) 0 0;
+  padding:var(--s5) var(--s4) calc(var(--s4) + env(safe-area-inset-bottom));
+  box-shadow:var(--e3);
+  max-height:82vh;overflow:auto;
+  animation:feuille-monte .22s cubic-bezier(.2,.8,.3,1) both;
+}
+.feuille__corps::before{
+  content:"";display:block;width:2.5rem;height:.25rem;border-radius:999px;
+  background:var(--line-fort);margin:calc(var(--s5) * -1 + var(--s2)) auto var(--s4);
+}
+.feuille__titre{font-size:var(--fs-lg);margin-bottom:var(--s3)}
+.feuille__txt{color:var(--ink-2)}
+.feuille__zone{
+  width:100%;font-family:var(--police);font-size:var(--fs-sm);line-height:1.5;
+  padding:var(--s3);border:1px solid var(--line);border-radius:var(--r-m);
+  background:var(--surface-2);color:var(--ink);resize:vertical;
+}
+.feuille__actions{display:flex;flex-direction:column;gap:var(--s2);margin-top:var(--s4)}
+.feuille__actions .btn{min-height:3rem;width:100%}
+@keyframes feuille-monte{from{transform:translateY(100%)}to{transform:none}}
+@media (prefers-reduced-motion:reduce){ .feuille__corps{animation:none} }
+
+/* Le retour reste atteignable sans remonter en haut de la fiche */
+.retour{position:sticky;top:calc(var(--h-topbar) + var(--s2));z-index:38;
+  background:color-mix(in srgb, var(--bg) 92%, transparent);border-radius:var(--r-pill)}
+.barre-fiche .btn{min-height:3.25rem}
+
+/* Le liseré coloré rend les avertissements distinguables au premier coup d'œil */
+.note{border-left:4px solid transparent}
+.note--ok{border-left-color:var(--vert)}
+.note--attention{border-left-color:var(--ylang-fonce)}
+.note--danger{border-left-color:var(--corail)}

@@ -24,8 +24,8 @@
 const APP = {
   nom: "Karibu Maoré",
   baseline: "Tout ce qu'il y a à faire à Mayotte — et comment le réserver",
-  version: "0.3.0",
-  maj: "2026-08-25",
+  version: "0.4.0",
+  maj: "2026-08-27",
   // ⚠️ À REMPLACER par le vrai numéro (format international, sans + ni espaces)
   contactWhatsApp: "262639000000",
   contactMail: "djamadar.saindou@gmail.com"

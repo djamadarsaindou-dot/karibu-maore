@@ -471,22 +471,24 @@ const UI = (() => {
       return `<circle cx="${px.toFixed(1)}" cy="${py.toFixed(1)}" r="3.4"
           fill="${haute ? "var(--lagon-500)" : "var(--ylang)"}" stroke="var(--surface)" stroke-width="1.5"/>
         <text x="${px.toFixed(1)}" y="${(py + (haute ? -10 : 16)).toFixed(1)}" text-anchor="middle"
-          font-size="10" font-weight="700" fill="${haute ? "var(--txt-haute)" : "var(--txt-basse)"}"
+          font-size="13" font-weight="700" fill="${haute ? "var(--txt-haute)" : "var(--txt-basse)"}"
           >${e.heure.replace(" h ", ":")}</text>
         ${e.hauteur != null ? `<text x="${px.toFixed(1)}" y="${(py + (haute ? -21 : 27)).toFixed(1)}"
-          text-anchor="middle" font-size="8.5" fill="var(--muted)">${e.hauteur.toFixed(2)} m</text>` : ""}`;
+          text-anchor="middle" font-size="11" fill="var(--muted)">${e.hauteur.toFixed(2)} m</text>` : ""}`;
     }).join("");
 
     const axe = [0, 6, 12, 18, 24].map(t =>
       `<line x1="${x(t).toFixed(1)}" y1="${base + amp + 8}" x2="${x(t).toFixed(1)}" y2="${base + amp + 12}"
          stroke="var(--line-fort)" stroke-width="1"/>
-       <text x="${x(t).toFixed(1)}" y="${H - 3}" text-anchor="middle" font-size="9"
+       <text x="${x(t).toFixed(1)}" y="${H - 3}" text-anchor="middle" font-size="11"
          fill="var(--muted)">${t} h</text>`).join("");
 
     const xn = x(heureCourante), yn = y(heureCourante);
 
     return `<svg class="maree-graph" viewBox="0 0 ${W} ${H}" role="img"
-      aria-label="Courbe estimée de la marée sur les 24 heures">
+      aria-label="Marée du jour : ${evts.map(e => (e.type === "haute" ? "pleine mer" : "basse mer") +
+        " à " + e.heure.replace(" h ", " heures ") +
+        (e.hauteur != null ? ", " + e.hauteur.toFixed(2).replace(".", ",") + " mètre" : "")).join(" ; ")}">
       ${fenetres}
       <path d="${aire}" fill="var(--lagon-500)" opacity=".10"/>
       <line x1="${mg}" y1="${base}" x2="${W - mg}" y2="${base}" stroke="var(--line-fort)"
@@ -498,7 +500,7 @@ const UI = (() => {
         stroke="var(--terre)" stroke-width="1.6" stroke-dasharray="2 3"/>
       <circle cx="${xn.toFixed(1)}" cy="${yn.toFixed(1)}" r="5" fill="var(--terre)"
         stroke="var(--surface)" stroke-width="2.2"/>
-      <text x="${xn.toFixed(1)}" y="${hautCourbe - 11}" text-anchor="middle" font-size="9.5"
+      <text x="${xn.toFixed(1)}" y="${hautCourbe - 11}" text-anchor="middle" font-size="12"
         font-weight="700" fill="var(--terre)">maintenant</text>
       <line x1="${mg}" y1="${base + amp + 8}" x2="${W - mg}" y2="${base + amp + 8}"
         stroke="var(--line-fort)" stroke-width="1"/>
@@ -560,5 +562,27 @@ const UI = (() => {
     </svg>`;
   }
 
-  return { icone, vignette, courbeMaree, saison, ile, logo, graine };
+  /* ---------------------------------------------------------- ILLUSTRATION
+     Une vraie photographie quand on en a une qui montre VRAIMENT le lieu,
+     l'illustration générée sinon. La vignette SVG reste dessinée derrière la
+     photo : elle sert de fond pendant le chargement, et il n'y a donc jamais
+     de rectangle vide, même hors connexion.
+     La photo n'est jamais préchargée : `loading="lazy"` la laisse arriver
+     quand elle entre à l'écran, ce qui évite de payer 40 fiches de photos
+     sur une connexion mahoraise.                                            */
+  function illustration(id, categorie, opt = {}) {
+    const fond = vignette(id, categorie, opt);
+    const p = typeof PHOTOS !== "undefined" ? PHOTOS[id] : null;
+    if (!p) return `<div class="illus illus--dessin">${fond}</div>`;
+    const alt = (p.d || "").replace(/"/g, "&quot;");
+    return `<div class="illus illus--photo">
+      <div class="illus__fond">${fond}</div>
+      <img src="photos/${p.f}" alt="${alt}" loading="${opt.prioritaire ? "eager" : "lazy"}"
+           decoding="async" width="${p.w || 1200}" height="${p.h || 800}">
+      ${opt.credit === false ? "" : `<span class="illus__credit">© ${
+        (p.a || "inconnu").replace(/"/g, "")} · ${p.l || ""}</span>`}
+    </div>`;
+  }
+
+  return { icone, vignette, illustration, courbeMaree, saison, ile, logo, graine };
 })();

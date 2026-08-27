@@ -11,10 +11,27 @@ const MOIS  = ["janvier","février","mars","avril","mai","juin","juillet","août
                "septembre","octobre","novembre","décembre"];
 const JOURS = ["dimanche","lundi","mardi","mercredi","jeudi","vendredi","samedi"];
 
-/* ------------------------------------------------------------- 1. STOCKAGE */
+/* ------------------------------------------------------------- 1. STOCKAGE
+   En navigation privée, avec les données de site bloquées, ou après une éviction
+   de stockage, l'écriture échoue silencieusement. Avaler cette erreur reviendrait
+   à dire « c'est enregistré » à quelqu'un qui perdra son carnet en fermant
+   l'application. On sonde donc une fois au démarrage, et l'appli le dit. */
 const Store = {
+  dispo: true,
   get(k, def) { try { const v = localStorage.getItem("km_" + k); return v === null ? def : JSON.parse(v); } catch { return def; } },
-  set(k, v) { try { localStorage.setItem("km_" + k, JSON.stringify(v)); } catch {} }
+  set(k, v) {
+    try { localStorage.setItem("km_" + k, JSON.stringify(v)); return true; }
+    catch { Store.dispo = false; return false; }
+  },
+  sonder() {
+    try {
+      localStorage.setItem("km_sonde", "1");
+      const ok = localStorage.getItem("km_sonde") === "1";
+      localStorage.removeItem("km_sonde");
+      Store.dispo = ok;
+    } catch { Store.dispo = false; }
+    return Store.dispo;
+  }
 };
 let favoris  = Store.get("favoris", []);
 let demandes = Store.get("demandes", []);
@@ -28,6 +45,10 @@ const esc     = s => String(s ?? "").replace(/[&<>"']/g, c =>
                   ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
 const attr    = s => esc(s).replace(/\s+/g, " ");
 const cap     = s => s.charAt(0).toUpperCase() + s.slice(1);
+/* « ilot » doit trouver « îlot », « ngouja » doit trouver « N'Gouja » */
+const dateFr  = iso => { const d = new Date(iso);
+  return isNaN(d) ? String(iso) : `${d.getDate()} ${MOIS[d.getMonth()]} ${d.getFullYear()}`; };
+const sansAccent = s => String(s).normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/['’]/g, " ");
 const euro    = n => n === 0 ? "Gratuit" : ["", "Petit budget", "Budget moyen", "Budget élevé"][n];
 const euroC   = n => n === 0 ? "gratuit" : "€".repeat(n);
 const dureeTxt= h => h >= 24 ? "Plusieurs jours" : h < 2 ? "1 h environ" : h + " h";
@@ -47,7 +68,13 @@ function ouvrirWhatsApp(numero, texte) {
                 "Votre message a été préparé ci-dessous : copiez-le et envoyez-le par le moyen " +
                 "de votre choix.\n\n" + texte;
     navigator.clipboard?.writeText(texte).catch(() => {});
-    alert(msg);
+    feuille({
+      titre: "Contact pas encore activé",
+      texte: "Votre message est prêt et copié. Envoyez-le par le moyen de votre choix.",
+      texteLong: texte,
+      actions: [{ libelle: "Copier à nouveau",
+                  faire: () => navigator.clipboard?.writeText(texte).catch(() => {}) }]
+    });
     return false;
   }
   window.open("https://wa.me/" + numero + "?text=" + encodeURIComponent(texte), "_blank", "noopener");
@@ -73,13 +100,13 @@ function carteLieu(l) {
   return `
   <article class="fiche-carte">
     <div class="fiche-carte__art">
-      ${UI.vignette(l.id, l.cat, { indice: l.nom + " " + l.resume })}
+      ${UI.illustration(l.id, l.cat, { indice: l.nom + " " + l.resume })}
       <span class="fiche-carte__cat">${c.emoji} ${esc(c.nom)}</span>
+      <button class="coeur" data-action="favori" data-id="${l.id}" aria-pressed="${fav}"
+              aria-label="${fav ? "Retirer" : "Ajouter"} ${attr(l.nom)} ${fav ? "du" : "au"} carnet">
+        ${ico("coeur")}
+      </button>
     </div>
-    <button class="coeur" data-action="favori" data-id="${l.id}" aria-pressed="${fav}"
-            aria-label="${fav ? "Retirer" : "Ajouter"} ${attr(l.nom)} ${fav ? "du" : "au"} carnet">
-      ${ico("coeur")}
-    </button>
     <div class="fiche-carte__corps">
       <h3 class="fiche-carte__titre"><button class="fiche-carte__lien"
         data-action="aller" data-route="/lieu/${l.id}">${esc(l.nom)}</button></h3>
@@ -126,7 +153,14 @@ function vueAccueil() {
   const soir = h >= 17 || h < 5;
   const suite = soir ? "Voici pour demain matin." : "Voici ce qui colle avec maintenant.";
 
-  const suggestions = classer(LIEUX, now, soir).slice(0, 4);
+  /* Ordre figé pour la journée : sans ça, mettre une fiche en favori la ferait
+     remonter et les cartes bougeraient sous le doigt. */
+  const cleJour = `${now.getFullYear()}-${now.getMonth()}-${now.getDate()}-${soir ? "s" : "j"}`;
+  if (_ordreSuggestions.cle !== cleJour) {
+    _ordreSuggestions.cle = cleJour;
+    _ordreSuggestions.ids = classer(LIEUX, now, soir).slice(0, 4).map(l => l.id);
+  }
+  const suggestions = _ordreSuggestions.ids.map(lieu).filter(Boolean);
 
   const evJour = EVENEMENTS.filter(e => actifMaintenant(e, now));
 
@@ -171,7 +205,7 @@ function vueAccueil() {
     <p class="section__note">Calculée sur votre appareil, sans réseau. Hauteurs en mètres
       au-dessus du zéro des cartes marines.</p>
     <div class="bloc">
-      ${UI.courbeMaree(etat.evts, h + now.getMinutes() / 60, null, MAREES.profil(new Date()))}
+      ${UI.courbeMaree(etat.evts, h + now.getMinutes() / 60, null, mareeDuJour().profil)}
       <div class="rangs" style="margin-top:var(--s3)">
         ${etat.evts.map(e => `<div class="rang">
           <span class="rang__cle">${e.type === "haute" ? "Pleine mer" : "Basse mer"}</span>
@@ -202,10 +236,11 @@ function vueAccueil() {
     <h2 class="section__titre">En ce moment sur l'île</h2>
     <div class="rangs">
       ${evJour.map(e => `
-        <button class="rang" ${e.lien ? `data-action="aller" data-route="/lieu/${e.lien}"` : "disabled"}>
+        <${e.lien ? "button" : "div"} class="rang${e.lien ? "" : " etape--fixe"}"
+          ${e.lien ? `data-action="aller" data-route="/lieu/${e.lien}"` : ""}>
           <span class="rang__cle">${e.type === "recurrent" ? cap(JOURS[e.jour]) : "En cours"}</span>
           <span class="rang__val">${esc(e.nom)}<small>${esc(e.texte)}</small></span>
-        </button>`).join("")}
+        </${e.lien ? "button" : "div"}>`).join("")}
     </div>
   </section>` : ""}
 
@@ -244,6 +279,20 @@ function vueAccueil() {
 }
 
 /* score de pertinence d'une fiche à un instant donné */
+/* Le calcul de marée somme 28 ondes par minute de la journée. Le refaire à
+   chaque rendu, c'est ~125 000 cosinus sur le fil principal d'un téléphone
+   d'entrée de gamme. On le garde en mémoire pour la journée en cours. */
+const _cacheMaree = new Map();
+function mareeDuJour() {
+  const L = MAREES.local(new Date());
+  const cle = `${L.annee}-${L.mois}-${L.jour}`;
+  if (!_cacheMaree.has(cle)) {
+    _cacheMaree.set(cle, { profil: MAREES.profil(new Date()) });
+    if (_cacheMaree.size > 3) _cacheMaree.delete(_cacheMaree.keys().next().value);
+  }
+  return _cacheMaree.get(cle);
+}
+
 function classer(liste, now, soir) {
   const mois = now.getMonth() + 1, h = now.getHours();
   const etat = MAREES.etatMaintenant(new Date());
@@ -277,11 +326,10 @@ function actifMaintenant(e, now) {
 }
 
 /* -------------------------------------------------------- 5. VUE : EXPLORER */
-function vueExplorer(params) {
-  if (params.get("cat")) filtres.cat = params.get("cat");
-  const now = maintenant(), mois = now.getMonth() + 1;
 
-  const liste = LIEUX.filter(l => {
+/* La liste des lieux qui passent les filtres courants. */
+function listeFiltree() {
+  return LIEUX.filter(l => {
     if (filtres.cat && l.cat !== filtres.cat) return false;
     if (filtres.zone && l.zone !== filtres.zone) return false;
     if (filtres.budget === "gratuit" && l.budget !== 0) return false;
@@ -289,10 +337,63 @@ function vueExplorer(params) {
     if (filtres.q) {
       const t = (l.nom + " " + l.resume + " " + l.texte + " " + l.commune + " " +
                  l.tags.join(" ") + " " + l.quand).toLowerCase();
-      if (!t.includes(filtres.q.toLowerCase().trim())) return false;
+      if (!sansAccent(t).includes(sansAccent(filtres.q.toLowerCase().trim()))) return false;
     }
     return true;
   });
+}
+
+/* Mise à jour SANS reconstruire la page.
+   Reconstruire tout #vue remettrait les rangées de puces à zéro : la puce qu'on
+   vient d'activer sortirait de l'écran par la droite, et l'utilisateur — en plein
+   soleil — la retoucherait pour la désactiver. On met donc à jour les puces sur
+   place et on ne remplace que la grille et le compteur. */
+function majListe() {
+  const grille = $(".grille");
+  if (!grille) return rendre(true);          // on n'est pas sur Explorer
+
+  $$(".filtre").forEach(b => {
+    const c = b.dataset.champ, v = b.dataset.val;
+    b.setAttribute("aria-pressed", String(v ? filtres[c] === v : !filtres[c]));
+  });
+
+  const liste = listeFiltree();
+  grille.innerHTML = liste.map(carteLieu).join("");
+  grille.classList.toggle("grille--vide", !liste.length);
+
+  const compteur = $(".oeil");
+  if (compteur) compteur.textContent = `${liste.length} sur ${LIEUX.length}`;
+
+  const actifs = ["cat","zone","budget","tag"].filter(k => filtres[k]).length + (filtres.q ? 1 : 0);
+  const reset = $("[data-action='reset-filtres']");
+  if (reset) {
+    reset.hidden = !actifs;
+    if (actifs) reset.innerHTML = `${ico("croix")} Enlever les filtres (${actifs})`;
+  }
+
+  /* L'état des filtres devient partageable et survit au rechargement, sans
+     empiler d'entrée dans l'historique (sinon le bouton retour ferait défiler
+     les filtres un par un). */
+  const qs = ["cat","zone","budget","tag"].filter(k => filtres[k])
+    .map(k => k + "=" + encodeURIComponent(filtres[k])).join("&");
+  history.replaceState(history.state, "", "#/explorer" + (qs ? "?" + qs : ""));
+
+  annoncer(`${liste.length} proposition${liste.length > 1 ? "s" : ""}.`);
+}
+
+function vueExplorer(params) {
+  /* On ne lit les paramètres d'URL qu'en ARRIVANT sur Explorer. Les relire à
+     chaque rendu réimposerait la catégorie et rendrait les puces inopérantes :
+     on toucherait « Tout » sans effet, et il n'y aurait aucune sortie visible. */
+  if (!derniereRoute.startsWith("/explorer")) {
+    filtres.cat    = params.get("cat")    || filtres.cat;
+    filtres.zone   = params.get("zone")   || filtres.zone;
+    filtres.budget = params.get("budget") || filtres.budget;
+    filtres.tag    = params.get("tag")    || filtres.tag;
+  }
+  const now = maintenant(), mois = now.getMonth() + 1;
+
+  const liste = listeFiltree();
 
   const horsSaison = liste.filter(l => !enSaison(l, mois)).length;
   const actifs = ["cat","zone","budget","tag"].filter(k => filtres[k]).length + (filtres.q ? 1 : 0);
@@ -324,8 +425,8 @@ function vueExplorer(params) {
     ${bouton("Il pleut", "tag", "pluie")}
     ${bouton("À l'ombre", "tag", "ombre")}
   </div>
-  ${actifs ? `<button class="btn btn--discret" data-action="reset-filtres">
-      ${ico("croix")} Enlever les filtres (${actifs})</button>` : ""}
+  <button class="btn btn--discret" data-action="reset-filtres" ${actifs ? "" : "hidden"}>
+    ${ico("croix")} Enlever les filtres (${actifs})</button>
 
   ${liste.length ? `<div class="grille" style="margin-top:var(--s3)">${liste.map(carteLieu).join("")}</div>`
     : `<div class="vide">${ico("loupe")}<p>Rien avec ces filtres.<br>Essayez d'en enlever un.</p>
@@ -347,40 +448,58 @@ function vueLieu(id) {
   const etat = MAREES.etatMaintenant(new Date());
   const saisonOk = enSaison(l, mois);
   const mareeOk = !l.maree || etat.proche === l.maree;
-  const prochaineBonne = l.maree ? etat.evts.find(e => e.type === l.maree && e.brut > hDec) : null;
+  /* etat.evts ne contient que les étales DU JOUR : le soir, la dernière est
+     passée et la fiche n'affichait plus aucune heure. On regarde alors demain. */
+  let prochaineBonne = l.maree ? etat.evts.find(e => e.type === l.maree && e.brut > hDec) : null;
+  let demain = false;
+  if (l.maree && !prochaineBonne) {
+    const ev = MAREES.duJour(new Date(Date.now() + 864e5)).find(e => e.type === l.maree);
+    if (ev) { prochaineBonne = ev; demain = true; }
+  }
+  /* La fenêtre utile est de ± 1 h 30 autour de l'étale — c'est ce que dessine la
+     courbe en vert. Annoncer une heure à la minute laisserait croire à un
+     rendez-vous qui n'existe pas. */
+  const creneau = prochaineBonne
+    ? `${MAREES.fmt((prochaineBonne.brut - 1.5 + 24) % 24)} → ${MAREES.fmt((prochaineBonne.brut + 1.5) % 24)}`
+    : null;
   const fav = favoris.includes(l.id);
+
+  /* La ligne de verdict : la seule chose qu'on veut lire sans défiler. */
+  const verdict = !saisonOk
+      ? { t: `Pas la saison — à privilégier en ${l.saison.map(m => MOIS[m-1]).join(", ")}`, k: "attention" }
+    : l.maree && !mareeOk
+      ? { t: creneau ? `Pas maintenant — créneau ${demain ? "demain" : "aujourd'hui"} ${creneau}`
+                     : `Pas maintenant — marée ${esc(etat.sens)}`, k: "attention" }
+    : l.etat === "ferme" ? { t: "Fermé actuellement", k: "danger" }
+    : { t: "On peut y aller maintenant", k: "ok" };
 
   return `
   <button class="retour" data-action="retour">${ico("fleche")} Retour</button>
 
   <article class="fiche">
     <header class="fiche__entete">
-      <div class="fiche__art">${UI.vignette(l.id, l.cat, { haut: true, indice: l.nom + " " + l.resume })}</div>
+      <div class="fiche__art">${UI.illustration(l.id, l.cat, { haut: true, prioritaire: true, indice: l.nom + " " + l.resume })}</div>
       <span class="fiche__cat">${c.emoji} ${esc(c.nom)}</span>
     </header>
     <h1 class="fiche__titre">${esc(l.nom)}</h1>
     <p class="fiche__sous">${ico("epingle")} ${esc(l.commune)} · ${esc(zoneNom(l.zone))}</p>
 
-    ${!saisonOk ? note("attention",
-      `<b>Ce n'est pas la meilleure période.</b> À privilégier en
-       ${l.saison.map(m => MOIS[m - 1]).join(", ")}.`, "agenda") : ""}
-    ${l.maree && !mareeOk ? note("attention",
-      `<b>Cette activité demande une marée ${l.maree}.</b> ` +
-      (prochaineBonne
-        ? `La marée est ${esc(etat.sens)} : la prochaine marée ${l.maree} est estimée vers <b>${esc(prochaineBonne.heure)}</b>.`
-        : `La marée est ${esc(etat.sens)} en ce moment.`),
-      "goutte") : ""}
-    ${l.maree && mareeOk ? note("ok",
-      `<b>La marée est bonne en ce moment</b> pour cette activité.`, "valide") : ""}
-
-    <div class="bloc">
-      <div class="faits">
-        <div class="fait"><span class="fait__cle">Durée</span><span class="fait__val">${dureeTxt(l.duree)}</span></div>
-        <div class="fait"><span class="fait__cle">Budget</span><span class="fait__val">${euro(l.budget)}</span></div>
-        <div class="fait"><span class="fait__cle">Marée</span><span class="fait__val">${l.maree ? cap(l.maree) : "Indifférente"}</span></div>
-        <div class="fait"><span class="fait__cle">Réservation</span><span class="fait__val">${l.presta.length ? "Oui" : "Libre"}</span></div>
-      </div>
+    <div class="fiche__puces">
+      <span class="puce">${dureeTxt(l.duree)}</span>
+      <span class="puce">${euroC(l.budget)}</span>
+      ${l.maree ? `<span class="puce puce--maree">marée ${l.maree}</span>` : ""}
+      ${l.tags.includes("famille")     ? `<span class="puce puce--ok">famille</span>` : ""}
+      ${l.tags.includes("sansVoiture") ? `<span class="puce">sans voiture</span>` : ""}
+      ${l.tags.includes("sportif")     ? `<span class="puce">sportif</span>` : ""}
+      ${l.presta.length ? `<span class="puce puce--or">réservable</span>` : ""}
     </div>
+
+    <p class="verdict verdict--${verdict.k}">${ico(verdict.k === "ok" ? "valide" : "alerte")}
+      ${esc(verdict.t)}</p>
+
+    ${l.etat && l.etat !== "ouvert" && ETATS[l.etat] ? note(l.etat === "ferme" ? "danger" : "attention",
+      `<b>${esc(ETATS[l.etat].txt)}</b>${l.verifie ? ` — relevé le ${dateFr(l.verifie)}` : ""}.
+       Confirmez par téléphone avant de faire la route.`, "alerte") : ""}
 
     <div class="bloc"><p>${esc(l.texte)}</p></div>
 
@@ -396,7 +515,7 @@ function vueLieu(id) {
     ${l.maree ? `
     <div class="bloc">
       <h2 class="bloc__titre">${ico("vagues")} La marée aujourd'hui</h2>
-      ${UI.courbeMaree(etat.evts, hDec, l.maree, MAREES.profil(new Date()))}
+      ${UI.courbeMaree(etat.evts, hDec, l.maree, mareeDuJour().profil)}
       <p class="champ__aide">Les zones vertes sont les créneaux favorables (± 1 h 30 autour de la
         marée ${l.maree}). Hauteurs en mètres au-dessus du zéro des cartes marines.
         ${etat.indic ? `Marnage du jour : <b>${etat.indic.marnage} m</b> (${esc(etat.indic.regime)}).` : ""}</p>
@@ -554,8 +673,9 @@ async function envoyerResa(id, mode) {
   Store.set("demandes", demandes);
 
   if (mode === "copie") {
-    try { await navigator.clipboard.writeText(texte); annoncer("Message copié."); alert("Message copié. Collez-le dans WhatsApp, un SMS ou un mail."); }
-    catch { alert(texte); }
+    try { await navigator.clipboard.writeText(texte); annoncer("Message copié.");
+          feuille({ titre: "Message copié", texte: "Collez-le dans WhatsApp, un SMS ou un mail.", texteLong: texte }); }
+    catch { feuille({ titre: "Votre message", texteLong: texte }); }
     return go("/carnet");
   }
   const direct = p && p.verifie && p.tel;
@@ -613,11 +733,12 @@ function vueItineraire(id) {
     <div class="parcours">
       ${i.etapes.map(e => {
         const l = lieu(e.lieu);
-        return `<button class="etape" ${l ? `data-action="aller" data-route="/lieu/${l.id}"` : "disabled"}>
+        return `<${l ? "button" : "div"} class="etape${l ? "" : " etape--fixe"}"
+          ${l ? `data-action="aller" data-route="/lieu/${l.id}"` : ""}>
           <span class="etape__h">${esc(e.h)}</span>
           <span class="etape__quoi">${esc(e.quoi)}</span>
           ${l ? `<span class="etape__ou">${ico("epingle")} ${esc(l.nom)} · ${esc(l.commune)}</span>` : ""}
-        </button>`;
+        </${l ? "button" : "div"}>`;
       }).join("")}
     </div>
   </div>
@@ -741,7 +862,7 @@ function vuePro() {
 
 function envoyerPro() {
   const g = i => ($("#p-" + i)?.value || "").trim();
-  if (!g("nom")) { alert("Indiquez au moins le nom de votre activité."); return; }
+  if (!g("nom")) { feuille({ titre: "Il manque le nom", texte: "Indiquez au moins le nom de votre activité." }); return; }
   const t = `Nouvelle inscription prestataire — Karibu Maoré\n\n` +
     `Activité : ${g("nom")}\nType : ${$("#p-type").value}\nCommune : ${g("commune")}\n` +
     `WhatsApp : ${g("tel")}\n\nOffre :\n${g("offre")}\n\n` +
@@ -957,8 +1078,31 @@ function vueIntrouvable() {
 function basculeFav(id, silencieux) {
   const dedans = favoris.includes(id);
   favoris = dedans ? favoris.filter(x => x !== id) : [...favoris, id];
-  Store.set("favoris", favoris);
-  if (!silencieux) { annoncer(dedans ? "Retiré du carnet." : "Ajouté au carnet."); rendre(true); }
+  const ecrit = Store.set("favoris", favoris);
+
+  /* On ne re-rend PAS la page : sur l'accueil, le score de favori remonterait la
+     carte dans le classement et les cartes sauteraient sous le doigt. On met à
+     jour uniquement les boutons qui portent cet identifiant. */
+  const l = lieu(id);
+  $$(`[data-action="favori"][data-id="${id}"]`).forEach(b => {
+    b.setAttribute("aria-pressed", String(!dedans));
+    if (l) b.setAttribute("aria-label",
+      `${dedans ? "Ajouter" : "Retirer"} ${l.nom} ${dedans ? "au" : "du"} carnet`);
+  });
+  if (typeof majPastille === "function") majPastille();
+
+  if (silencieux) return;
+  annoncer(dedans ? "Retiré du carnet." : "Ajouté au carnet.");
+
+  /* Sur la page Carnet, la carte doit vraiment disparaître : là, on re-rend. */
+  if (derniereRoute.startsWith("/carnet")) rendre(true);
+
+  if (!ecrit && !Store.prevenu) {
+    Store.prevenu = true;
+    feuille({ titre: "Rien ne sera enregistré",
+      texte: "Cet appareil n'enregistre rien (navigation privée ou stockage bloqué). "
+           + "Votre carnet disparaîtra en fermant l'application." });
+  }
 }
 
 function ajouterItineraire(id) {
@@ -967,7 +1111,8 @@ function ajouterItineraire(id) {
   i.etapes.forEach(e => { if (lieu(e.lieu) && !favoris.includes(e.lieu)) { favoris.push(e.lieu); n++; } });
   Store.set("favoris", favoris);
   annoncer(`${n} étape(s) ajoutée(s) au carnet.`);
-  alert(n ? `${n} étape${n > 1 ? "s ajoutées" : " ajoutée"} à votre carnet.` : "Tout était déjà dans votre carnet.");
+  feuille({ titre: n ? "Ajouté au carnet" : "Déjà dans votre carnet",
+    texte: n ? `${n} étape${n > 1 ? "s ajoutées" : " ajoutée"}.` : "Toutes les étapes y étaient déjà." });
   majPastille();
 }
 
@@ -979,8 +1124,12 @@ async function partager(id) {
     url: location.href
   };
   if (navigator.share) { try { await navigator.share(donnees); return; } catch { return; } }
-  try { await navigator.clipboard.writeText(`${donnees.text}\n${donnees.url}`); alert("Copié, prêt à coller."); }
-  catch { alert(donnees.text); }
+  try {
+    await navigator.clipboard.writeText(`${donnees.text}\n${donnees.url}`);
+    feuille({ titre: "Copié", texte: "Prêt à coller dans WhatsApp ou un message." });
+  } catch {
+    feuille({ titre: "À partager", texteLong: `${donnees.text}\n${donnees.url}` });
+  }
 }
 
 function signaler(id) {
@@ -992,18 +1141,32 @@ function signaler(id) {
 }
 
 function viderDemandes() {
-  if (!confirm("Effacer toutes les demandes enregistrées sur cet appareil ?")) return;
+  feuille({ titre: "Effacer l'historique ?",
+    texte: "Toutes les demandes enregistrées sur cet appareil seront supprimées.",
+    actions: [{ libelle: "Effacer", faire: () => { demandes = []; Store.set("demandes", demandes); rendre(true); } }] });
+  return;
   demandes = []; Store.set("demandes", demandes); rendre(true);
 }
 
 /* ------------------------------------------------------------ 14. ROUTAGE */
-function go(route) { location.hash = "#" + route; }
+let _serie = (history.state && history.state.n) || 0;
+function go(route) {
+  _serie += 1;
+  history.pushState({ n: _serie }, "", "#" + route);
+  rendreSur();
+}
 
 /* On mémorise où l'utilisateur en était dans chaque liste : revenir d'une fiche
    vers Explorer en étant renvoyé tout en haut est le défaut le plus agaçant
    d'une appli de ce type. */
 const positions = new Map();
+/* À quelle section appartient chaque sous-écran, pour que l'onglet
+   correspondant reste allumé quand on y descend. */
+const PARENT = { lieu:"/explorer", resa:"/explorer", itineraire:"/itineraires",
+                 secours:"/", infos:"/", lexique:"/", apropos:"/", pro:"/carnet",
+                 credits:"/" };
 let derniereRoute = "";
+const _ordreSuggestions = { cle: "", ids: [] };
 let derniereVue = "";
 
 function rendre(sansScroll) {
@@ -1034,26 +1197,29 @@ function rendre(sansScroll) {
   /* On relève la position AVANT de remplacer le contenu : à cet instant la page
      est encore celle qu'on quitte. Ne dépend d'aucun événement « scroll », qui
      n'est pas émis partout de façon fiable. */
-  if (derniereRoute && derniereRoute !== chemin) positions.set(derniereRoute, window.scrollY);
+  if (derniereRoute && derniereRoute !== brut) positions.set(derniereRoute, window.scrollY);
 
   vue.innerHTML = html;
   document.title = titre + " — Karibu Maoré";
 
   $$(".onglet").forEach(a => {
-    const actif = a.dataset.r === "/" + (seg[0] || "");
+    const racine = PARENT[seg[0]] || ("/" + (seg[0] || ""));
+    const actif = a.dataset.r === racine;
     if (actif) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current");
   });
   majPastille();
 
   const nouvelleVue = seg[0] || "/";
   if (!sansScroll && nouvelleVue !== derniereVue) {
-    const retrouve = positions.get(chemin);
+    const retrouve = positions.get(brut);
     window.scrollTo({ top: retrouve || 0, behavior: "auto" });
     vue.focus({ preventScroll: true });
     if (!retrouve) annoncer(titre);
   }
   derniereVue = nouvelleVue;
-  derniereRoute = chemin;
+  derniereRoute = brut;
+  document.body.dataset.vue = seg[0] || "accueil";
+  majBarreFiche(seg[0] === "lieu" ? seg[1] : null);
 }
 
 function majPastille() {
@@ -1073,11 +1239,12 @@ document.addEventListener("click", e => {
   const a = el.dataset.action;
   if (a === "aller")             { e.preventDefault(); go(el.dataset.route); }
   else if (a === "favori")       { e.preventDefault(); e.stopPropagation(); basculeFav(el.dataset.id); }
-  else if (a === "retour")       { history.length > 1 ? history.back() : go("/"); }
+  else if (a === "retour")       { (history.state && history.state.n > 0) ? history.back()
+                                     : go(PARENT[(location.hash.slice(2).split("/")[0])] || "/"); }
   else if (a === "filtre")       { const c = el.dataset.champ, v = el.dataset.val;
-                                   filtres[c] = (!v || filtres[c] === v) ? null : v; rendre(true); }
+                                   filtres[c] = (!v || filtres[c] === v) ? null : v; majListe(); }
   else if (a === "reset-filtres"){ filtres = { cat:null, zone:null, budget:null, tag:null, q:"" };
-                                   $("#q").value = ""; rendre(true); }
+                                   $("#q").value = ""; majListe(); }
   else if (a === "resa")         { envoyerResa(el.dataset.id, el.dataset.mode); }
   else if (a === "envoyer-pro")  { envoyerPro(); }
   else if (a === "partager")     { partager(el.dataset.id); }
@@ -1111,7 +1278,105 @@ champQ.addEventListener("input", e => {
 });
 $("#marque").addEventListener("click", () => go("/"));
 
-window.addEventListener("hashchange", () => rendre());
+window.addEventListener("hashchange", () => rendreSur());
+
+/* ------------------------------------------------------------- FEUILLE
+   Remplace alert() et confirm(). Le texte est sélectionnable et défilable,
+   les boutons font 48 px et vivent dans le tiers bas de l'écran. */
+function feuille({ titre, texte, texteLong, actions = [] }) {
+  const d = $("#feuille");
+  if (!d) { alert(texte || texteLong || titre); return Promise.resolve(false); }
+  return new Promise(resolve => {
+    d.innerHTML = `
+      <form method="dialog" class="feuille__corps">
+        <h2 class="feuille__titre" id="feuille-titre">${esc(titre)}</h2>
+        ${texte ? `<p class="feuille__txt">${esc(texte)}</p>` : ""}
+        ${texteLong ? `<textarea class="feuille__zone" readonly rows="7">${esc(texteLong)}</textarea>` : ""}
+        <div class="feuille__actions">
+          ${actions.map((a, i) => `<button value="${i}"
+            class="btn ${a.style === "secondaire" ? "btn--secondaire" : ""}">${esc(a.libelle)}</button>`).join("")}
+          <button value="fermer" class="btn btn--secondaire">Fermer</button>
+        </div>
+      </form>`;
+    d.addEventListener("close", function fin() {
+      d.removeEventListener("close", fin);
+      const i = parseInt(d.returnValue, 10);
+      if (!isNaN(i) && actions[i]) { actions[i].faire?.(); resolve(true); } else resolve(false);
+    });
+    d.showModal();
+  });
+}
+
+/* La barre d'action de la fiche vit hors de #vue : elle n'est donc pas
+   reconstruite à chaque rendu, et elle reste sous le pouce en permanence. */
+function majBarreFiche(id) {
+  const barre = $("#barre-fiche");
+  if (!barre) return;
+  const l = id ? lieu(id) : null;
+  if (!l) { barre.innerHTML = ""; return; }
+  const fav = favoris.includes(l.id);
+  barre.innerHTML = `
+    ${l.presta.length
+      ? `<button class="btn" data-action="aller" data-route="/resa/${l.id}">
+           ${ico("message")} Réserver</button>`
+      : `<a class="btn" href="${mapLien(l)}" target="_blank" rel="noopener">
+           ${ico("epingle")} Y aller</a>`}
+    <button class="icone-btn" data-action="favori" data-id="${l.id}" aria-pressed="${fav}"
+      aria-label="${fav ? "Retirer" : "Ajouter"} ${attr(l.nom)} ${fav ? "du" : "au"} carnet">
+      ${ico("coeur")}</button>
+    <button class="icone-btn" data-action="partager" data-id="${l.id}"
+      aria-label="Partager ${attr(l.nom)}">${ico("partager")}</button>`;
+}
+
+/* ------------------------------------------------------ FILET DE SÉCURITÉ
+   Si un fichier n'a pas chargé (téléchargement tronqué, cache empoisonné par un
+   portail captif), rendre() lève une exception et l'utilisateur se retrouve
+   devant une application qui a l'air installée — barre d'onglets comprise — mais
+   dont le contenu est vide, sans un mot d'explication. Il conclut qu'elle est
+   cassée et la désinstalle. On lui donne au minimum une explication et une
+   sortie : le bouton « Réinstaller le contenu » est la SEULE façon de réparer un
+   cache empoisonné depuis l'intérieur de l'application. */
+function panne(err) {
+  const v = $("#vue");
+  if (!v) return;
+  v.innerHTML = `
+    <section class="section">
+      <h2 class="section__titre">Le carnet n'a pas pu se charger</h2>
+      <p class="section__note">Une partie de l'application manque à l'appel. C'est en général
+        un téléchargement interrompu, ou un réseau Wi-Fi qui a renvoyé sa page de connexion
+        à la place des fichiers.</p>
+    </section>
+    <div class="bloc">
+      <p style="margin-bottom:var(--s3)"><code>${esc(String(err && err.message || err || ""))}</code></p>
+      <div class="btns">
+        <button class="btn" data-action="recharger">Réessayer</button>
+        <button class="btn btn--secondaire" data-action="reinstaller">Réinstaller le contenu</button>
+      </div>
+      <p class="champ__aide" style="margin-top:var(--s3)">« Réinstaller » vide le contenu mis en
+        mémoire et le retélécharge. Vos favoris ne sont pas effacés.</p>
+    </div>`;
+}
+
+function rendreSur() {
+  try { rendre(); } catch (e) { console.error(e); panne(e); }
+}
+
+/* attrape aussi l'échec de chargement d'un <script> lui-même */
+window.addEventListener("error", e => {
+  if (e.target && e.target.tagName === "SCRIPT") panne(new Error("Fichier manquant : " + e.target.src));
+});
+
+document.addEventListener("click", e => {
+  const b = e.target.closest("[data-action='recharger'],[data-action='reinstaller']");
+  if (!b) return;
+  if (b.dataset.action === "recharger") return location.reload();
+  Promise.resolve()
+    .then(() => caches.keys().then(ks => Promise.all(ks.map(k => caches.delete(k)))))
+    .then(() => navigator.serviceWorker?.getRegistrations()
+      .then(rs => Promise.all(rs.map(r => r.unregister()))))
+    .catch(() => {})
+    .then(() => location.reload(true));
+});
 window.addEventListener("scroll", () => {
   $("#topbar").dataset.defile = window.scrollY > 8 ? "oui" : "non";
 }, { passive: true });
@@ -1124,11 +1389,47 @@ $("#btn-vider").innerHTML = UI.icone("croix");
 const ICONES_ONGLETS = ["accueil", "boussole", "carte", "agenda", "sac"];
 $$(".onglet .ico").forEach((s, i) => { s.innerHTML = UI.icone(ICONES_ONGLETS[i]); });
 
-rendre();
+if ("scrollRestoration" in history) history.scrollRestoration = "manual";
+window.addEventListener("popstate", () => rendreSur());
+Store.sonder();
+rendreSur();
 
 /* ------------------------------------------------------- 17. HORS CONNEXION */
 if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(() => {}));
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("sw.js").then(reg => {
+      /* Une nouvelle version est prête : on ne recharge pas d'autorité — quelqu'un
+         est peut-être en train de lire une fiche sur la plage. On propose. */
+      reg.addEventListener("updatefound", () => {
+        const neuf = reg.installing;
+        if (!neuf) return;
+        neuf.addEventListener("statechange", () => {
+          if (neuf.state === "installed" && navigator.serviceWorker.controller) bandeauMaj(reg);
+        });
+      });
+    }).catch(() => {});
+
+    let rechargement = false;
+    navigator.serviceWorker.addEventListener("controllerchange", () => {
+      if (rechargement) return;
+      rechargement = true;
+      location.reload();
+    });
+  });
+}
+
+function bandeauMaj(reg) {
+  if ($("#maj")) return;
+  const d = document.createElement("div");
+  d.id = "maj";
+  d.className = "bandeau-maj";
+  d.innerHTML = `<span>Une nouvelle version du carnet est prête.</span>
+    <button class="btn btn--mini">Recharger</button>`;
+  d.querySelector("button").addEventListener("click", () => {
+    reg.waiting?.postMessage("activer-maintenant");
+    setTimeout(() => location.reload(), 300);
+  });
+  document.body.appendChild(d);
 }
 function etatReseau() {
   let b = $("#hors-ligne");
