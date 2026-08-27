@@ -26,8 +26,8 @@ const APP = {
   baseline: "Tout ce qu'il y a à faire à Mayotte — et comment le réserver",
   version: "0.4.0",
   maj: "2026-08-27",
-  // ⚠️ À REMPLACER par le vrai numéro (format international, sans + ni espaces)
-  contactWhatsApp: "262639000000",
+  // Numéro de contact, format international sans + ni espaces (0639 40 69 48)
+  contactWhatsApp: "262639406948",
   contactMail: "djamadar.saindou@gmail.com"
 };
 

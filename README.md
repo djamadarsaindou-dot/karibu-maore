@@ -9,10 +9,10 @@ On édite un fichier, on enregistre, on pousse.
 Sur téléphone, le menu du navigateur propose « Ajouter à l'écran d'accueil » : l'application
 s'installe et fonctionne ensuite **sans réseau**.
 
-> ⚠️ **Le contact n'est pas encore activé.** Tant que `contactWhatsApp` vaut le numéro
-> d'exemple, l'application n'ouvre jamais WhatsApp : elle prépare le message et l'affiche.
-> C'est délibéré — un numéro factice peut appartenir à quelqu'un. Voir « Mettre le vrai
-> numéro WhatsApp » plus bas : c'est une ligne à changer, puis `git push`.
+> Le contact est **actif** : les demandes de réservation et les signalements ouvrent
+> WhatsApp sur le 0639 40 69 48. Un garde-fou reste en place dans `app.js` — si le numéro
+> était un jour remplacé par un numéro d'exemple, l'application se contenterait de préparer
+> le message sans jamais l'envoyer.
 
 ---
 
@@ -82,18 +82,22 @@ pas à remplacer la mise en ligne.
 
 ---
 
-## Les trois choses à faire AVANT de publier
+## Ce qui reste à faire
 
-### 1. Mettre le vrai numéro WhatsApp
+### 1. Le numéro WhatsApp — fait
 
 Dans `data.js`, en haut :
 
 ```js
-contactWhatsApp: "262639000000",   // ← à remplacer
+contactWhatsApp: "262639406948",   // 0639 40 69 48
 ```
 
-Format international, **sans `+` ni espaces**. Un mobile mahorais `0639 12 34 56`
-s'écrit `262639123456`. `node verifier.js` vous rappellera tant que c'est le numéro d'exemple.
+Format international, **sans `+` ni espaces** : un mobile mahorais `0639 12 34 56`
+s'écrit `262639123456`. `node verifier.js` refuse de laisser passer un numéro d'exemple.
+
+Ce numéro est **public** : il figure en clair dans `data.js`, sur un dépôt public et sur une
+page indexable. Si vous préférez le retirer un jour, c'est la même ligne à changer — mais les
+moteurs et les aspirateurs d'adresses en garderont une copie.
 
 ### 2. Activer les prestataires réels
 
