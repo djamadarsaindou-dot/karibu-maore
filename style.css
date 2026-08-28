@@ -1164,3 +1164,10 @@ body{font-weight:420;font-synthesis-weight:none}
 .liste-nue{list-style:none;margin:0;padding:0}
 .credit-photo__txt a{color:var(--platier-grave);text-underline-offset:2px}
 .credit-photo__txt small + small{margin-top:.2rem}
+
+/* Une date calculée le dit, et on peut demander pourquoi. */
+.puce--calc{
+  background:none;border:1px dashed var(--line);color:var(--muted);
+  font:inherit;font-size:var(--fs-2xs);cursor:pointer;
+}
+.puce--calc:hover{border-color:var(--platier-grave);color:var(--platier-grave)}

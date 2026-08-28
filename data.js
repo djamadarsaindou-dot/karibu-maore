@@ -537,6 +537,48 @@ const LIEUX = [
     conseils: ["Demander avant de filmer les femmes au travail — la réponse est souvent oui, mais on demande."],
     presta: ["potieres"], gps: [-12.9000, 45.1900]
   },
+  /* Le mourengué est le seul spectacle de l'île qui ne soit pas un spectacle.
+     Il n'est pas programmé, il n'est pas encadré, il est contesté, et
+     plusieurs communes l'ont interdit après des débordements. Une fiche qui
+     l'annoncerait comme une attraction serait fausse deux fois : sur ce que
+     c'est, et sur la possibilité d'en voir. Elle dit donc les deux. */
+  {
+    id: "mourengue",
+    nom: "Le mourengué, les soirs de ramadan",
+    cat: "culture",
+    commune: "Places de village",
+    zone: "grande-terre",
+    resume: "Le combat traditionnel mahorais, sur la place, après la rupture du jeûne.",
+    texte: "Deux adversaires, un cercle de spectateurs, des tambours, et des coups portés " +
+           "pieds et poings nus. Le mourengué — moringue ailleurs dans l'océan Indien — se " +
+           "danse autant qu'il se bat : l'esquive et le rythme comptent plus que la force. " +
+           "Il se pratique surtout pendant les nuits du ramadan, quand les places de village " +
+           "se remplissent après la rupture du jeûne, et les femmes y combattent aussi. " +
+           "C'est une pratique vivante et disputée : plusieurs communes l'ont interdite après " +
+           "des débordements, et le débat sur son encadrement n'est pas clos.",
+    quand: "Les soirs du ramadan, après le coucher du soleil. Rien n'est programmé.",
+    duree: 2,
+    budget: 0,
+    maree: null,
+    saison: [],
+    tags: ["soir", "groupe", "sansVoiture"],
+    vedette: 1,
+    conseils: [
+      "Ça ne s'annonce pas et ça ne se réserve pas : ça se sait dans le village le jour même. Demandez sur place, poliment, plutôt que de chercher un horaire.",
+      "On regarde, on ne filme pas sans demander, et on ne se met pas au premier rang du cercle : la place est aux gens du village.",
+      "Plusieurs communes l'ont interdit. Si les gendarmes sont là, la soirée s'arrête — n'insistez pas.",
+      "Pendant le ramadan, ne mangez pas et ne buvez pas en public la journée. Ce n'est pas la loi, c'est la moindre des politesses."
+    ],
+    presta: [],
+    gps: [-12.7806, 45.2278],
+    sansLieu: true,
+    sources: [
+      { t: "France 24, Les Observateurs — le moringué féminin pendant le ramadan à Mayotte",
+        u: "https://observers.france24.com/fr/20170609-france-mayotte-moringue-sport-combat-femmes-battent-foule-ramadan-tradition" },
+      { t: "Mayotte Hebdo — « Le moringué, un art martial de plus en plus décrié »",
+        u: "https://www.mayottehebdo.com/actualite/sport/le-moringue-un-art-martial-de-plus-en-plus-decrie/" }
+    ]
+  },
   {
     id: "debaa", nom: "Debaa, mbiwi et wadaha", cat: "culture", commune: "Villages", zone: "grande-terre",
     resume: "Les danses chantées mahoraises — le vrai spectacle de l'île.",

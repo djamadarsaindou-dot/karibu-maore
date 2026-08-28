@@ -170,6 +170,34 @@ elle-même : **lever et coucher à la seconde**, midi solaire à 5 secondes.
 > leur seuil effectif est −1,12° au lieu de −0,833°, ils dérivent d'une à deux
 > minutes.
 
+## Calendrier de l'hégire
+
+`hijri.js` — les dates des fêtes musulmanes ne sont **écrites nulle part** dans
+l'application. Elles sortent de l'instant de la nouvelle lune, calculé par la
+série de J. Meeus, *Astronomical Algorithms*, chapitre 49 (vingt-cinq termes
+périodiques et quatorze corrections additionnelles). Le mois commence le
+lendemain de la conjonction, heure de Mayotte. Comme pour la Lune, ce qui est
+repris est une compilation de coefficients, pas une base de données.
+
+**Contrôlé sur quatre dates annoncées par des autorités indépendantes, toutes
+retrouvées au jour près** — c'est l'autotest de `node hijri.js`, et il refuse
+de passer si l'une bouge :
+
+| Repère | Calculé | Annoncé par |
+|---|---|---|
+| 1 ramadan 1447 | 18 février 2026 | Grande Mosquée de Paris |
+| 1 chawwal 1447 (Aïd el-Fitr) | 20 mars 2026 | Fiqh Council of North America |
+| 1 ramadan 1446 | 1er mars 2025 | annonce en France |
+| 10 dhou al-hijja 1446 (Aïd el-Kebir) | 6 juin 2025 | Aïd el-Kebir 2025 |
+
+**L'application écrit toujours « vers le ».** Le début du mois est arrêté par
+l'observation du croissant et annoncé localement : un jour d'écart est possible,
+et il est fréquent. La date qui fait foi est celle de la mosquée. Une
+application qui trancherait à la place des autorités religieuses se tromperait
+sur le fond, même les années où elle tombe juste sur la date.
+
+---
+
 ## Indice UV et jour sans ombre
 
 Aucune donnée n'est reprise : les deux sont **calculés** à partir des mêmes

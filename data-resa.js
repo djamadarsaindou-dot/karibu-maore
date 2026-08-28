@@ -62,6 +62,14 @@ const EVENEMENTS = [
   { id: "ev-voule", nom: "Voulé (barbecue de plage)", type: "recurrent", jour: 6,
     heure: "à partir de 16 h", lieu: "Plages du sud et de l'est", lien: "voule",
     texte: "L'institution du samedi. Prévenir le restaurant de plage dans la journée." },
+  /* Une date précise deviendrait fausse dans un an. On donne la PÉRIODE
+     habituelle, vérifiable, et on renvoie à l'organisateur pour le jour. */
+  { id: "ev-milatsika", nom: "Festival Milatsika", type: "saison", debut: 10, fin: 10,
+    heure: "un week-end, souvent mi-octobre", lieu: "Chiconi", lien: "debaa",
+    texte: "Le grand rendez-vous musical de l'île depuis 2007 : musiques mahoraises, de "
+         + "l'océan Indien et d'ailleurs, sur deux soirs. La vingtième édition est attendue "
+         + "en 2026. Les dates exactes sont annoncées chaque année par l'association "
+         + "organisatrice — elles ne sont pas dans cette application." },
   { id: "ev-manzaraka", nom: "Saison des manzaraka (grands mariages)", type: "saison", debut: 7, fin: 9,
     heure: "surtout le samedi", lieu: "Villages de toute l'île", lien: "manzaraka",
     texte: "Cortèges, debaa, mbiwi. Le meilleur moment culturel de l'année." },

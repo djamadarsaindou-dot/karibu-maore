@@ -33,7 +33,7 @@ html = html.replace(
    photos/ (1,4 Mo, impossible à envoyer par WhatsApp), et un <img> qui ne
    charge pas laisserait apparaître son texte de remplacement. On repart donc
    proprement sur les illustrations dessinées, qui sont déjà le repli prévu. */
-const scripts = ["data.js", "data-resa.js", "photos.js", "carte.js", "carte-vue.js", "contours.js", "recherche.js", "intentions.js", "astro.js", "marees.js", "ui.js", "app.js"];
+const scripts = ["data.js", "data-resa.js", "photos.js", "carte.js", "carte-vue.js", "contours.js", "recherche.js", "intentions.js", "astro.js", "hijri.js", "marees.js", "ui.js", "app.js"];
 for (const s of scripts) {
   html = html.replace(`<script src="${s}"></script>`, () => {
     let code = lire(s);

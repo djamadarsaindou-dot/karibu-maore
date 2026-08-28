@@ -366,7 +366,65 @@ function actifMaintenant(e, now) {
   const m = now.getMonth() + 1;
   if (e.type === "recurrent") return e.jour === now.getDay();
   if (e.type === "saison") return e.debut <= e.fin ? (m >= e.debut && m <= e.fin) : (m >= e.debut || m <= e.fin);
+  if (e.type === "calcule") {
+    const j = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()));
+    return e.du <= j && j <= e.au;
+  }
   return false;
+}
+
+/* ================ LES FÊTES QUI NE SONT DANS AUCUN FICHIER ================
+   Le calendrier de l'hégire gouverne l'année à Mayotte plus sûrement que le
+   calendrier civil : pendant le ramadan les horaires changent, les restaurants
+   ferment la journée, les places de village s'animent à la nuit tombée.
+   Ces dates ne sont écrites nulle part dans l'application — elles sortent de la
+   position réelle de la Lune, exactement comme les marées.
+
+   ON ÉCRIT TOUJOURS « VERS LE ». Le début du mois est arrêté par l'observation
+   du croissant et annoncé localement : un jour d'écart est possible, et il est
+   fréquent. Trancher à la place de la mosquée serait une faute, même les années
+   où le calcul tombe juste. */
+function evenementsCalcules() {
+  if (typeof HIJRI === "undefined") return [];
+  const now = maintenant();
+  const auj = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()));
+  const dans = HIJRI.entre(auj, new Date(auj.getTime() + 400 * 86400000));
+  const jourMois = d => `${d.getUTCDate()} ${MOIS[d.getUTCMonth()]}`;
+  const TEXTES = {
+    ramadan: {
+      lieu: "Toute l'île", heure: "un mois entier", lien: "mourengue",
+      texte: "Le mois de jeûne. Beaucoup de restaurants ferment la journée et " +
+             "rouvrent après le coucher du soleil ; les administrations décalent " +
+             "leurs horaires. Ne mangez pas, ne buvez pas et ne fumez pas en public " +
+             "la journée : ce n'est pas une obligation légale, c'est de la politesse " +
+             "élémentaire. En revanche les soirées sont les plus vivantes de l'année."
+    },
+    fitr: {
+      lieu: "Villages et mosquées", heure: "prière au petit matin", lien: null,
+      texte: "La fête qui clôt le ramadan. Grande prière, habits neufs, visites de " +
+             "famille toute la journée. Beaucoup de commerces ferment. Si on vous " +
+             "invite à manger, dites oui."
+    },
+    kebir: {
+      lieu: "Villages et mosquées", heure: "prière au petit matin", lien: null,
+      texte: "La fête du sacrifice. Prière au matin, repas partagé, jour férié à " +
+             "Mayotte. Les villages sont très animés et les routes chargées."
+    }
+  };
+  return dans.map(f => {
+    const t = TEXTES[f.cle];
+    const court = (f.fin.getTime() - f.debut.getTime()) <= 86400000;
+    return {
+      id: `hj-${f.cle}-${f.an}`,
+      nom: f.nom,
+      type: "calcule",
+      du: f.debut, au: f.fin,
+      quand: court ? `vers le ${jourMois(f.debut)}`
+                   : `vers le ${jourMois(f.debut)} → ${jourMois(f.fin)}`,
+      heure: t.heure, lieu: t.lieu, lien: t.lien, texte: t.texte,
+      calcule: true
+    };
+  });
 }
 
 /* -------------------------------------------------------- 5. VUE : EXPLORER */
@@ -933,8 +991,9 @@ function vueAgenda() {
   const vivant = e => !e.perime || e.perime >= aujourdhui;
   const now = maintenant(), mois = now.getMonth() + 1;
   const periode = e => e.type === "recurrent" ? "Chaque " + JOURS[e.jour]
-    : e.type === "saison" ? `${cap(MOIS[e.debut - 1])} → ${MOIS[e.fin - 1]}` : esc(e.date);
-  const tri = EVENEMENTS.filter(vivant).sort((a, b) => (actifMaintenant(b, now) ? 1 : 0) - (actifMaintenant(a, now) ? 1 : 0));
+    : e.type === "saison" ? `${cap(MOIS[e.debut - 1])} → ${MOIS[e.fin - 1]}`
+    : e.type === "calcule" ? esc(e.quand) : esc(e.date);
+  const tri = [...EVENEMENTS.filter(vivant), ...evenementsCalcules()].sort((a, b) => (actifMaintenant(b, now) ? 1 : 0) - (actifMaintenant(a, now) ? 1 : 0));
 
   return `
   <section class="section">
@@ -956,14 +1015,16 @@ function vueAgenda() {
           <p class="fiche-carte__res">${esc(e.texte)}</p>
           <div class="fiche-carte__meta">
             ${encours ? `<span class="puce puce--ok">en ce moment</span>` : `<span class="puce">à venir</span>`}
+            ${e.calcule ? `<button class="puce puce--calc" data-action="hijri-detail">date calculée</button>` : ""}
           </div>
         </div>
       </article>`;
     }).join("")}
   </div>
   ${note("attention", `Cet agenda donne les <b>rythmes</b> de l'année, pas la programmation
-    des associations. Les dates précises des fêtes religieuses et des mariages se demandent
-    au village ou à la mairie.`, "info")}
+    des associations. Les fêtes musulmanes sont <b>calculées</b> à partir de la position de
+    la Lune : la date qui fait foi est celle qu'annonce la mosquée, et un jour d'écart est
+    fréquent. Les mariages, eux, se demandent au village.`, "info")}
   ${pied()}`;
 }
 
@@ -1703,6 +1764,26 @@ document.addEventListener("click", e => {
   else if (a === "suggestion") { filtres.q = el.dataset.q; const c = $("#q");
                                   if (c) c.value = filtres.q; rendre(true); }
   else if (a === "credits") { aller("/credits"); }
+  else if (a === "hijri-detail") { feuille({ titre: "Pourquoi « vers le »",
+      texte: "Cette date est calculée, et ce n'est pas elle qui fait foi.",
+      texteLong: [
+        "Les dates des fêtes musulmanes ne sont écrites nulle part dans cette " +
+        "application. Elles sortent de la position réelle de la Lune : l'instant de " +
+        "la nouvelle lune, calculé par la série astronomique de Jean Meeus et ses " +
+        "vingt-cinq termes périodiques. Le mois commence le lendemain de la " +
+        "conjonction.",
+        "Le calcul a été contrôlé sur quatre dates annoncées par des autorités " +
+        "indépendantes, et il les retrouve toutes les quatre au jour près : le " +
+        "1er ramadan 1447 au 18 février 2026 selon la Grande Mosquée de Paris, le " +
+        "1er chawwal 1447 au 20 mars 2026, le 1er ramadan 1446 au 1er mars 2025, et " +
+        "l'Aïd el-Kebir 1446 au 6 juin 2025.",
+        "Mais le début du mois n'est pas arrêté par un calcul : il l'est par " +
+        "l'observation du croissant, et l'annonce est faite localement. Un jour " +
+        "d'écart est possible, et il est fréquent. C'est pourquoi il est écrit " +
+        "« vers le », et pourquoi la date qui compte se demande à la mosquée. Une " +
+        "application qui trancherait à la place des autorités religieuses se " +
+        "tromperait sur le fond, même les années où elle tombe juste sur la date."
+      ].join(String.fromCharCode(10, 10)) }); }
   else if (a === "uv-detail") { feuille({ titre: "D'où sort ce nombre",
       texte: "Il est calculé, pas mesuré, et calculé pour un ciel parfaitement clair.",
       /* Les paragraphes sont un tableau : ecrire un saut de ligne dans un
