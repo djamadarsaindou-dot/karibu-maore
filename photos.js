@@ -31,6 +31,15 @@ const PHOTOS = {
     "w": 1000,
     "h": 666
   },
+  "barge": {
+    "f": "barge.webp",
+    "a": "Jean-Pierre Dalbéra from Paris, France",
+    "l": "CC BY 2.0",
+    "u": "https://commons.wikimedia.org/wiki/File:La_barge_%C3%A0_Dzaoudzi_(Mayotte)_(34019109614).jpg",
+    "d": "La barge accostée à Dzaoudzi, rampe baissée",
+    "w": 1000,
+    "h": 666
+  },
   "choungui": {
     "f": "choungui.webp",
     "a": "Frédéric Ducarme",
@@ -39,6 +48,15 @@ const PHOTOS = {
     "d": "Le piton du mont Choungui vu depuis le nord",
     "w": 1000,
     "h": 750
+  },
+  "dauphins": {
+    "f": "dauphins.webp",
+    "a": "DavidLorieux",
+    "l": "CC BY-SA 4.0",
+    "u": "https://commons.wikimedia.org/wiki/File:20251223_-_Dauphin_tachet%C3%A9_pantropical_-_David_Lorieux_-_Ceta%27Maore.jpg",
+    "d": "Un dauphin tacheté pantropical en plein saut, dans le lagon",
+    "w": 1000,
+    "h": 749
   },
   "debaa": {
     "f": "debaa.webp",
@@ -94,6 +112,33 @@ const PHOTOS = {
     "w": 820,
     "h": 544
   },
+  "marche-mamoudzou": {
+    "f": "marche-mamoudzou.webp",
+    "a": "Bebetot",
+    "l": "CC BY-SA 4.0",
+    "u": "https://commons.wikimedia.org/wiki/File:L4cZxvqWN9-compress.jpg",
+    "d": "Les étals de légumes et de fruits sous la halle du marché de Mamoudzou",
+    "w": 1000,
+    "h": 667
+  },
+  "mataba": {
+    "f": "mataba.webp",
+    "a": "Jean-Pierre Dalbéra",
+    "l": "CC BY 2.0",
+    "u": "https://commons.wikimedia.org/wiki/File:Cuisine_de_l%27archipel_des_Comores_par_la_Brigade_de_Mayotte_aux_Grandes_Tables_de_la_Friche_(Marseille)_(53000746104).jpg",
+    "d": "Des plats mahorais dressés, sur feuille de bananier",
+    "w": 1000,
+    "h": 673
+  },
+  "moya": {
+    "f": "moya.webp",
+    "a": "B.navez",
+    "l": "CC BY-SA 3.0",
+    "u": "https://commons.wikimedia.org/wiki/File:Palagonite_cliffs_at_Moya_beach_(Mayotte).JPG",
+    "d": "Les falaises de palagonite qui ferment la plage de Moya",
+    "w": 1000,
+    "h": 493
+  },
   "mtsamboro": {
     "f": "mtsamboro.webp",
     "a": "Tanguy Nicolas",
@@ -112,6 +157,24 @@ const PHOTOS = {
     "w": 1000,
     "h": 562
   },
+  "ngouja": {
+    "f": "ngouja.webp",
+    "a": "VillageHero from Ulm, Germany",
+    "l": "CC BY-SA 2.0",
+    "u": "https://commons.wikimedia.org/wiki/File:Ngouja_Beach_(Mayotte)_(30600851543).jpg",
+    "d": "La plage de N'Gouja, ses baobabs et l'eau turquoise du lagon",
+    "w": 1000,
+    "h": 563
+  },
+  "padza": {
+    "f": "padza.webp",
+    "a": "Frédéric Ducarme",
+    "l": "CC BY-SA 4.0",
+    "u": "https://commons.wikimedia.org/wiki/File:Padza_%C3%A9rod%C3%A9.jpg",
+    "d": "Un padza : la latérite rouge mise à nu par l'érosion, au-dessus du lagon",
+    "w": 1000,
+    "h": 747
+  },
   "papani": {
     "f": "papani.webp",
     "a": "mwanasimba from La Réunion",
@@ -129,6 +192,15 @@ const PHOTOS = {
     "d": "Le lagon vers la Passe en S",
     "w": 1000,
     "h": 750
+  },
+  "rocher": {
+    "f": "rocher.webp",
+    "a": "Yane MAINARD",
+    "l": "CC0",
+    "u": "https://commons.wikimedia.org/wiki/File:Dzaoudzi.jpg",
+    "d": "Le rocher de Dzaoudzi, le boulevard des Crabes et la vasière des Badamiers, vus d'avion",
+    "w": 960,
+    "h": 638
   },
   "sakouli": {
     "f": "sakouli.webp",
@@ -185,18 +257,3 @@ const PHOTOS = {
     "h": 615
   }
 };
-
-/* Licences et leur page de référence, pour créditer correctement */
-const LICENCES = {
-  "CC0":          "https://creativecommons.org/publicdomain/zero/1.0/deed.fr",
-  "Public domain":"https://fr.wikipedia.org/wiki/Domaine_public",
-  "CC BY 2.0":    "https://creativecommons.org/licenses/by/2.0/deed.fr",
-  "CC BY 3.0":    "https://creativecommons.org/licenses/by/3.0/deed.fr",
-  "CC BY 4.0":    "https://creativecommons.org/licenses/by/4.0/deed.fr",
-  "CC BY-SA 2.0": "https://creativecommons.org/licenses/by-sa/2.0/deed.fr",
-  "CC BY-SA 3.0": "https://creativecommons.org/licenses/by-sa/3.0/deed.fr",
-  "CC BY-SA 4.0": "https://creativecommons.org/licenses/by-sa/4.0/deed.fr"
-};
-
-const photo = id => PHOTOS[id] || null;
-const licenceUrl = l => LICENCES[l] || "https://commons.wikimedia.org";
