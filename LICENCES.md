@@ -122,6 +122,41 @@ hors connexion.
 
 ---
 
+## Relief
+
+`contours.js` — courbes de niveau tous les 100 m, de 100 à 600 m.
+
+| Donnée | Origine | Licence |
+|---|---|---|
+| Modèle d'élévation | **Copernicus DEM GLO-30**, tuile `S13_00_E045` | Licence Copernicus DEM — usage mondial, gratuit, y compris commercial, **attribution obligatoire** |
+
+Crédit exigé, affiché sous la carte dès que le relief apparaît :
+*© DLR e.V. 2010-2014 et © Airbus Defence and Space GmbH 2014-2018 pour le
+COP-DEM, distribué par l'Agence spatiale européenne.*
+
+**Ce qui est embarqué est une œuvre dérivée, pas le modèle.** Ce sont des
+polylignes extraites par marching squares (`outils/relief.py`) puis simplifiées
+par Douglas-Peucker à 0,55 pixel de la carte finale. Le modèle d'origine —
+3 600 × 3 600 valeurs flottantes — n'est pas redistribué.
+
+**GLO-30 est un modèle de surface, pas de terrain :** il inclut la canopée. Le
+point culminant qu'il donne pour Mayotte est 654,9 m à 12,880 S / 45,162 E, ce
+qui est bien le Mont Bénara, que l'IGN place à 660 m. À 100 m d'écart entre deux
+courbes, la différence ne se voit pas ; elle interdit en revanche d'annoncer une
+altitude au mètre près à partir de cette donnée, et l'application ne le fait pas.
+
+**Le niveau 0 m est délibérément absent.** Le trait de côte vient déjà des
+contours IGN des communes ; une courbe 0 issue d'un modèle de surface s'en
+écarte par endroits de plusieurs dizaines de mètres, et deux traits presque
+superposés se lisent comme un défaut d'affichage.
+
+**Le fichier n'est pas chargé au démarrage.** 55 Ko pour une couche décorative
+ne doivent pas peser sur la première ouverture : `contours.js` est demandé la
+première fois qu'on dépasse le zoom 1,6. Le *service worker* le met malgré tout
+en cache à l'installation, pour qu'il soit là hors connexion.
+
+---
+
 ## Calculs solaires
 
 `astro.js` implémente les séries de la **NOAA Solar Calculator** (domaine public),

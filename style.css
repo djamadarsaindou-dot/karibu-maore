@@ -961,7 +961,45 @@ body{font-weight:420;font-synthesis-weight:none}
   border-radius:var(--r-l);overflow:hidden;
   background:var(--passe);box-shadow:var(--e2);
 }
-.carte{display:block;width:100%;height:auto;touch-action:manipulation}
+.carte{display:block;width:100%;height:auto;touch-action:pan-y;
+  -webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
+/* LE COMPROMIS DU DOIGT. Tant que la carte est à son échelle 1, le doigt
+   appartient à la PAGE : on peut faire défiler l'écran en glissant dessus, et
+   seule la pincée à deux doigts nous revient. Dès qu'on a zoomé, la carte
+   prend tout le doigt — sinon on ne pourrait plus se déplacer dedans. Le
+   bouton « voir toute l'île » rend le défilement à la page. Sans cette bascule,
+   la carte est un piège à doigt au milieu d'une page qui devrait défiler. */
+.carte-cadre[data-zoom="oui"] .carte{touch-action:none;cursor:grab}
+.carte-cadre[data-zoom="oui"] .carte:active{cursor:grabbing}
+.carte__relief{fill:none;stroke:#8d7f66;stroke-width:.7;opacity:0;
+  transition:opacity var(--t-normal);pointer-events:none}
+
+/* Les commandes flottent au-dessus de la carte, en colonne, du côté du pouce. */
+.carte__cmd{
+  position:absolute;right:var(--s2);top:var(--s2);z-index:2;
+  display:grid;gap:var(--s1);
+}
+.carte__cmd .icone-btn{
+  width:2.6rem;height:2.6rem;
+  background:rgba(244,237,226,.94);color:var(--basalte);
+  border:1px solid rgba(36,31,29,.14);
+  box-shadow:0 2px 8px rgba(10,58,87,.28);
+  backdrop-filter:blur(6px);
+}
+.carte__cmd .icone-btn:hover{background:#fff}
+.carte__cmd .icone-btn svg{width:1.25rem;height:1.25rem}
+
+/* MA POSITION. Le disque pâle est la précision annoncée par le téléphone, et
+   il est dessiné à l'échelle du monde : il grandit quand on dézoome, ce qui est
+   exactement juste — une précision de 30 m couvre plus de carte de loin. Le
+   point, lui, garde sa taille à l'écran. */
+.moi__precision{fill:var(--platier);opacity:.18;stroke:var(--platier);
+  stroke-width:1;stroke-opacity:.45;pointer-events:none}
+.moi__point{fill:#1f6feb;stroke:#fff;stroke-width:3;pointer-events:none}
+@media (prefers-reduced-motion:no-preference){
+  .moi__point{animation:moi-bat 2.4s ease-in-out infinite}
+  @keyframes moi-bat{0%,100%{opacity:1}50%{opacity:.55}}
+}
 .carte__mer{fill:var(--passe)}
 .carte__recif{fill:none;stroke:var(--platier);stroke-width:2.2;opacity:.55;
   stroke-linecap:round;stroke-linejoin:round}
@@ -986,6 +1024,8 @@ body{font-weight:420;font-synthesis-weight:none}
   text-align:right;
 }
 .carte__credit a{color:#bfe9ea}
+.carte__credit{pointer-events:none}
+.carte__credit a{pointer-events:auto}
 
 .carte-apercu{
   display:grid;grid-template-columns:5.5rem 1fr;gap:var(--s3);

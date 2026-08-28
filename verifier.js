@@ -32,7 +32,7 @@ const A = m => alertes.push(m);
 
 const CATS  = new Set(CATEGORIES.map(c => c.id));
 const ZONES = new Set(["grande-terre", "petite-terre", "lagon"]);
-const TAGS  = new Set(["famille", "sportif", "sansVoiture", "ombre", "pluie"]);
+const TAGS  = new Set(["famille", "sportif", "sansVoiture", "ombre", "pluie", "soir", "groupe", "pmr"]);
 const ETATS = new Set(["ouvert", "a-confirmer", "ferme", "modifie"]);
 const IDS_P = new Set(PRESTATAIRES.map(p => p.id));
 

@@ -575,7 +575,13 @@ function vueCarte(params) {
   </div>
 
   <div class="carte-cadre">
-    ${UI.carte(liste, { selection: sel ? sel.id : null })}
+    ${CarteVue.rendre(liste, { selection: sel ? sel.id : null })}
+    <div class="carte__cmd">
+      <button class="icone-btn" data-action="carte-zoom" data-f="1.6" aria-label="Zoomer">${ico("plus")}</button>
+      <button class="icone-btn" data-action="carte-zoom" data-f="0.625" aria-label="Dézoomer">${ico("moins")}</button>
+      <button class="icone-btn" data-action="carte-moi" aria-label="Me situer sur la carte">${ico("epingle")}</button>
+      <button class="icone-btn" data-action="carte-recadrer" aria-label="Voir toute l'île">${ico("boussole")}</button>
+    </div>
     <p class="carte__credit">Fond de carte : contours IGN ·
       récif © les contributeurs d'<a href="https://www.openstreetmap.org/copyright"
       target="_blank" rel="noopener">OpenStreetMap</a></p>
@@ -1448,6 +1454,7 @@ function rendre(sansScroll) {
   derniereRoute = brut;
   document.body.dataset.vue = seg[0] || "accueil";
   majBarreFiche(seg[0] === "lieu" ? seg[1] : null);
+  if (seg[0] === "carte") { const c = $(".carte-cadre"); if (c) CarteVue.brancher(c); }
 }
 
 function majPastille() {
@@ -1479,6 +1486,23 @@ document.addEventListener("click", e => {
                                    rendre(true); }
   else if (a === "suggestion") { filtres.q = el.dataset.q; const c = $("#q");
                                   if (c) c.value = filtres.q; rendre(true); }
+  else if (a === "carte-zoom")  { CarteVue.zoomer(parseFloat(el.dataset.f)); }
+  else if (a === "carte-recadrer") { CarteVue.recadrer(); }
+  else if (a === "carte-moi")   {
+      annoncer("Recherche de votre position…");
+      CarteVue.situer(r => {
+        if (r.erreur === "refus") feuille({ titre: "Position refusée",
+          texte: "Vous pouvez l'autoriser dans les réglages du navigateur. " +
+                 "L'application n'envoie votre position nulle part : elle sert seulement " +
+                 "à vous placer sur la carte." });
+        else if (r.erreur) feuille({ titre: "Position introuvable",
+          texte: "Le téléphone n'a pas réussi à se situer. Sous les arbres ou en intérieur, " +
+                 "c'est fréquent." });
+        else if (!r.dans) feuille({ titre: "Vous n'êtes pas à Mayotte",
+          texte: "La carte ne couvre que l'île. Elle vous attendra." });
+        else annoncer("Vous êtes sur la carte.");
+      });
+    }
   else if (a === "carte-cat")   { filtres.cat = el.dataset.val || null; carteSel = null; rendre(true); }
   else if (a === "filtre")       { const c = el.dataset.champ, v = el.dataset.val;
                                    filtres[c] = (!v || filtres[c] === v) ? null : v; majListe(); }
