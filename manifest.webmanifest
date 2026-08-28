@@ -5,23 +5,103 @@
   "description": "Tout ce qu'il y a à faire à Mayotte et comment le réserver : activités, marées, saisons, conseils de terrain. Fonctionne hors connexion.",
   "lang": "fr",
   "dir": "ltr",
-  "categories": ["travel", "lifestyle", "navigation"],
+  "categories": [
+    "travel",
+    "lifestyle",
+    "navigation"
+  ],
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
-  "display_override": ["standalone", "minimal-ui", "browser"],
+  "display_override": [
+    "standalone",
+    "minimal-ui",
+    "browser"
+  ],
   "orientation": "any",
-  "background_color": "#fbfaf7",
-  "theme_color": "#0e9aa7",
+  "background_color": "#f4ede2",
+  "theme_color": "#0a3a57",
   "icons": [
-    { "src": "icone-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
-    { "src": "icone-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
-    { "src": "icone-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
-    { "src": "icone.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+    {
+      "src": "icone-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icone-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icone-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "icone.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
   ],
   "shortcuts": [
-    { "name": "Aujourd'hui", "short_name": "Aujourd'hui", "url": "./#/", "description": "Ce qui colle avec l'heure et la marée" },
-    { "name": "Explorer", "short_name": "Explorer", "url": "./#/explorer", "description": "Toutes les activités" },
-    { "name": "Mon carnet", "short_name": "Carnet", "url": "./#/carnet", "description": "Mes envies et mes demandes" }
+    {
+      "name": "Aujourd'hui",
+      "short_name": "Aujourd'hui",
+      "url": "./#/",
+      "description": "Ce qui colle avec l'heure et la marée"
+    },
+    {
+      "name": "Explorer",
+      "short_name": "Explorer",
+      "url": "./#/explorer",
+      "description": "Toutes les activités"
+    },
+    {
+      "name": "Mon carnet",
+      "short_name": "Carnet",
+      "url": "./#/carnet",
+      "description": "Mes envies et mes demandes"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "captures/accueil.webp",
+      "sizes": "500x1000",
+      "type": "image/webp",
+      "form_factor": "narrow",
+      "label": "L'accueil : la marée, le marnage, le soleil et l'indice UV du moment, puis les idées qui collent avec l'heure."
+    },
+    {
+      "src": "captures/explorer.webp",
+      "sizes": "500x1000",
+      "type": "image/webp",
+      "form_factor": "narrow",
+      "label": "Explorer : 44 activités filtrables par envie, par zone, par budget et par accès sans voiture."
+    },
+    {
+      "src": "captures/carte.webp",
+      "sizes": "500x1000",
+      "type": "image/webp",
+      "form_factor": "narrow",
+      "label": "La carte de Mayotte en vectoriel, utilisable hors connexion, avec le zoom et le relief."
+    },
+    {
+      "src": "captures/fiche.webp",
+      "sizes": "500x1000",
+      "type": "image/webp",
+      "form_factor": "narrow",
+      "label": "Une fiche : le verdict du moment, l'état vérifié, les conseils de terrain et les mois favorables."
+    },
+    {
+      "src": "captures/large.webp",
+      "sizes": "1280x800",
+      "type": "image/webp",
+      "form_factor": "wide",
+      "label": "Karibu Maoré sur grand écran."
+    }
   ]
 }
