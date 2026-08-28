@@ -11,3 +11,7 @@ karibu-maore-artifact.html
 .DS_Store
 Thumbs.db
 prof/
+PLAN-SUITE.md
+outils/communes.geojson
+outils/osm.json
+outils/*.tif

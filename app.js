@@ -366,20 +366,68 @@ function actifMaintenant(e, now) {
 
 /* -------------------------------------------------------- 5. VUE : EXPLORER */
 
-/* La liste des lieux qui passent les filtres courants. */
+/* La liste des lieux qui passent les filtres et la recherche, CLASSÉE.
+
+   La règle de pondération est le cœur du sujet : quand une intention a mordu,
+   les mots libres restants ne pèsent qu'un quart. Sans elle, « une rando pas
+   trop dure avec les enfants » remonte « Le voulé du samedi soir » en tête,
+   parce que le mot rare « dure » figure dans sa description et que sa
+   contribution BM25 écrase le bonus de catégorie. */
 function listeFiltree() {
-  return LIEUX.filter(l => {
+  const dur = l => {
     if (filtres.cat && l.cat !== filtres.cat) return false;
     if (filtres.zone && l.zone !== filtres.zone) return false;
     if (filtres.budget === "gratuit" && l.budget !== 0) return false;
     if (filtres.tag && !l.tags.includes(filtres.tag)) return false;
-    if (filtres.q) {
-      const t = (l.nom + " " + l.resume + " " + l.texte + " " + l.commune + " " +
-                 l.tags.join(" ") + " " + l.quand).toLowerCase();
-      if (!sansAccent(t).includes(sansAccent(filtres.q.toLowerCase().trim()))) return false;
-    }
     return true;
-  });
+  };
+  const base = LIEUX.filter(dur);
+  const q = (filtres.q || "").trim();
+  if (!q) return base;
+
+  const it = INTENTIONS.lire(q);
+  const f = it.filtres;
+  const etatMaree = f.maree ? MAREES.etatMaintenant(new Date()) : null;
+
+  const passe = l => {
+    if (f.tags && !f.tags.every(t => l.tags.includes(t))) return false;
+    if (f.zone && l.zone !== f.zone) return false;
+    if (f.budget !== undefined && l.budget !== f.budget) return false;
+    if (f.budgetMax !== undefined && l.budget > f.budgetMax) return false;
+    if (f.budgetMin !== undefined && l.budget < f.budgetMin) return false;
+    if (f.reservable && !l.presta.length) return false;
+    if (f.dureeMax !== undefined && l.duree > f.dureeMax) return false;
+    if (f.dureeMin !== undefined && l.duree < f.dureeMin) return false;
+    if (f.maree && l.maree && l.maree !== f.maree) return false;
+    if (f.saison && l.saison.length && !l.saison.includes(maintenant().getMonth() + 1)) return false;
+    return true;
+  };
+  let candidats = base.filter(passe);
+  /* Un filtre qui ne laisse rien vaut mieux desserré que vide : on retire la
+     contrainte de tags, la plus sévère, plutôt que de rendre un écran blanc. */
+  if (!candidats.length && f.tags) {
+    candidats = base.filter(l => f.tags.some(t => l.tags.includes(t)));
+  }
+  if (!candidats.length) candidats = base;
+
+  const requete = [it.reste, ...it.mots].filter(Boolean).join(" ");
+  const brut = requete ? RECHERCHE.bm25(requete, LIEUX) : new Map();
+  const haut = Math.max(1e-9, ...[...brut.values()]);
+  const aRegle = it.touches.length > 0;
+
+  return candidats
+    .map(l => {
+      const bn = (brut.get(l.id) || 0) / haut;
+      let s = (aRegle ? 0.25 : 1) * bn;
+      if (it.bonus.cat === l.cat) s += 0.30;
+      if (it.bonus.nord && l.gps[0] > -12.78) s += 0.15;
+      if (it.bonus.sud && l.gps[0] < -12.85) s += 0.15;
+      if (etatMaree && l.maree && etatMaree.proche === l.maree) s += 0.35;
+      s += (l.vedette || 0) * 0.02;              // départage les ex æquo
+      return { l, s };
+    })
+    .sort((a, b) => b.s - a.s || LIEUX.indexOf(a.l) - LIEUX.indexOf(b.l))
+    .map(x => x.l);
 }
 
 /* Mise à jour SANS reconstruire la page.

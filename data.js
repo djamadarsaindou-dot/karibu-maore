@@ -24,7 +24,7 @@
 const APP = {
   nom: "Karibu Maoré",
   baseline: "Tout ce qu'il y a à faire à Mayotte — et comment le réserver",
-  version: "0.7.0",
+  version: "0.8.0",
   maj: "2026-08-28",
   // Numéro de contact, format international sans + ni espaces (0639 40 69 48)
   contactWhatsApp: "262639406948",
@@ -56,7 +56,8 @@ const LIEUX = [
     texte: "Un ancien dôme volcanique qui se dresse tout seul au sud de l'île. La montée est courte mais très raide sur la fin : ça grimpe à quatre pattes dans les racines. En haut, on voit la double barrière de corail, la baie de Bouéni et, par temps clair, les autres îles de l'archipel.",
     quand: "Tôt le matin (départ avant 7 h) ou en fin d'après-midi. Éviter après de fortes pluies : la terre rouge devient une patinoire.",
     duree: 3, budget: 0, maree: null, saison: [5,6,7,8,9,10],
-    tags: ["sportif"],
+    tags: ["sportif", "groupe"],
+    vedette: 2,
     conseils: [
       "Cotation : DIFFICILE. Environ 1,2 km depuis le parking (343 m) pour à peu près 250 m de dénivelé, très raide et continu, avec des sections où l'on progresse à quatre pattes en s'aidant des racines. Déconseillé aux jeunes enfants et aux personnes sujettes au vertige.",
       "La descente est plus redoutable que la montée : terrain érodé, extrêmement glissant par temps de pluie.",
@@ -77,7 +78,8 @@ const LIEUX = [
     texte: "Moins spectaculaire que Choungui côté panorama, mais bien plus riche : forêt relique, fougères arborescentes, oiseaux endémiques. C'est la randonnée « nature » de l'île.",
     quand: "Saison sèche. Le sommet est souvent dans les nuages en saison des pluies.",
     duree: 4, budget: 0, maree: null, saison: [5,6,7,8,9,10,11],
-    tags: ["sportif", "ombre"],
+    tags: ["sportif", "ombre", "groupe"],
+    vedette: 1,
     conseils: [
       "Sentier peu balisé par endroits : y aller accompagné ou avec une trace GPS téléchargée à l'avance.",
       "Anti-moustiques obligatoire en forêt."
@@ -90,7 +92,8 @@ const LIEUX = [
     texte: "Ce lac salé au fond d'un cratère doit sa couleur à des micro-organismes qui passionnent les chercheurs : le milieu ressemblerait à celui des océans primitifs. Le tour du cratère par la crête offre le lac d'un côté et l'océan de l'autre.",
     quand: "Lever du soleil : la couleur est la plus franche et il ne fait pas encore 35°.",
     duree: 2, budget: 0, maree: null, saison: [],
-    tags: ["famille", "sansVoiture"],
+    tags: ["famille", "sansVoiture", "soir"],
+    vedette: 2,
     conseils: [
       "On ne se baigne pas dans le Dziani, et il est demandé de ne pas s'approcher de l'eau. Lac salé et alcalin (pH 9 à 9,5), anoxique dès 1,5 m de profondeur, sédiments qui produisent du méthane, une fosse de 18 m, aucune surveillance et aucun accès rapide des secours.",
       "C'est un site sacré, où se déroulent des cérémonies traditionnelles. Restez sur le sentier de crête, ne descendez pas vers l'eau, ne photographiez pas une cérémonie sans autorisation.",
@@ -111,7 +114,8 @@ const LIEUX = [
     texte: "Une succession de criques où les tortues vertes viennent pondre la nuit. Le sentier longe la côte sud-est. C'est aussi un des rares endroits où l'on croise des makis en liberté au petit matin.",
     quand: "Le matin. La ponte, elle, se passe de nuit.",
     duree: 5, budget: 0, maree: null, saison: [5,6,7,8,9,10],
-    tags: ["sportif"],
+    tags: ["sportif", "soir", "groupe"],
+    vedette: 1,
     conseils: [
       "La nuit sur une plage de ponte : pas de lampe, pas de flash, pas d'écran de téléphone, vêtements sombres. Ne marchez pas sur le haut de plage, où sont enfouis les nids. La fréquentation nocturne est réglementée : n'y allez pas sans encadrement par une structure agréée, et renseignez-vous auprès de la Direction de l'environnement du Conseil départemental.",
       "Le braconnage est la première cause de mortalité des tortues à Mayotte : environ 350 animaux tués par an, soit au moins 10 % des femelles venues pondre. Signalez une carcasse ou un nid pillé plutôt que d'intervenir vous-même.",
@@ -132,7 +136,8 @@ const LIEUX = [
     texte: "Curiosité rare : le ruisseau saute la falaise et arrive sur le sable. En saison des pluies le débit est spectaculaire ; en saison sèche il ne reste parfois qu'un filet.",
     quand: "Après la saison des pluies (mars-mai) : du débit ET de la lumière.",
     duree: 2, budget: 0, maree: "basse", saison: [3,4,5,6],
-    tags: ["famille"],
+    tags: ["famille", "ombre"],
+    vedette: 1,
     conseils: [
       "Ne vous douchez pas sous la cascade et n'avalez pas cette eau. La leptospirose circule à Mayotte — 121 cas au 24 avril 2026, dont 4 réanimations — et s'attrape par contact avec l'eau douce souillée par l'urine de rongeurs. Jamais d'immersion si vous avez une plaie, même minime.",
       "À marée très haute, la chute tombe dans la mer et non sur la plage : consultez l'horaire de marée avant de venir.",
@@ -150,7 +155,8 @@ const LIEUX = [
     texte: "Les padzas sont des zones où la latérite a été mise à nu par l'érosion. Le contraste entre l'ocre vif, le vert autour et le bleu du lagon en fait le décor le plus photogénique de l'île — surtout au coucher du soleil.",
     quand: "1 h avant le coucher du soleil : la lumière rasante fait flamber le rouge.",
     duree: 2, budget: 0, maree: null, saison: [],
-    tags: ["famille"],
+    tags: ["famille", "soir"],
+    vedette: 1,
     conseils: [
       "Chaussures qu'on accepte de salir : la latérite tache définitivement.",
       "Ne pas rouler sur les padzas, ça aggrave l'érosion."
@@ -163,7 +169,8 @@ const LIEUX = [
     texte: "Le jardin du lycée agricole rassemble les cultures qui font Mayotte : ylang-ylang, vanille, cannelle, poivre, arbres fruitiers. Parfait pour comprendre ce qu'on mange et ce qu'on sent partout sur l'île.",
     quand: "Toute l'année, aux horaires d'ouverture — à vérifier avant de monter, ils varient.",
     duree: 2, budget: 1, maree: null, saison: [],
-    tags: ["famille", "ombre", "pluie"],
+    tags: ["famille", "ombre", "pluie", "pmr"],
+    vedette: 1,
     conseils: ["Se combine avec le marché de Coconi le mercredi matin, juste à côté."],
     presta: [], gps: [-12.8300, 45.1400]
   },
@@ -173,7 +180,8 @@ const LIEUX = [
     texte: "Les palétuviers filtrent l'eau, retiennent la terre et abritent crabes, hérons et alevins. À marée haute on y circule en kayak ; à marée basse on marche sur les passerelles et on observe les crabes violonistes.",
     quand: "Kayak à marée haute, observation à marée basse.",
     duree: 3, budget: 2, maree: "haute", saison: [],
-    tags: ["famille"],
+    tags: ["famille", "ombre", "groupe"],
+    vedette: 1,
     conseils: [
       "Manches longues : les moustiques de mangrove piquent aussi en journée, et le paludisme connaît une reprise de transmission locale.",
       "Environ 80 % des palétuviers ont été défoliés par Chido : la mangrove que vous verrez n'est pas celle des photos d'avant 2024."
@@ -186,7 +194,8 @@ const LIEUX = [
     texte: "Le maki brun — komba en shimaoré — vit partout où il reste des arbres fruitiers. On les voit facilement autour de Coconi, à Combani et sur la pointe Saziley, souvent en famille avec les petits accrochés au dos. Contrairement à ce qu'on lit souvent, ce n'est pas une espèce endémique : introduit de Madagascar, il est aujourd'hui naturalisé et figure même dans la base des espèces envahissantes d'outre-mer.",
     quand: "Tôt le matin ou en fin d'après-midi, quand ils descendent manger.",
     duree: 1, budget: 0, maree: null, saison: [],
-    tags: ["famille"],
+    tags: ["famille", "ombre"],
+    vedette: 1,
     conseils: [
       "Ne les nourrissez jamais. Le nourrissage les habitue à l'homme, les rend dépendants, les pousse à piller jardins et cultures, et crée des conflits avec les agriculteurs. Depuis Chido, ils ont perdu habitat et ressources : raison de plus pour ne pas interférer.",
       "Ne pas capturer, détenir ni perturber : l'espèce est protégée.",
@@ -207,7 +216,8 @@ const LIEUX = [
     texte: "LA plage carte postale de Mayotte : cocotiers penchés, sable clair et surtout un herbier où les tortues vertes broutent toute la journée. On les voit avec un simple masque, sans bateau, sans palmes.",
     quand: "À marée montante ou haute : les tortues remontent avec l'eau et l'herbier devient accessible.",
     duree: 4, budget: 1, maree: "haute", saison: [],
-    tags: ["famille"],
+    tags: ["famille", "ombre"],
+    vedette: 2,
     conseils: [
       "3 mètres minimum à la nage, et jamais entre la tortue et la surface : elle doit pouvoir remonter respirer. Ne nagez pas au-dessus d'une tortue qui broute, ne la suivez pas, ne l'encerclez pas — restez en retrait et laissez venir.",
       "Ne pas toucher, ne pas piétiner les herbiers. Les tortues marines sont des espèces protégées à Mayotte : les toucher, les capturer ou les perturber est interdit.",
@@ -229,6 +239,7 @@ const LIEUX = [
     quand: "Le matin. L'après-midi, la houle peut lever.",
     duree: 4, budget: 0, maree: null, saison: [],
     tags: ["famille", "sansVoiture"],
+    vedette: 2,
     conseils: [
       "Attention au courant qui sort de la baie quand la mer est formée.",
       "Escalier raide pour descendre : compliqué avec une poussette."
@@ -241,7 +252,8 @@ const LIEUX = [
     texte: "Une des plages les plus fréquentées le week-end par les familles mahoraises. Sable, filaos pour l'ombre, et à marée basse un immense platier corallien où l'on trouve oursins, poulpes et bénitiers.",
     quand: "Week-end pour l'ambiance, semaine pour le calme.",
     duree: 4, budget: 0, maree: "basse", saison: [],
-    tags: ["famille", "ombre"],
+    tags: ["famille", "ombre", "pmr", "groupe"],
+    vedette: 2,
     conseils: [
       "Chaussures d'eau indispensables sur le platier : oursins et corail mort coupent.",
       "Le dimanche après-midi, c'est le rendez-vous familial : ambiance garantie, calme non."
@@ -254,7 +266,7 @@ const LIEUX = [
     texte: "Au nord de Mamoudzou, une longue plage facile d'accès qui dépanne pour une fin de journée sans faire une heure de route.",
     quand: "Fin d'après-midi en semaine.",
     duree: 2, budget: 0, maree: null, saison: [],
-    tags: ["famille"],
+    tags: ["famille", "ombre", "pmr"],
     conseils: ["Se renseigner sur l'ambiance du secteur avant d'y aller en soirée."],
     presta: [], gps: [-12.7400, 45.2000]
   },
@@ -264,7 +276,8 @@ const LIEUX = [
     texte: "Une immense baie peu profonde protégée par la digue. Quand l'alizé rentre, c'est le spot de kitesurf et de wingfoil de l'île, avec un plan d'eau lisse et sans danger.",
     quand: "Saison des alizés (mai à octobre), l'après-midi quand le vent monte.",
     duree: 3, budget: 2, maree: "haute", saison: [5,6,7,8,9,10],
-    tags: ["sportif", "sansVoiture"],
+    tags: ["sportif", "sansVoiture", "groupe"],
+    vedette: 1,
     conseils: [
       "À marée basse la baie se vide : plus assez d'eau pour naviguer.",
       "Accessible à pied depuis la barge : l'activité idéale sans voiture."
@@ -287,7 +300,8 @@ const LIEUX = [
     texte: "L'image que tout le monde ramène de Mayotte : un croissant de sable blanc au milieu du bleu, sans un arbre, sans rien. Il apparaît à marée descendante et disparaît complètement à marée haute. Autour, du snorkeling parmi les meilleurs du lagon.",
     quand: "IMPÉRATIF : autour de la marée basse. Le prestataire cale la sortie sur l'horaire des marées, pas sur le vôtre.",
     duree: 5, budget: 3, maree: "basse", saison: [],
-    tags: ["famille"],
+    tags: ["famille", "groupe"],
+    vedette: 2,
     conseils: [
       "Zéro ombre sur l'îlot : chapeau, lycra, crème — et de l'eau en quantité.",
       "Crème solaire minérale (sans oxybenzone) : on est au-dessus du corail.",
@@ -303,7 +317,8 @@ const LIEUX = [
     texte: "Le plus accessible des îlots : on le voit depuis le front de mer de Mamoudzou. Petite plage, sentier, makis, et un tombant sympa côté large.",
     quand: "Toute l'année. Idéal pour une demi-journée quand on n'a pas le temps d'aller loin.",
     duree: 4, budget: 2, maree: null, saison: [],
-    tags: ["famille"],
+    tags: ["famille", "groupe"],
+    vedette: 1,
     conseils: ["Les makis de l'îlot volent la nourriture : sacs fermés."],
     presta: ["bateau-mamoudzou"], gps: [-12.8000, 45.2500]
   },
@@ -313,7 +328,8 @@ const LIEUX = [
     texte: "L'archipel du nord, avec l'îlot Mtsamboro et les Choizil. Plages désertes, fonds spectaculaires, très peu de monde en semaine.",
     quand: "Saison sèche, mer calme.",
     duree: 6, budget: 3, maree: null, saison: [5,6,7,8,9,10],
-    tags: [],
+    tags: ["groupe"],
+    vedette: 1,
     conseils: ["Journée complète : partir tôt du nord pour ne pas rentrer de nuit."],
     presta: ["bateau-nord"], gps: [-12.6600, 45.0700]
   },
@@ -325,7 +341,8 @@ const LIEUX = [
     texte: "Chaque hiver austral, les baleines à bosse remontent du canal du Mozambique pour mettre bas et allaiter dans les eaux chaudes du lagon. On voit les souffles, les sauts, et souvent une mère avec son baleineau. C'est l'événement naturel majeur de l'année à Mayotte.",
     quand: "De juillet à octobre, avec un pic entre fin août et début septembre ; des arrivées sont possibles dès juin. Le matin, quand la mer est encore lisse.",
     duree: 4, budget: 3, maree: null, saison: [7,8,9,10],
-    tags: ["famille"],
+    tags: ["famille", "groupe"],
+    vedette: 2,
     conseils: [
       "Interdiction légale : on n'approche pas un cétacé à moins de 100 mètres, et dans cette zone la mise à l'eau est proscrite — on reste à bord. La règle vaut partout dans les eaux de Mayotte, couvertes en totalité par le Parc naturel marin.",
       "Il n'existe pas de « nage avec les baleines » banalisée à Mayotte : au-delà des 100 m, le Parc déconseille formellement la mise à l'eau. Une étude qu'il cite mesure 63 % d'évitement des baleines quand il y a mise à l'eau, contre 8 % sans. Un opérateur qui vous promet de nager avec, c'est le signal qu'il ne faut pas monter à bord.",
@@ -347,7 +364,8 @@ const LIEUX = [
     texte: "Plusieurs espèces fréquentent les passes. Les dauphins à long bec se reposent en groupes serrés le matin dans les baies : c'est le moment où on les approche le plus facilement — et celui où il ne faut surtout pas les déranger.",
     quand: "Toute l'année, tôt le matin.",
     duree: 4, budget: 3, maree: null, saison: [],
-    tags: ["famille"],
+    tags: ["famille", "groupe"],
+    vedette: 1,
     conseils: [
       "Les dauphins sont des cétacés : la règle des 100 mètres leur est applicable, toute l'année. Méfiez-vous de toute offre commerciale vendant « la nage avec les dauphins ».",
       "Le dauphin à long bec se repose et socialise en journée le long de la barrière, et chasse la nuit : un groupe croisé en journée près de la barrière est très probablement en phase de repos.",
@@ -363,7 +381,8 @@ const LIEUX = [
     texte: "Une passe en forme de S dans la barrière de corail, balayée par les courants qui apportent la vie : tortues, raies, requins de récif, bancs de carangues, et une couverture corallienne remarquable. Plusieurs spots de niveaux différents, du baptême à la plongée dérivante.",
     quand: "Toute l'année ; visibilité souvent meilleure en saison sèche.",
     duree: 5, budget: 3, maree: null, saison: [],
-    tags: ["sportif"],
+    tags: ["sportif", "groupe"],
+    vedette: 2,
     conseils: [
       "Son nom shimaoré est Longogori. Comme toutes les passes, elle canalise des courants de marée puissants : c'est ce qui fait sa richesse, et c'est ce qui interdit d'y nager sans encadrement.",
       "Le niveau requis dépend du courant du jour : c'est le club qui décide, pas vous.",
@@ -381,6 +400,7 @@ const LIEUX = [
     quand: "Marée haute ou montante, mer calme, milieu de matinée pour la lumière.",
     duree: 2, budget: 0, maree: "haute", saison: [],
     tags: ["famille"],
+    vedette: 2,
     conseils: [
       "Ne posez jamais le pied, la main ni l'ancre sur du corail vivant : après le blanchissement et Chido, la mortalité corallienne cumulée atteint 66 % et les colonies survivantes sont précieuses.",
       "Un lycra anti-UV vaut mieux que toute la crème du monde. Si vous mettez de la crème, qu'elle soit minérale : les filtres chimiques nuisent à la photosynthèse du corail, et la mention commerciale « reef-safe » ne correspond à aucun label officiel.",
@@ -398,7 +418,8 @@ const LIEUX = [
     texte: "Le meilleur moyen d'approcher la mangrove et les oiseaux sans les faire fuir. Certains prestataires proposent des sorties au lever du soleil ou à la pleine lune.",
     quand: "Marée haute pour la mangrove, tôt le matin pour le plan d'eau lisse.",
     duree: 3, budget: 2, maree: "haute", saison: [],
-    tags: ["famille", "sportif"],
+    tags: ["famille", "sportif", "groupe"],
+    vedette: 1,
     conseils: ["Sac étanche pour le téléphone, et une lanière : le fond du lagon est plein de téléphones."],
     presta: ["kayak"], gps: [-12.9100, 45.1200]
   },
@@ -408,7 +429,7 @@ const LIEUX = [
     texte: "Sorties à la traîne au-delà de la barrière, ou pêche au jig sur les tombants. Certains prestataires font cuisiner la prise au retour.",
     quand: "Toute l'année, mer plus maniable en saison sèche.",
     duree: 6, budget: 3, maree: null, saison: [],
-    tags: ["sportif"],
+    tags: ["sportif", "groupe"],
     conseils: [
       "Demandez AVANT qui garde le poisson : ça se négocie bien avant, et très mal après.",
       "La pêche au poulpe est fermée chaque année, en principe du 1er avril au 15 juin, par arrêté préfectoral — professionnels comme particuliers, capture, achat, vente et détention comprises. Vérifiez l'arrêté en vigueur avant la saison."
@@ -423,7 +444,7 @@ const LIEUX = [
     texte: "Format plus rare, souvent en petit groupe : on longe la côte, on dort dans un village ou sur un îlot, on traverse les passes. La vision la plus complète de l'île.",
     quand: "Saison sèche uniquement.",
     duree: 24, budget: 3, maree: null, saison: [6,7,8,9,10],
-    tags: [],
+    tags: ["sportif", "groupe"],
     conseils: ["Se cale des semaines à l'avance et dépend fortement de la météo."],
     presta: ["bateau-nord"], gps: [-12.8000, 45.1000]
   },
@@ -445,7 +466,8 @@ const LIEUX = [
     texte: "Le musée raconte le peuplement de l'archipel, les sultanats, l'arrivée de l'islam, la colonisation, le choix de rester français. À faire EN DÉBUT de séjour : tout le reste devient plus lisible ensuite.",
     quand: "Vérifier les horaires avant de traverser en barge.",
     duree: 2, budget: 1, maree: null, saison: [],
-    tags: ["famille", "sansVoiture", "pluie", "ombre"],
+    tags: ["famille", "sansVoiture", "pluie", "ombre", "pmr"],
+    vedette: 2,
     conseils: ["À combiner avec le rocher de Dzaoudzi et Moya dans la même journée en Petite-Terre."],
     presta: [], gps: [-12.7869, 45.2589]
   },
@@ -455,7 +477,8 @@ const LIEUX = [
     texte: "Fondée en 1538 selon l'inscription de son mihrab, c'est un monument historique et un lieu de culte toujours actif, au cœur de l'ancienne capitale du sultanat.",
     quand: "En dehors des heures de prière, et jamais le vendredi midi.",
     duree: 1, budget: 0, maree: null, saison: [],
-    tags: ["sansVoiture", "pluie"],
+    tags: ["sansVoiture", "pluie", "ombre", "pmr"],
+    vedette: 1,
     conseils: [
       "C'est un lieu de culte avant d'être un site touristique : demander avant d'entrer ou de photographier.",
       "Tenue couvrante (épaules et genoux) pour tout le monde, foulard pour les femmes."
@@ -468,7 +491,9 @@ const LIEUX = [
     texte: "Le cœur commerçant de l'île : mangues, fruits à pain, ambrevades, curcuma frais, brèdes, poissons du matin. C'est là qu'on apprend le nom des choses et qu'on goûte avant d'acheter.",
     quand: "Le matin, avant 10 h — après, il fait chaud et les meilleurs produits sont partis.",
     duree: 2, budget: 1, maree: null, saison: [],
-    tags: ["sansVoiture"],
+    tags: ["sansVoiture", "pluie", "ombre", "pmr", "famille"],
+    vedette: 2,
+    sansLieu: true,
     conseils: [
       "Espèces, petites coupures. Peu de terminaux de carte.",
       "Sac devant soi, téléphone rangé — marché dense, pas plus risqué qu'ailleurs mais peu indulgent.",
@@ -482,7 +507,8 @@ const LIEUX = [
     texte: "Plus petit et plus agricole que celui de Mamoudzou : légumes du centre de l'île, plants, miel, confitures, vanille. Ambiance nettement plus calme.",
     quand: "Mercredi matin.",
     duree: 2, budget: 1, maree: null, saison: [],
-    tags: ["famille"],
+    tags: ["famille", "pluie", "ombre"],
+    vedette: 1,
     conseils: ["Se combine parfaitement avec le jardin botanique juste à côté."],
     presta: [], gps: [-12.8300, 45.1400]
   },
@@ -492,7 +518,8 @@ const LIEUX = [
     texte: "Visite d'une plantation et d'un alambic : cueillette au petit matin, distillation à la vapeur, séparation des qualités (extra, première, deuxième…). Les parfums des grandes maisons partent d'ici.",
     quand: "Le matin, pendant la distillation. La cueillette se fait à l'aube.",
     duree: 2, budget: 1, maree: null, saison: [],
-    tags: ["famille", "ombre"],
+    tags: ["famille", "ombre", "pluie", "groupe"],
+    vedette: 1,
     conseils: [
       "Prévenir à l'avance : la distillation ne tourne pas tous les jours.",
       "Acheter l'huile essentielle sur place plutôt qu'à l'aéroport : moins cher et traçable."
@@ -505,7 +532,8 @@ const LIEUX = [
     texte: "Un savoir-faire ancien encore vivant : l'argile est travaillée à la main, les pots séchés au soleil puis cuits dans un feu de bois. Démonstration et vente au village.",
     quand: "Sur rendez-vous, via l'association du village.",
     duree: 2, budget: 1, maree: null, saison: [],
-    tags: ["famille", "ombre"],
+    tags: ["famille", "ombre", "pluie", "groupe", "pmr"],
+    vedette: 1,
     conseils: ["Demander avant de filmer les femmes au travail — la réponse est souvent oui, mais on demande."],
     presta: ["potieres"], gps: [-12.9000, 45.1900]
   },
@@ -515,7 +543,8 @@ const LIEUX = [
     texte: "Le debaa est un chant soufi dansé par les femmes, en tenue brodée, avec un balancement des bras et des mains d'une précision folle. Le mbiwi se danse avec deux baguettes de bambou frappées ; le wadaha est la danse du pilon. Ça se pratique lors des mariages, des fêtes de village et des grandes occasions.",
     quand: "Souvent le week-end, très fréquent en saison des mariages (juillet-septembre).",
     duree: 3, budget: 0, maree: null, saison: [7,8,9],
-    tags: ["famille"],
+    tags: ["famille", "soir", "groupe"],
+    vedette: 2,
     conseils: [
       "Ce ne sont pas des spectacles pour touristes : on assiste à une fête, on y est invité. Se renseigner auprès d'une association ou de la mairie.",
       "Tenue correcte, et on demande avant de filmer."
@@ -528,7 +557,8 @@ const LIEUX = [
     texte: "Le manzaraka est le cortège qui accompagne le marié chez la mariée, au son des chants et des tambours, dans une débauche de couleurs et de bijoux. C'est l'événement social majeur de la vie mahoraise, et la saison sèche en est remplie.",
     quand: "Saison sèche, surtout de juillet à septembre, le samedi.",
     duree: 4, budget: 0, maree: null, saison: [7,8,9],
-    tags: ["famille"],
+    tags: ["famille", "soir", "groupe"],
+    vedette: 1,
     conseils: [
       "On n'y va pas sans être invité — mais l'invitation vient vite si on connaît quelqu'un du village.",
       "Prévoir une tenue habillée : les Mahorais se mettent sur leur trente-et-un."
@@ -541,7 +571,8 @@ const LIEUX = [
     texte: "Le Rocher, relié à Petite-Terre par le boulevard des Crabes, garde l'architecture de l'ancienne capitale. Balade tranquille avec le lagon des deux côtés, à faire au coucher du soleil.",
     quand: "Fin d'après-midi.",
     duree: 2, budget: 0, maree: null, saison: [],
-    tags: ["famille", "sansVoiture"],
+    tags: ["famille", "sansVoiture", "soir", "pmr"],
+    vedette: 1,
     conseils: ["Se fait à pied depuis la barge, aucune voiture nécessaire."],
     presta: [], gps: [-12.7869, 45.2589]
   },
@@ -553,7 +584,8 @@ const LIEUX = [
     texte: "L'institution du week-end mahorais. On s'installe sur la plage en fin d'après-midi, on grille du poisson ou de la viande, on mange des bananes et du manioc braisés, et ça dure jusque tard. Certains restaurants de plage organisent des voulés ouverts à tous.",
     quand: "Samedi en fin d'après-midi.",
     duree: 4, budget: 2, maree: null, saison: [],
-    tags: ["famille"],
+    tags: ["famille", "soir", "groupe"],
+    vedette: 2,
     conseils: [
       "Se prévient dans la journée pour que le poisson soit acheté.",
       "Prévoir une lampe : il n'y a aucun éclairage sur les plages, et le crépuscule est court sous ces latitudes — l'appli vous donne l'heure exacte du coucher et ce qu'il reste de jour."
@@ -566,7 +598,9 @@ const LIEUX = [
     texte: "Le mataba, ce sont des feuilles de manioc pilées longuement, cuisinées au lait de coco, souvent avec du poisson salé ou de la viande. Le poulet au coco, plus doux, se sert avec du riz et des achards. On mange ça dans les gargotes de bord de route pour quelques euros.",
     quand: "Le midi, dans les gargotes ouvertes en semaine.",
     duree: 1, budget: 1, maree: null, saison: [],
-    tags: ["famille", "pluie"],
+    tags: ["famille", "pluie", "ombre", "pmr"],
+    vedette: 2,
+    sansLieu: true,
     conseils: [
       "Espèces obligatoires dans la plupart des gargotes.",
       "Pendant le Ramadan, presque tout est fermé la journée et ouvre après la rupture du jeûne : anticiper."
@@ -579,7 +613,9 @@ const LIEUX = [
     texte: "Le street food mahorais : brochettes de zébu ou de poulet, servies avec du piment et du pain. Un ou deux euros, cuit devant vous.",
     quand: "En soirée, à partir de 18 h.",
     duree: 1, budget: 1, maree: null, saison: [],
-    tags: [],
+    tags: ["sansVoiture", "soir", "pmr"],
+    vedette: 1,
+    sansLieu: true,
     conseils: ["Choisir un stand où ça tourne : le turnover, c'est la fraîcheur."],
     presta: [], gps: [-12.7806, 45.2278]
   },
@@ -589,7 +625,9 @@ const LIEUX = [
     texte: "Le mkatra foutra est une galette de farine légèrement sucrée, cuite à la poêle, moelleuse à l'intérieur. Avec un thé au gingembre bien fort, c'est le petit-déjeuner local.",
     quand: "Le matin, dans les boutiques de village.",
     duree: 1, budget: 1, maree: null, saison: [],
-    tags: ["famille"],
+    tags: ["famille", "pluie", "ombre", "pmr", "sansVoiture"],
+    vedette: 1,
+    sansLieu: true,
     conseils: ["Se trouve aussi lors des fêtes et des mariages, en version maison nettement meilleure."],
     presta: [], gps: [-12.7806, 45.2278]
   },
@@ -599,7 +637,9 @@ const LIEUX = [
     texte: "Des associations et des particuliers proposent des ateliers chez eux : marché le matin, cuisine ensuite, repas partagé. La meilleure porte d'entrée dans la vie quotidienne de l'île.",
     quand: "Sur réservation, souvent le week-end.",
     duree: 4, budget: 2, maree: null, saison: [],
-    tags: ["famille", "pluie", "ombre"],
+    tags: ["famille", "pluie", "ombre", "groupe", "pmr"],
+    vedette: 1,
+    sansLieu: true,
     conseils: ["Prévenir des allergies et des interdits alimentaires au moment de réserver."],
     presta: ["atelier-cuisine"], gps: [-12.7806, 45.2278]
   },
@@ -611,7 +651,9 @@ const LIEUX = [
     texte: "La barge relie Grande-Terre et Petite-Terre en une vingtaine de minutes. Piétons et véhicules. C'est le meilleur point de vue sur Mamoudzou et le lagon, et un condensé de la vie mahoraise.",
     quand: "Rotations fréquentes en journée, plus espacées le soir et le week-end. Vérifier les horaires du jour.",
     duree: 1, budget: 1, maree: null, saison: [],
-    tags: ["famille", "sansVoiture"],
+    tags: ["famille", "sansVoiture", "pluie", "pmr"],
+    vedette: 1,
+    sansLieu: true,
     conseils: [
       "Aux heures de pointe (7 h et 16 h), c'est bondé : décaler d'une heure.",
       "En voiture, la file d'attente peut être très longue : partir large avant un avion."
@@ -625,6 +667,7 @@ const LIEUX = [
     quand: "Réserver dès les billets d'avion pris.",
     duree: 1, budget: 3, maree: null, saison: [],
     tags: [],
+    sansLieu: true,
     conseils: [
       "Ne jamais rien laisser de visible dans l'habitacle, nulle part, même cinq minutes.",
       "Éviter de rouler la nuit hors des axes principaux : routes étroites et non éclairées.",
@@ -638,7 +681,8 @@ const LIEUX = [
     texte: "Des véhicules qui partent quand ils sont pleins, depuis les gares routières et les places de village. Tarif fixe selon la destination. Efficace, économique, et une expérience en soi.",
     quand: "En journée. Se raréfient nettement en fin d'après-midi.",
     duree: 1, budget: 1, maree: null, saison: [],
-    tags: ["sansVoiture"],
+    tags: ["sansVoiture", "pluie"],
+    sansLieu: true,
     conseils: [
       "Espèces, appoint apprécié.",
       "Annoncer sa destination avant de monter.",
