@@ -751,8 +751,10 @@ const UI = (() => {
       <div class="illus__fond">${fond}</div>
       <img src="photos/${p.f}" alt="${alt}" loading="${opt.prioritaire ? "eager" : "lazy"}"
            decoding="async" width="${p.w || 1200}" height="${p.h || 800}">
-      ${opt.credit === false ? "" : `<span class="illus__credit">© ${
-        (p.a || "inconnu").replace(/"/g, "")} · ${p.l || ""}</span>`}
+      ${opt.credit === false ? "" : `<button class="illus__credit" data-action="credits"
+        aria-label="Crédits de cette photographie : ${(p.a || "auteur inconnu").replace(/"/g, "")}, ${
+          (p.l || "").replace(/"/g, "")}. Ouvrir la page des crédits.">© ${
+        (p.a || "inconnu").replace(/"/g, "")} · ${p.l || ""}</button>`}
     </div>`;
   }
 

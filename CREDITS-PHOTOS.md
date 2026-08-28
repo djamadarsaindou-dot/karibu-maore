@@ -7,6 +7,30 @@ l'auteur : le crédit est affiché sur chaque photo dans l'application, et repri
 Aucune photo n'illustre un lieu qu'elle ne montre pas : chacune a été regardée avant
 d'être retenue. Les fiches sans photo gardent leur illustration dessinée.
 
+## Ce qui a été fait aux images, et rien d'autre
+
+Les fichiers livrés sont des **œuvres dérivées** : ils ont été **réduits en largeur**
+(820 à 1 000 pixels) et **réencodés en WebP**, pour qu'une fiche s'ouvre vite sur une
+connexion mahoraise.
+
+**Aucun recadrage, aucune retouche, aucun filtre.** Les rapports d'aspect livrés vont
+de 0,67 à 1,78 et sont exactement ceux des originaux ; le cadrage que l'on voit sur les
+vignettes de l'application est un effet d'affichage (`object-fit: cover`), pas une
+modification du fichier distribué.
+
+## Partage dans les mêmes conditions
+
+Les licences *share alike* — ici CC BY-SA 2.0, 3.0 et 4.0 — imposent trois choses que
+la simple mention d'un auteur ne couvre pas : donner accès à la licence, **indiquer que
+l'œuvre a été modifiée**, et placer l'œuvre modifiée **sous la même licence**.
+
+C'est fait : **chaque version réduite distribuée par cette application est sous la même
+licence que son original, au nom du même auteur.** Vous pouvez la reprendre aux mêmes
+conditions. Dans l'application, la pastille posée sur chaque photo mène à la page des
+crédits, où la licence est cliquable et l'original accessible sur Wikimedia Commons.
+
+La photo `dziani` est en CC0 : elle n'impose rien, mais son auteur est cité quand même.
+
 | Fiche | Ce que montre la photo | Auteur | Licence | Source |
 |---|---|---|---|---|
 | `baleines` | Le dos d'une baleine à bosse à la surface | DavidLorieux | CC BY-SA 4.0 | [20231004 - Baleine à bosse - David Lorieux -](https://commons.wikimedia.org/wiki/File:20231004_-_Baleine_%C3%A0_bosse_-_David_Lorieux_-_Ceta%27Maore.jpg) |

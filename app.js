@@ -1052,6 +1052,88 @@ function envoyerPro() {
 }
 
 /* --------------------------------------------- 12. VUES : INFOS, LEXIQUE… */
+/* ====================== LES CRÉDITS PHOTOGRAPHIQUES =======================
+   POURQUOI UNE PAGE ENTIÈRE. Les licences CC BY et CC BY-SA n'imposent pas
+   seulement de citer l'auteur. Elles imposent aussi, et c'est la partie
+   qu'on oublie :
+     · d'indiquer la licence, et de permettre d'y accéder ;
+     · d'INDIQUER SI L'ŒUVRE A ÉTÉ MODIFIÉE ;
+     · pour les licences « share alike », de placer l'œuvre modifiée sous la
+       MÊME licence que l'originale.
+   La pastille posée sur la photo ne peut pas porter tout cela sans devenir
+   illisible. Elle mène donc ici, et ici tout y est.
+
+   CE QUI A ÉTÉ FAIT AUX IMAGES, exactement, et rien d'autre : réduction de
+   largeur et réencodage en WebP. AUCUN recadrage — les rapports d'aspect
+   livrés vont de 0,67 à 1,78 et sont ceux des originaux. Le cadrage carré
+   qu'on voit sur les vignettes est un effet d'affichage (`object-fit`), pas
+   une modification du fichier distribué. */
+const LICENCE_URL = {
+  "CC0":          "https://creativecommons.org/publicdomain/zero/1.0/deed.fr",
+  "CC BY 2.0":    "https://creativecommons.org/licenses/by/2.0/deed.fr",
+  "CC BY 3.0":    "https://creativecommons.org/licenses/by/3.0/deed.fr",
+  "CC BY 4.0":    "https://creativecommons.org/licenses/by/4.0/deed.fr",
+  "CC BY-SA 2.0": "https://creativecommons.org/licenses/by-sa/2.0/deed.fr",
+  "CC BY-SA 3.0": "https://creativecommons.org/licenses/by-sa/3.0/deed.fr",
+  "CC BY-SA 4.0": "https://creativecommons.org/licenses/by-sa/4.0/deed.fr"
+};
+const lienLicence = l => LICENCE_URL[l]
+  ? `<a href="${LICENCE_URL[l]}" target="_blank" rel="noopener license">${esc(l)}</a>`
+  : esc(l || "licence non précisée");
+
+function vueCredits() {
+  const ids = Object.keys(typeof PHOTOS !== "undefined" ? PHOTOS : {});
+  const partage = ids.filter(k => (PHOTOS[k].l || "").includes("SA")).length;
+  return `
+  <section class="section section--serree">
+    <h2 class="section__titre">Crédits photographiques</h2>
+    <p class="section__note">${ids.length} photographies, toutes libres, toutes
+      prises à Mayotte. Les fiches sans photo gardent leur illustration dessinée :
+      c'est volontaire, et c'est mieux qu'une image approximative.</p>
+  </section>
+
+  <section class="section section--serree">
+    <div class="encart">
+      <h3>Ce qui a été fait aux images</h3>
+      <p>Elles ont été <b>réduites en largeur et réencodées en WebP</b>, pour qu'une
+        fiche s'ouvre vite sur une connexion mahoraise. <b>Aucun recadrage, aucune
+        retouche, aucun filtre.</b> Le cadrage que vous voyez sur les vignettes est
+        un effet d'affichage, pas une modification du fichier.</p>
+      <p>${partage} de ces photographies sont sous une licence <i>share alike</i>.
+        Les versions réduites que distribue cette application sont donc placées
+        <b>sous la même licence que leur original</b>, auteur pour auteur. Vous
+        pouvez les reprendre aux mêmes conditions.</p>
+    </div>
+  </section>
+
+  <section class="section section--serree">
+    <ul class="liste-nue">
+      ${ids.map(k => {
+        const p = PHOTOS[k], l = lieu(k);
+        return `<li class="credit-photo">
+          <div class="credit-photo__img">
+            <img src="photos/${p.f}" alt="" loading="lazy" decoding="async"
+                 width="${p.w}" height="${p.h}"></div>
+          <div class="credit-photo__txt">
+            <b>${esc(l ? l.nom : k)}</b>
+            <small>${esc(p.d || "")}</small>
+            <small>© ${esc(p.a || "auteur inconnu")} · ${lienLicence(p.l)}
+              · <a href="${p.u}" target="_blank" rel="noopener">l'original sur
+              Wikimedia Commons</a></small>
+          </div>
+        </li>`;
+      }).join("")}
+    </ul>
+  </section>
+
+  <section class="section section--serree">
+    <p class="section__note">Le reste des sources — polices, icônes, marées, carte,
+      relief, calculs solaires et lunaires — est détaillé dans le fichier
+      <code>LICENCES.md</code> du dépôt de l'application.</p>
+  </section>
+  ${pied()}`;
+}
+
 function vueInfos() {
   return `
   <section class="section">
@@ -1555,6 +1637,7 @@ function rendre(sansScroll) {
     case "carnet":      html = vueCarnet();             titre = "Mon carnet"; break;
     case "pro":         html = vuePro();                titre = "Espace prestataire"; break;
     case "infos":       html = vueInfos();              titre = "Infos pratiques"; break;
+    case "credits":     html = vueCredits();            titre = "Crédits photo"; break;
     case "lexique":     html = vueLexique();            titre = "Shimaoré"; break;
     case "apropos":     html = vueAPropos();            titre = "À propos"; break;
     case "secours":     html = vueSecours();            titre = "Secours et alerte"; break;
@@ -1619,6 +1702,7 @@ document.addEventListener("click", e => {
                                    rendre(true); }
   else if (a === "suggestion") { filtres.q = el.dataset.q; const c = $("#q");
                                   if (c) c.value = filtres.q; rendre(true); }
+  else if (a === "credits") { aller("/credits"); }
   else if (a === "uv-detail") { feuille({ titre: "D'où sort ce nombre",
       texte: "Il est calculé, pas mesuré, et calculé pour un ciel parfaitement clair.",
       /* Les paragraphes sont un tableau : ecrire un saut de ligne dans un
