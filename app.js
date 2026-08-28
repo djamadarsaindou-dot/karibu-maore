@@ -907,8 +907,8 @@ async function envoyerResa(id, mode) {
 
   if (mode === "copie") {
     try { await navigator.clipboard.writeText(texte); annoncer("Message copié.");
-          feuille({ titre: "Message copié", texte: "Collez-le dans WhatsApp, un SMS ou un mail.", texteLong: texte }); }
-    catch { feuille({ titre: "Votre message", texteLong: texte }); }
+          feuille({ titre: "Message copié", texte: "Collez-le dans WhatsApp, un SMS ou un mail.", texteLong: texte , copiable: true }); }
+    catch { feuille({ titre: "Votre message", texteLong: texte , copiable: true }); }
     return go("/carnet");
   }
   const direct = p && p.verifie && p.tel;
@@ -1637,7 +1637,7 @@ async function partager(id) {
     await navigator.clipboard.writeText(`${donnees.text}\n${donnees.url}`);
     feuille({ titre: "Copié", texte: "Prêt à coller dans WhatsApp ou un message." });
   } catch {
-    feuille({ titre: "À partager", texteLong: `${donnees.text}\n${donnees.url}` });
+    feuille({ titre: "À partager", copiable: true, texteLong: `${donnees.text}\n${donnees.url}` });
   }
 }
 
@@ -1732,6 +1732,7 @@ function rendre(sansScroll) {
   document.body.dataset.vue = seg[0] || "accueil";
   majBarreFiche(seg[0] === "lieu" ? seg[1] : null);
   if (seg[0] === "carte") { const c = $(".carte-cadre"); if (c) CarteVue.brancher(c); }
+  ENTETE.pourVue(seg[0] || "accueil");
 }
 
 function majPastille() {
@@ -1871,23 +1872,86 @@ window.addEventListener("hashchange", () => rendreSur());
 /* ------------------------------------------------------------- FEUILLE
    Remplace alert() et confirm(). Le texte est sélectionnable et défilable,
    les boutons font 48 px et vivent dans le tiers bas de l'écran. */
-function feuille({ titre, texte, texteLong, actions = [] }) {
+/* ========================= LA FEUILLE DU BAS ==============================
+   POURQUOI <dialog> ET PAS popover. Les deux montent une couche par-dessus la
+   page, mais `showModal()` apporte gratuitement ce qu'il faudrait sinon
+   réécrire à la main et rater : le reste de la page devient inerte, le focus
+   est piégé dedans, Échap ferme, et un lecteur d'écran annonce une boîte de
+   dialogue. `popover` ne fait rien de tout cela.
+
+   CE QUI MANQUAIT, ET QU'ON AJOUTE : le geste. Sur un téléphone, une feuille
+   qui monte du bas se repousse vers le bas — c'est devenu un réflexe, et son
+   absence donne l'impression d'une page web déguisée. Il y a donc une poignée,
+   on peut la tirer, et au tiers de la hauteur elle part.
+
+   DEUX TEMPS AU RELÂCHEMENT : sous le seuil elle revient en place, au-dessus
+   elle continue son mouvement puis se ferme. Fermer sèchement à mi-glissement
+   donnerait l'impression d'avoir cassé quelque chose.
+
+   TEXTE LONG : de la prose se lit en paragraphes. Le `<textarea>` est réservé
+   à ce qu'on veut RECOPIER — un message de réservation, un lien de partage —
+   où sa sélection facile est justement l'intérêt. */
+function feuille({ titre, texte, texteLong, copiable = false, actions = [] }) {
   const d = $("#feuille");
   if (!d) { alert(texte || texteLong || titre); return Promise.resolve(false); }
+  const paras = p => String(p).split(String.fromCharCode(10, 10))
+    .map(x => `<p class="feuille__txt">${esc(x.trim())}</p>`).join("");
   return new Promise(resolve => {
     d.innerHTML = `
       <form method="dialog" class="feuille__corps">
+        <button class="feuille__poignee" value="fermer" aria-label="Fermer"></button>
         <h2 class="feuille__titre" id="feuille-titre">${esc(titre)}</h2>
-        ${texte ? `<p class="feuille__txt">${esc(texte)}</p>` : ""}
-        ${texteLong ? `<textarea class="feuille__zone" readonly rows="7">${esc(texteLong)}</textarea>` : ""}
+        ${texte ? `<p class="feuille__txt feuille__txt--fort">${esc(texte)}</p>` : ""}
+        ${texteLong ? (copiable
+            ? `<textarea class="feuille__zone" readonly rows="7">${esc(texteLong)}</textarea>`
+            : `<div class="feuille__prose">${paras(texteLong)}</div>`) : ""}
         <div class="feuille__actions">
           ${actions.map((a, i) => `<button value="${i}"
             class="btn ${a.style === "secondaire" ? "btn--secondaire" : ""}">${esc(a.libelle)}</button>`).join("")}
           <button value="fermer" class="btn btn--secondaire">Fermer</button>
         </div>
       </form>`;
+
+    const corps = d.firstElementChild;
+    let depart = null, dy = 0;
+    /* On déplace par `translate`, pas par `transform` : l'animation d'entrée
+       occupe déjà `transform` avec fill-mode both, et un style en ligne ne la
+       déloge pas. Les deux propriétés se composent, elles ne se marchent pas
+       dessus. */
+    const poser = v => { corps.style.translate = v ? `0 ${v}px` : ""; };
+
+    corps.addEventListener("pointerdown", e => {
+      /* On ne saisit la feuille que par le haut : plus bas, le doigt sert à
+         faire défiler le texte, et voler ce geste serait pire que ne pas
+         avoir le geste du tout. */
+      if (e.clientY - corps.getBoundingClientRect().top > 64) return;
+      if (e.target.closest(".btn, textarea, a")) return;
+      depart = e.clientY; dy = 0;
+      corps.style.transition = "none";
+      corps.setPointerCapture(e.pointerId);
+    });
+    corps.addEventListener("pointermove", e => {
+      if (depart == null) return;
+      dy = Math.max(0, e.clientY - depart);
+      poser(dy);
+    });
+    const relacher = () => {
+      if (depart == null) return;
+      depart = null;
+      corps.style.transition = "";
+      const seuil = Math.min(140, corps.offsetHeight / 3);
+      if (dy > seuil) { poser(corps.offsetHeight); setTimeout(() => d.close("fermer"), 160); }
+      else poser(0);
+    };
+    corps.addEventListener("pointerup", relacher);
+    corps.addEventListener("pointercancel", relacher);
+
+    /* Toucher le fond ferme aussi : c'est ce que tout le monde essaie. */
+    d.addEventListener("click", e => { if (e.target === d) d.close("fermer"); });
+
     d.addEventListener("close", function fin() {
       d.removeEventListener("close", fin);
+      corps.style.translate = "";
       const i = parseInt(d.returnValue, 10);
       if (!isNaN(i) && actions[i]) { actions[i].faire?.(); resolve(true); } else resolve(false);
     });
@@ -1978,9 +2042,76 @@ document.addEventListener("click", e => {
     .catch(() => {})
     .then(() => location.reload(true));
 });
-window.addEventListener("scroll", () => {
-  $("#topbar").dataset.defile = window.scrollY > 8 ? "oui" : "non";
-}, { passive: true });
+/* ============== L'EN-TÊTE QUI SE RESSERRE, ET LA BARRE DE LECTURE ==========
+   DEUX PROBLÈMES, UNE SEULE ÉCOUTE.
+
+   1. Sur une fiche longue, une fois la photo passée, plus rien ne dit ce qu'on
+      lit. Le nom du lieu vient donc s'inscrire dans la barre du haut dès qu'il
+      a quitté l'écran — pas avant, sinon il ferait doublon avec le titre.
+
+   2. Une fiche ne montre pas sa longueur. Un filet de deux pixels sous la barre
+      dit où l'on en est. Il n'apparaît que là où il y a quelque chose à lire :
+      sur une liste, une barre de progression est un bruit de plus.
+
+   TOUT PASSE PAR requestAnimationFrame. Écrire dans le DOM à chaque événement
+   « scroll » force un recalcul de style par image et fait saccader le
+   défilement sur un téléphone d'entrée de gamme — exactement ce qu'on cherche
+   à éviter en ayant une application plutôt qu'un site. */
+const ENTETE = (() => {
+  let attend = false, titreVu = "", lecture = null;
+
+  function mesurer() {
+    attend = false;
+    const y = window.scrollY;
+    const bar = $("#topbar");
+    if (bar) bar.dataset.defile = y > 8 ? "oui" : "non";
+
+    /* Le titre monte dans la barre quand le vrai titre est sorti par le haut. */
+    const cible = $("#vue .fiche__titre") || $("#vue .section__titre");
+    const t = $("#topbar-titre");
+    if (t) {
+      const dedans = cible ? cible.getBoundingClientRect().bottom > 4 : true;
+      const texte = !dedans && cible ? cible.textContent.trim() : "";
+      if (texte !== titreVu) {
+        titreVu = texte;
+        t.textContent = texte;
+        t.dataset.vu = texte ? "oui" : "non";
+      }
+    }
+
+    const l = lecture;
+    if (l) {
+      const h = document.documentElement.scrollHeight - window.innerHeight;
+      const p = h > 40 ? Math.min(1, Math.max(0, y / h)) : 0;
+      l.firstElementChild.style.transform = `scaleX(${p.toFixed(4)})`;
+    }
+  }
+
+  function surDefilement() {
+    if (attend) return;
+    attend = true;
+    requestAnimationFrame(mesurer);
+  }
+
+  /* Appelé après chaque rendu : la barre de lecture n'a de sens que sur une
+     fiche ou une journée, c'est-à-dire là où l'on LIT. */
+  function pourVue(nom) {
+    lecture = $("#lecture");
+    if (lecture) {
+      const utile = nom === "lieu" || nom === "itineraire" || nom === "credits" || nom === "apropos";
+      lecture.dataset.actif = utile ? "oui" : "non";
+      if (!utile) lecture.firstElementChild.style.transform = "scaleX(0)";
+    }
+    titreVu = "";
+    const t = $("#topbar-titre");
+    if (t) { t.textContent = ""; t.dataset.vu = "non"; }
+    mesurer();
+  }
+
+  window.addEventListener("scroll", surDefilement, { passive: true });
+  window.addEventListener("resize", surDefilement, { passive: true });
+  return { pourVue, mesurer };
+})();
 
 /* --------------------------------------------------------- 16. DÉMARRAGE */
 $("#km-defs").innerHTML = UI.claustra();

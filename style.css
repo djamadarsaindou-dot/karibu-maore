@@ -877,10 +877,26 @@ body[data-vue="lieu"]{padding-bottom:calc(8.4rem + env(safe-area-inset-bottom))}
   max-height:82vh;overflow:auto;
   animation:feuille-monte .22s cubic-bezier(.2,.8,.3,1) both;
 }
-.feuille__corps::before{
-  content:"";display:block;width:2.5rem;height:.25rem;border-radius:999px;
-  background:var(--line-fort);margin:calc(var(--s5) * -1 + var(--s2)) auto var(--s4);
+/* La poignée est un vrai bouton : on la tire au doigt, et au clavier ou au
+   lecteur d'écran elle ferme. Un ::before décoratif ne faisait ni l'un ni
+   l'autre — il promettait un geste qui n'existait pas. */
+.feuille__poignee{
+  display:block;width:3rem;height:1.5rem;padding:0;border:0;background:none;
+  margin:calc(var(--s5) * -1 + var(--s1)) auto var(--s3);cursor:grab;
+  touch-action:none;
 }
+.feuille__poignee::before{
+  content:"";display:block;width:2.5rem;height:.25rem;border-radius:999px;
+  background:var(--line-fort);margin:.6rem auto;
+  transition:background var(--t-rapide), width var(--t-rapide);
+}
+.feuille__poignee:hover::before{background:var(--muted);width:3rem}
+.feuille__poignee:focus-visible{outline:2px solid var(--platier-grave);
+  outline-offset:2px;border-radius:var(--r-m)}
+.feuille__corps{transition:translate .2s cubic-bezier(.2,.8,.3,1)}
+.feuille__txt--fort{color:var(--ink);font-weight:600}
+.feuille__prose .feuille__txt{margin:0 0 var(--s3);line-height:1.65}
+.feuille__prose .feuille__txt:last-child{margin-bottom:0}
 .feuille__titre{font-size:var(--fs-lg);margin-bottom:var(--s3)}
 .feuille__txt{color:var(--ink-2)}
 .feuille__zone{
@@ -891,7 +907,7 @@ body[data-vue="lieu"]{padding-bottom:calc(8.4rem + env(safe-area-inset-bottom))}
 .feuille__actions{display:flex;flex-direction:column;gap:var(--s2);margin-top:var(--s4)}
 .feuille__actions .btn{min-height:3rem;width:100%}
 @keyframes feuille-monte{from{transform:translateY(100%)}to{transform:none}}
-@media (prefers-reduced-motion:reduce){ .feuille__corps{animation:none} }
+@media (prefers-reduced-motion:reduce){ .feuille__corps{animation:none;transition:none} }
 
 /* Le retour reste atteignable sans remonter en haut de la fiche */
 .retour{position:sticky;top:calc(var(--h-topbar) + var(--s2));z-index:38;
@@ -1171,3 +1187,39 @@ body{font-weight:420;font-synthesis-weight:none}
   font:inherit;font-size:var(--fs-2xs);cursor:pointer;
 }
 .puce--calc:hover{border-color:var(--platier-grave);color:var(--platier-grave)}
+
+
+/* ============ L'EN-TÊTE QUI SE RESSERRE, ET LA BARRE DE LECTURE ===========
+   Le nom de ce qu'on lit vient s'inscrire dans la barre du haut une fois que
+   le vrai titre est sorti par le haut de l'écran. Sur une fiche longue, c'est
+   la seule chose qui rappelle où l'on est. */
+.topbar__titre{
+  flex:1;min-width:0;
+  font-family:var(--titre);font-size:var(--fs-sm);font-weight:650;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  opacity:0;transform:translateY(.4rem);
+  transition:opacity var(--t-normal), transform var(--t-normal);
+}
+.topbar__titre[data-vu="oui"]{opacity:1;transform:none}
+/* Quand le titre est là, la marque s'efface pour lui laisser la ligne. */
+.topbar:has(.topbar__titre[data-vu="oui"]) .topbar__marque span:last-child{
+  display:none;
+}
+
+/* Un filet de deux pixels sous la barre : où l'on en est dans la lecture.
+   Il n'existe que là où il y a quelque chose à lire — sur une liste, une
+   barre de progression n'est qu'un bruit de plus. */
+.topbar__lecture{
+  position:sticky;top:var(--h-topbar);z-index:39;height:2px;
+  margin-bottom:-2px;background:transparent;overflow:hidden;
+  opacity:0;transition:opacity var(--t-normal);pointer-events:none;
+}
+.topbar__lecture[data-actif="oui"]{opacity:1}
+.topbar__lecture i{
+  display:block;height:100%;width:100%;
+  transform:scaleX(0);transform-origin:0 50%;
+  background:linear-gradient(90deg,var(--platier-grave),var(--ylang));
+}
+@media (prefers-reduced-motion:reduce){
+  .topbar__titre{transition:none;transform:none}
+}
