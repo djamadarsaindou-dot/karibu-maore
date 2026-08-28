@@ -170,6 +170,39 @@ elle-même : **lever et coucher à la seconde**, midi solaire à 5 secondes.
 > leur seuil effectif est −1,12° au lieu de −0,833°, ils dérivent d'une à deux
 > minutes.
 
+## Indice UV et jour sans ombre
+
+Aucune donnée n'est reprise : les deux sont **calculés** à partir des mêmes
+formules solaires que le lever et le coucher.
+
+**L'indice UV** part de la forme usuelle `UVI = 12,5 · μ^2,42` (μ = cosinus de
+l'angle zénithal), établie pour 300 unités Dobson d'ozone au niveau de la mer,
+corrigée de la colonne d'ozone tropicale — environ 260 DU — par une loi de
+puissance d'exposant 1,2, soit +18 %. C'est une formule d'usage courant, pas
+une base de données : rien n'est recopié, il n'y a donc rien à créditer, mais
+il y a tout à vérifier.
+
+**Recoupement.** Darwin, en Australie, est à 12,3° de latitude sud, celle de
+Mayotte à un dixième de degré près. Les relevés publiés de l'ARPANSA y donnent
+des maxima d'été entre 11 et 15. Le calcul rend 14,8 par ciel parfaitement
+clair en février et 8,8 en juin. L'enveloppe est la bonne — les jours nuageux
+occupant le bas de ce qui se mesure.
+
+**La mention « ciel clair » n'est jamais escamotée.** C'est un calcul, pas une
+mesure : un ciel couvert peut diviser l'indice par deux. Afficher un calcul
+comme un relevé serait pire que se taire.
+
+**Le jour sans ombre** est le jour où la déclinaison du soleil, au midi solaire
+local, croise la latitude du lieu. Il est cherché par balayage sur l'année en
+cours et la suivante, sans aucune date en dur. À Mayotte, cela tombe vers le
+14-15 février et vers le 26-28 octobre, et le jour exact dépend de l'endroit :
+la pointe nord et la pointe sud ne sont pas au zénith le même jour. Les dates
+qui circulent en ligne sont souvent fausses d'une semaine, quand elles ne
+prêtent pas à La Réunion — qui est hors des tropiques — un phénomène qu'elle
+ne connaît pas.
+
+---
+
 ## Calculs lunaires
 
 Série lunaire **ELP-2000/82**, Chapront-Touzé & Chapront (1983) ; tabulation

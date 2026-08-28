@@ -215,6 +215,9 @@ function vueAccueil() {
     </div>
   </section>
 
+  ${blocSansOmbre()}
+  ${blocUV()}
+
   <section class="section">
     <h2 class="section__titre">Aujourd'hui <span class="oeil">${suggestions.length} idées</span></h2>
     <p class="section__note">Choisies selon l'heure, la marée estimée et la saison.</p>
@@ -713,6 +716,12 @@ function vueLieu(id) {
 
     ${l.tags.includes("soir") ? blocNuit() : ""}
 
+    ${/* Le soleil ne se rappelle qu'aux fiches où l'on reste dehors sans
+          ombre : plage, lagon, sentier. Le mettre partout le rendrait
+          invisible, ce qui est la manière la plus sûre de ne pas prévenir. */
+      ["plage", "mer"].includes(l.cat) || l.tags.includes("sportif")
+        ? blocUV(true) : ""}
+
     ${l.cat !== "pratique" ? blocSecours() : ""}
 
     ${blocSources(l)}
@@ -1112,6 +1121,130 @@ function vueSecours() {
    On annonce l'obscurité de la plage — jamais la ponte. La corrélation entre
    ponte et lune est débattue, et l'application y perdrait exactement la
    crédibilité que lui donnent ses sources de terrain. */
+/* ====================== LE SOLEIL QUI BRÛLE ===============================
+   L'information la plus utile de toute l'application, et la moins connue.
+   Sous cette latitude l'indice UV dépasse 11 — « extrême » au sens de l'OMS —
+   la moitié des jours de l'année, et il est déjà à 8 à dix heures du matin.
+   Quelqu'un qui arrive de métropole applique ses réflexes de métropole et
+   brûle avant le déjeuner.
+
+   ON DIT TOUJOURS « CIEL CLAIR ». Ce nombre est un calcul de géométrie
+   solaire et d'ozone, pas une mesure : un ciel couvert peut le diviser par
+   deux. Présenter un calcul comme un relevé serait pire que se taire. La
+   mention n'est donc jamais escamotée, même faute de place.
+
+   RECOUPEMENT. Darwin, en Australie, est à 12,3° S — la latitude de Mayotte
+   à un dixième de degré près. Les relevés de l'ARPANSA y donnent des maxima
+   d'été entre 11 et 15. Le modèle rend 14,8 par ciel parfaitement clair en
+   février et 8,8 en juin : l'enveloppe est la bonne, les jours nuageux
+   occupant le bas de la fourchette mesurée. */
+const UV_BANDES = [
+  { max: 3,   nom: "faible",    fond: "#2f7d47" },
+  { max: 6,   nom: "modéré",    fond: "#c4b63e" },
+  { max: 8,   nom: "fort",      fond: "#d97a20" },
+  { max: 11,  nom: "très fort", fond: "#b3341f" },
+  { max: 16,  nom: "extrême",   fond: "#6b3fa0" }
+];
+
+function blocUV(compact = false) {
+  const d = new Date();
+  const h = SOLEIL.position(d).hauteur;
+  const s = jourSolaire();
+  const mn = SOLEIL.local(d).h * 60;
+
+  /* TROIS SITUATIONS, ET LES CONFONDRE DONNE DES ÂNERIES. Sous l'horizon
+     avant midi solaire, la journée est devant : c'est le maximum d'AUJOURD'HUI
+     qui intéresse. Sous l'horizon après, elle est finie : c'est celui de
+     DEMAIN. Et un soleil levé mais encore bas ne se dit pas « couché » — un
+     premier jet le faisait, et l'application annonçait la nuit à 6 h 42. */
+  const demain = new Date(d.getTime() + 86400000);
+  const couche = h <= 0;
+  const veille = couche && mn < s.midi;
+  const mx = SOLEIL.uvMax(couche && !veille ? demain : d);
+  const val = couche ? mx.indice : SOLEIL.uv(d).indice;
+  const p = SOLEIL.uvPalier(val);
+
+  const pos = Math.max(0, Math.min(100, val / 16 * 100));
+  const largeurs = UV_BANDES.map((b, i) =>
+    ((b.max - (i ? UV_BANDES[i - 1].max : 0)) / 16 * 100).toFixed(2));
+  const affiche = val < 10 ? val.toFixed(1) : String(Math.round(val));
+  const pic = `${mx.indice < 10 ? mx.indice.toFixed(1) : Math.round(mx.indice)} vers ${SOLEIL.min2h(SOLEIL.journee(couche && !veille ? demain : d).midi)}`;
+
+  const titre = couche ? (veille ? "Indice UV du jour" : "Indice UV de demain") : "Indice UV";
+  const phrase = veille
+    ? `Le soleil se lève à ${SOLEIL.min2h(s.lever)}. Le maximum du jour atteindra <b>${pic}</b>, par ciel clair.`
+    : couche
+      ? `Le soleil est couché. Demain, le maximum atteindra <b>${pic}</b>, par ciel clair.`
+      : p.minutes
+        ? `Une peau claire non protégée rougit en <b>${p.minutes} minutes</b> environ. Maximum du jour : ${pic}.`
+        : mn > s.midi
+          /* L'après-midi, « le maximum SERA de » est faux : il est derrière.
+             Le temps du verbe est la seule chose qui distingue une phrase
+             juste d'une phrase qui trahit qu'on n'a pas regardé l'heure. */
+          ? `Le soleil descend, l'ultraviolet retombe. Le maximum du jour était de ${pic}.`
+          : `Le soleil est encore bas — rien à craindre dans l'immédiat. Le maximum du jour sera de ${pic}.`;
+
+  return `
+  <section class="section section--serree">
+    <div class="uv uv--${p.cle}">
+      <div class="uv__tete">
+        <span class="uv__cle">${ico("soleil")} ${titre}</span>
+        <span class="uv__mot">${p.mot}</span>
+        <span class="uv__val">${affiche}</span>
+      </div>
+      <div class="uv__jauge" role="img"
+        aria-label="Indice UV ${affiche} sur 16, niveau ${p.mot}, calculé par ciel clair">
+        ${UV_BANDES.map((b, i) => `<i style="width:${largeurs[i]}%;background:${b.fond}"></i>`).join("")}
+        <span class="uv__curseur" style="left:${pos.toFixed(1)}%"></span>
+      </div>
+      <p class="uv__dit">${phrase}</p>
+      <p class="uv__clair">Calculé pour un <b>ciel clair</b> — ce n'est pas une mesure.
+        Les nuages peuvent le diviser par deux, et le sable comme l'eau vous renvoient
+        en plus ce qui vient d'en haut.${compact ? "" : `
+        <button class="lien-nu" data-action="uv-detail">Comment c'est calculé</button>`}</p>
+    </div>
+  </section>`;
+}
+
+/* ======================== LE JOUR SANS OMBRE ==============================
+   Deux fois l'an le soleil passe au zénith et les ombres disparaissent sous
+   les pieds. Ça se voit, ça se photographie, et personne ne le sait. On ne
+   l'annonce que dans les dix jours qui précèdent : une curiosité annoncée
+   six mois à l'avance n'est plus une curiosité, c'est du remplissage. */
+function blocSansOmbre() {
+  const d = new Date();
+  const L = SOLEIL.local(d);
+  const jours = [...SOLEIL.joursSansOmbre(L.a), ...SOLEIL.joursSansOmbre(L.a + 1)];
+  const auj = Date.UTC(L.a, L.m - 1, L.j);
+  let prochain = null, ecart = 1e9;
+  for (const j of jours) {
+    const K = SOLEIL.local(j.quand);
+    const t = Date.UTC(K.a, K.m - 1, K.j);
+    const dj = Math.round((t - auj) / 86400000);
+    if (dj >= 0 && dj < ecart) { ecart = dj; prochain = { ...j, dj, K }; }
+  }
+  if (!prochain || prochain.dj > 10) return "";
+  const quand = prochain.dj === 0 ? "aujourd'hui"
+              : prochain.dj === 1 ? "demain"
+              : `dans ${prochain.dj} jours`;
+  return `
+  <section class="section section--serree">
+    <div class="ombre-nulle">
+      <h3>${ico("soleil")} Le jour sans ombre, ${quand}</h3>
+      <p>Le ${prochain.K.j} ${MOIS_LONG[prochain.K.m]} à <b>${SOLEIL.min2h(prochain.midi)}</b>,
+        le soleil sera à ${prochain.hauteur.toFixed(1)}° au-dessus de l'horizon :
+        à la verticale, ou tout comme. Posez une bouteille debout sur une dalle —
+        elle n'aura plus d'ombre. Mayotte est dans les tropiques ; c'est pour ça
+        que ça arrive ici deux fois par an, et jamais à La Réunion.</p>
+      <p class="ombre-nulle__note">Calculé pour la latitude de Mamoudzou. À la pointe
+        sud, c'est la veille.</p>
+    </div>
+  </section>`;
+}
+
+const MOIS_LONG = ["", "janvier", "février", "mars", "avril", "mai", "juin",
+  "juillet", "août", "septembre", "octobre", "novembre", "décembre"];
+
 function blocNuit() {
   const d = new Date();
   const s = jourSolaire();
@@ -1486,6 +1619,33 @@ document.addEventListener("click", e => {
                                    rendre(true); }
   else if (a === "suggestion") { filtres.q = el.dataset.q; const c = $("#q");
                                   if (c) c.value = filtres.q; rendre(true); }
+  else if (a === "uv-detail") { feuille({ titre: "D'où sort ce nombre",
+      texte: "Il est calculé, pas mesuré, et calculé pour un ciel parfaitement clair.",
+      /* Les paragraphes sont un tableau : ecrire un saut de ligne dans un
+         litteral traverse trop d'outils pour rester fiable. */
+      texteLong: [
+        "L'indice part de la hauteur du soleil sur l'horizon, elle-même calculée par " +
+        "les formules solaires de la NOAA — les mêmes qui donnent l'heure du lever à la " +
+        "seconde près. Plus le soleil est haut, moins son rayonnement traverse " +
+        "d'atmosphère, et la relation n'est pas proportionnelle : elle suit une " +
+        "puissance 2,42.",
+        "S'y ajoute la couche d'ozone, qui est le vrai filtre. Sous les tropiques elle " +
+        "est plus mince qu'ailleurs — environ 260 unités Dobson contre 300 en référence " +
+        "— ce qui laisse passer près de 20 % d'ultraviolet en plus. C'est la raison " +
+        "pour laquelle on brûle plus vite ici qu'à une même hauteur de soleil en Europe.",
+        "Ce que le calcul ne fait pas : il ne connaît pas les nuages, qui peuvent " +
+        "diviser l'indice par deux ; il ne compte pas le sable clair ni la surface de " +
+        "l'eau, qui vous renvoient une part de ce qui descend et augmentent donc la " +
+        "dose reçue sans changer l'indice. L'altitude ajouterait 4 % au sommet du " +
+        "Bénara : c'est négligé.",
+        "Recoupement. Darwin, en Australie, est à 12,3° de latitude sud — celle de " +
+        "Mayotte à un dixième de degré près. Les relevés officiels y donnent des " +
+        "maxima d'été entre 11 et 15. Le calcul rend ici 14,8 par ciel parfaitement " +
+        "clair en février et 8,8 en juin : la fourchette est la bonne, les jours " +
+        "nuageux occupant le bas de ce qui se mesure.",
+        "Précision honnête : à un point d'indice près, par ciel clair. C'est assez " +
+        "pour la seule décision qui compte — se couvrir, ou non."
+      ].join(String.fromCharCode(10, 10)) }); }
   else if (a === "carte-zoom")  { CarteVue.zoomer(parseFloat(el.dataset.f)); }
   else if (a === "carte-recadrer") { CarteVue.recadrer(); }
   else if (a === "carte-moi")   {

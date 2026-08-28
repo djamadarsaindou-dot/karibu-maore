@@ -1081,3 +1081,63 @@ body{font-weight:420;font-synthesis-weight:none}
 .bandeau-install .btn--mini{flex:0 0 auto;white-space:nowrap}
 .btn--fantome{background:transparent;color:var(--sable);
   border:1px solid rgba(244,237,226,.4)}
+
+
+/* ========================= L'INDICE UV ====================================
+   Les cinq couleurs sont celles de l'échelle de l'OMS, à peine assourdies
+   pour tenir dans la palette : elles sont normalisées à l'international, et
+   les réinventer ferait perdre le seul repère que le voyageur transporte
+   déjà avec lui. */
+.uv{
+  background:var(--surface);border:1px solid var(--line);
+  border-left:4px solid var(--vase);
+  border-radius:var(--r-l);padding:var(--s3);box-shadow:var(--e1);
+}
+.uv--faible  {border-left-color:#2f7d47}
+.uv--modere  {border-left-color:#c4b63e}
+.uv--fort    {border-left-color:#d97a20}
+.uv--tresfort{border-left-color:#b3341f}
+.uv--extreme {border-left-color:#6b3fa0}
+
+.uv__tete{display:flex;align-items:baseline;gap:var(--s2);flex-wrap:wrap}
+.uv__cle{display:inline-flex;align-items:center;gap:.4em;
+  font-size:var(--fs-xs);letter-spacing:.06em;text-transform:uppercase;
+  color:var(--muted);font-weight:650}
+.uv__cle svg{width:1em;height:1em}
+.uv__mot{font-size:var(--fs-sm);font-weight:650;color:var(--ink-2)}
+.uv__val{margin-left:auto;font-family:var(--titre);font-size:var(--fs-xl);
+  font-weight:700;line-height:1;font-variant-numeric:tabular-nums}
+
+/* La jauge est une image, pas un contrôle : elle n'a pas de tabindex, et son
+   sens est donné en toutes lettres dans l'aria-label. */
+.uv__jauge{position:relative;display:flex;height:.55rem;margin:var(--s2) 0 var(--s2);
+  border-radius:99px;overflow:hidden}
+.uv__jauge i{display:block;height:100%}
+.uv__curseur{
+  position:absolute;top:50%;width:1.05rem;height:1.05rem;
+  transform:translate(-50%,-50%);
+  border-radius:50%;background:var(--surface);
+  border:3px solid var(--basalte);box-shadow:0 1px 4px rgba(36,31,29,.4);
+}
+.uv__dit{margin:0;font-size:var(--fs-sm);color:var(--ink-2)}
+.uv__clair{margin:var(--s2) 0 0;font-size:var(--fs-xs);color:var(--muted);line-height:1.5}
+
+.lien-nu{
+  background:none;border:none;padding:0;margin:0;
+  font:inherit;color:var(--platier-grave);font-weight:650;
+  text-decoration:underline;text-underline-offset:2px;cursor:pointer;
+}
+.lien-nu:hover{color:var(--terre-cuite)}
+
+/* ===================== LE JOUR SANS OMBRE ================================ */
+.ombre-nulle{
+  background:linear-gradient(140deg,#fbf3e2,#f4ede2);
+  border:1px solid var(--line);border-radius:var(--r-l);
+  padding:var(--s3);box-shadow:var(--e1);
+}
+.ombre-nulle h3{margin:0 0 var(--s2);font-family:var(--titre);
+  font-size:var(--fs-md);display:flex;align-items:center;gap:.45em}
+.ombre-nulle h3 svg{width:1.1em;height:1.1em;color:var(--ylang)}
+.ombre-nulle p{margin:0;font-size:var(--fs-sm);color:var(--ink-2);line-height:1.6}
+.ombre-nulle__note{margin-top:var(--s2) !important;font-size:var(--fs-xs) !important;
+  color:var(--muted) !important}

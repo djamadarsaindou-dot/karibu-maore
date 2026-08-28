@@ -129,7 +129,101 @@ const SOLEIL = (() => {
     };
   }
 
-  return { journee, position, midiSolaire, evenement, local, min2h, SEUILS, LAT, LON, TZ };
+  /* ===================== L'INDICE UV, PAR CIEL CLAIR =====================
+     POURQUOI LE CALCULER. Sous les tropiques, l'indice UV dépasse 11 —
+     « extrême » — plus de la moitié des jours de l'année, et il est déjà à 8
+     à neuf heures du matin. Un touriste qui applique ses réflexes de
+     métropole brûle avant midi. Aucune application hors ligne ne le dit.
+
+     CE QUE C'EST, ET CE QUE CE N'EST PAS. C'est un calcul de CIEL CLAIR :
+     géométrie solaire, ozone, altitude. Ce n'est PAS une mesure, et ce n'est
+     pas une prévision — un ciel couvert peut le diviser par deux, un voile
+     d'altitude à peine le réduire. L'affichage porte donc toujours la mention
+     « ciel clair », sans exception : un nombre présenté comme une mesure
+     serait pire que pas de nombre du tout.
+
+     LA FORMULE. UVI = 12,5 · μ^2,42 est la forme usuelle pour 300 unités
+     Dobson d'ozone au niveau de la mer (μ = cosinus de l'angle zénithal).
+     Deux corrections comptent ici :
+       · l'ozone. Sur la ceinture tropicale, la colonne tourne autour de 260 DU
+         contre 300 de référence. La sensibilité de l'UV érythémal à l'ozone
+         suit une loi de puissance d'exposant voisin de −1,2 : (300/260)^1,2,
+         soit environ +18 %. La valeur varie de quelques pour cent au fil de
+         l'année ; on ne la fait pas varier, parce qu'on ne la mesure pas.
+       · l'altitude. Environ +6 % par 1 000 m. À Mayotte, le mont Bénara
+         culmine à 660 m : au plus 4 %. On l'ignore, et on le dit.
+     Le sable clair et l'eau renvoient une part du rayonnement, ce qui ajoute
+     réellement à la dose reçue — mais l'indice UV se définit sur le
+     rayonnement descendant. On ne le gonfle pas ; on le mentionne en conseil.
+
+     PRÉCISION HONNÊTE. À ±1 point d'indice par ciel clair. C'est amplement
+     assez pour la seule décision qui compte : se couvrir, ou non. */
+  const OZONE = Math.pow(300 / 260, 1.2);      // ≈ 1,18 sous les tropiques
+
+  function uv(date) {
+    const h = position(date).hauteur;
+    if (h <= 0) return { indice: 0, mu: 0 };
+    const mu = sin(h);
+    const i = 12.5 * Math.pow(mu, 2.42) * OZONE;
+    return { indice: Math.round(i * 10) / 10, mu, hauteur: h };
+  }
+
+  /* Les paliers officiels de l'OMS. Le libellé « extrême » commence à 11. */
+  function uvPalier(i) {
+    if (i < 3)  return { cle: "faible",  mot: "faible",  minutes: null };
+    if (i < 6)  return { cle: "modere",  mot: "modéré",  minutes: 45 };
+    if (i < 8)  return { cle: "fort",    mot: "fort",    minutes: 25 };
+    if (i < 11) return { cle: "tresfort",mot: "très fort", minutes: 15 };
+    return          { cle: "extreme", mot: "extrême", minutes: 10 };
+  }
+
+  /* L'indice maximal du jour, atteint au midi solaire. */
+  const uvMax = date => {
+    const L = local(date);
+    const base = Date.UTC(L.a, L.m - 1, L.j, 0, 0, 0) - TZ * 3600000;
+    return uv(new Date(base + midiSolaire(date) * 60000));
+  };
+
+  /* ======================== LE JOUR SANS OMBRE ==========================
+     Deux fois l'an, entre les tropiques, le soleil passe exactement au
+     zénith : à midi solaire, une bouteille posée debout n'a plus d'ombre.
+     Ce n'est pas une curiosité de calendrier, c'est visible à l'œil nu et
+     ça se photographie.
+
+     ON LE CALCULE, ON NE LE RECOPIE PAS. Les dates circulent en ligne, et
+     elles sont souvent fausses d'une semaine — quand elles ne confondent pas
+     Mayotte avec La Réunion, qui est hors des tropiques et n'en a jamais.
+     Ici : on cherche le jour où la déclinaison du soleil, au midi solaire
+     local, croise la latitude du lieu. Aucune table, aucune date en dur.
+
+     À Mayotte, cela tombe vers le 14-15 février et vers le 26-28 octobre,
+     et le jour exact dépend de l'endroit — la pointe nord et la pointe sud
+     ne sont pas au zénith le même jour. */
+  function joursSansOmbre(annee, lat = LAT) {
+    const midiDe = t => {
+      const d = new Date(t);
+      const base = Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate(), 0, 0, 0) - TZ * 3600000;
+      return new Date(base + midiSolaire(new Date(base + 12 * 3600000)) * 60000);
+    };
+    const out = [];
+    let prec = null;
+    for (let t = Date.UTC(annee, 0, 1); t < Date.UTC(annee + 1, 0, 1); t += 86400000) {
+      const inst = midiDe(t);
+      const v = position(inst).declinaison - lat;
+      if (prec && (prec.v < 0) !== (v < 0)) {
+        const g = Math.abs(prec.v) < Math.abs(v) ? prec : { inst, v };
+        const L = local(g.inst);
+        out.push({ mois: L.m, jour: L.j, quand: g.inst,
+                   hauteur: position(g.inst).hauteur,
+                   midi: midiSolaire(g.inst) });
+      }
+      prec = { inst, v };
+    }
+    return out;
+  }
+
+  return { journee, position, midiSolaire, evenement, local, min2h, SEUILS,
+           uv, uvMax, uvPalier, joursSansOmbre, LAT, LON, TZ };
 })();
 
 
