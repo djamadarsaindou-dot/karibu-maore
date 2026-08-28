@@ -134,3 +134,16 @@ elle-même : **lever et coucher à la seconde**, midi solaire à 5 secondes.
 > Ne pas contrôler contre sunrise-sunset.org ni les calendriers grand public :
 > leur seuil effectif est −1,12° au lieu de −0,833°, ils dérivent d'une à deux
 > minutes.
+
+## Calculs lunaires
+
+Série lunaire **ELP-2000/82**, Chapront-Touzé & Chapront (1983) ; tabulation
+d'usage courant popularisée par J. Meeus, *Astronomical Algorithms*, ch. 47.
+
+Ce qui est repris est une **compilation de coefficients** : les nombres eux-mêmes
+ne relèvent pas du droit d'auteur, leur agencement peut en relever, d'où cette
+citation de la source primaire.
+
+Validation : l'autotest reproduit l'exemple 47.a de Meeus (12 avril 1992) à la
+sixième décimale sur la longitude, la latitude et la parallaxe. C'est le meilleur
+contrôle possible — il valide toute la série d'un coup.

@@ -162,7 +162,9 @@ function vueAccueil() {
   }
   const suggestions = _ordreSuggestions.ids.map(lieu).filter(Boolean);
 
-  const evJour = EVENEMENTS.filter(e => actifMaintenant(e, now));
+  const dateJour = new Date().toISOString().slice(0, 10);
+  const evJour = EVENEMENTS.filter(e => (!e.perime || e.perime >= dateJour)
+                                     && actifMaintenant(e, now));
 
   const prochaine = etat.evts.find(e => e.brut > h + now.getMinutes() / 60) || etat.evts[0];
 
@@ -516,9 +518,28 @@ function vueExplorer(params) {
   <button class="btn btn--discret" data-action="reset-filtres" ${actifs ? "" : "hidden"}>
     ${ico("croix")} Enlever les filtres (${actifs})</button>
 
+  ${filtres.q && liste.length ? (() => {
+      const it = INTENTIONS.lire(filtres.q);
+      return it.touches.length ? `<p class="section__note lu-comme">${ico("valide")}
+        Lu comme : ${it.touches.map(t => `<b>${esc(t)}</b>`).join(" + ")}</p>` : "";
+    })() : ""}
+
   ${liste.length ? `<div class="grille" style="margin-top:var(--s3)">${liste.map(carteLieu).join("")}</div>`
-    : `<div class="vide">${ico("loupe")}<p>Rien avec ces filtres.<br>Essayez d'en enlever un.</p>
+    : `<div class="vide">${ico("loupe")}
+       <p>Rien avec ces filtres.<br>Essayez d'en enlever un.</p>
        <button class="btn btn--secondaire" data-action="reset-filtres">Tout réafficher</button></div>`}
+
+  ${!filtres.q && !actifs ? `
+  <section class="section">
+    <h2 class="section__titre">On cherche quoi ?</h2>
+    <p class="section__note">Tapez comme vous parlez : l'application comprend.</p>
+    <div class="filtres filtres--suggestions">
+      ${["que faire quand il pleut", "avec les enfants sans voiture", "où voir des tortues",
+         "une rando pas trop dure", "gratuit ce week-end", "pêche à pied"]
+        .map(q => `<button class="filtre" data-action="suggestion" data-q="${attr(q)}">
+          ${ico("loupe")} ${esc(q)}</button>`).join("")}
+    </div>
+  </section>` : ""}
 
   ${horsSaison ? `<p class="section__note" style="margin-top:var(--s4)">
     ${horsSaison} proposition${horsSaison > 1 ? "s" : ""} ${horsSaison > 1 ? "sont" : "est"} hors
@@ -683,6 +704,8 @@ function vueLieu(id) {
       : `<p class="champ__aide" style="margin:0">Rien à réserver : c'est libre et gratuit.
          Il suffit d'y aller — en respectant les conseils ci-dessus.</p>`}
     </div>
+
+    ${l.tags.includes("soir") ? blocNuit() : ""}
 
     ${l.cat !== "pratique" ? blocSecours() : ""}
 
@@ -887,10 +910,16 @@ function vueItineraire(id) {
 
 /* -------------------------------------------------------- 9. VUE : AGENDA */
 function vueAgenda() {
+  /* Une date figée dans le code devient un mensonge le jour où elle passe.
+     Tout événement portant `perime` disparaît de lui-même à cette date : si
+     personne ne met l'application à jour pendant deux ans, elle se taira au
+     lieu d'annoncer un festival qui n'a plus lieu. */
+  const aujourdhui = new Date().toISOString().slice(0, 10);
+  const vivant = e => !e.perime || e.perime >= aujourdhui;
   const now = maintenant(), mois = now.getMonth() + 1;
   const periode = e => e.type === "recurrent" ? "Chaque " + JOURS[e.jour]
     : e.type === "saison" ? `${cap(MOIS[e.debut - 1])} → ${MOIS[e.fin - 1]}` : esc(e.date);
-  const tri = [...EVENEMENTS].sort((a, b) => (actifMaintenant(b, now) ? 1 : 0) - (actifMaintenant(a, now) ? 1 : 0));
+  const tri = EVENEMENTS.filter(vivant).sort((a, b) => (actifMaintenant(b, now) ? 1 : 0) - (actifMaintenant(a, now) ? 1 : 0));
 
   return `
   <section class="section">
@@ -1072,6 +1101,49 @@ function vueSecours() {
   ${pied()}`;
 }
 
+/* La nuit, pour les fiches qui se vivent après le coucher du soleil.
+
+   On annonce l'obscurité de la plage — jamais la ponte. La corrélation entre
+   ponte et lune est débattue, et l'application y perdrait exactement la
+   crédibilité que lui donnent ses sources de terrain. */
+function blocNuit() {
+  const d = new Date();
+  const s = jourSolaire();
+  const lc = LUNE.leverCoucher(d, SOLEIL.LAT, SOLEIL.LON, SOLEIL.TZ);
+  const ph = LUNE.phase(d);
+  const pct = Math.round(ph.eclairee * 100);
+
+  /* Comparer des heures de lever et de coucher qui enjambent minuit est une
+     source d'erreur : une pleine lune levée à 18 h 13 et couchée à 6 h 06
+     éclaire toute la nuit, alors qu'un simple « coucher < début de nuit »
+     conclurait l'inverse. On échantillonne donc la hauteur réelle de la Lune
+     pendant la nuit noire, ce qui ne peut pas se tromper. */
+  const L = SOLEIL.local(d);
+  const minuit = new Date(Date.UTC(L.a, L.m - 1, L.j, 0, 0, 0) - SOLEIL.TZ * 3600000);
+  let hautes = 0, mesures = 0;
+  for (let mn = s.nuit; mn < s.aubeNuit + 1440; mn += 20) {
+    const t = new Date(minuit.getTime() + mn * 60000);
+    if (LUNE.hauteur(t, SOLEIL.LAT, SOLEIL.LON) > 0) hautes++;
+    mesures++;
+  }
+  const partEclairee = mesures ? hautes / mesures : 0;
+  /* Sombre si la Lune est fine, ou si elle passe la plus grande partie de la
+     nuit sous l'horizon. */
+  const sombre = pct < 25 || partEclairee < 0.35;
+
+  return `<div class="bloc">
+    <h2 class="bloc__titre">${ico("lune")} La nuit prochaine</h2>
+    <p><b>Lune éclairée à ${pct} %</b>${lc.lever != null ? ` · levée à ${SOLEIL.min2h(lc.lever)}` : ""}${
+      lc.coucher != null ? ` · couchée à ${SOLEIL.min2h(lc.coucher)}` : ""}.
+      Nuit noire de ${SOLEIL.min2h(s.nuit)} à ${SOLEIL.min2h(s.aubeNuit)}.</p>
+    <p class="champ__aide">${sombre
+      ? "La plage sera <b>sombre</b> : la Lune est absente ou fine pendant la nuit noire."
+      : `La plage sera <b>éclairée par la Lune</b> pendant ${Math.round(partEclairee * 100)} %
+         de la nuit noire : on y voit sans lampe, et on est vu.`}
+      Calculé sur votre appareil, sans réseau.</p>
+  </div>`;
+}
+
 /* rappel compact, affiché au bas de chaque fiche d'activité */
 function blocSecours() {
   return `<div class="bloc">
@@ -1180,6 +1252,18 @@ function vueAPropos() {
     l'application n'est pas encore activé : les demandes de réservation sont préparées puis
     affichées à l'écran, mais rien n'est envoyé. Écrivez plutôt à l'adresse ci-dessous.`,
     "info") : ""}
+
+  <div class="bloc">
+    <h3 class="bloc__titre">${ico("boussole")} Réglages</h3>
+    <div class="rangs">
+      <button class="rang" data-action="bascule-anim">
+        <span class="rang__cle">Animations</span>
+        <span class="rang__val">${Store.get("anim", "on") === "off" ? "Désactivées" : "Activées"}
+          <small>Les écrans glissent d'une vue à l'autre. À couper si l'appareil rame,
+          ou si le mouvement vous gêne.</small></span>
+      </button>
+    </div>
+  </div>
 
   <div class="btns">
     <button class="btn" data-action="aller" data-route="/secours">
@@ -1388,6 +1472,13 @@ document.addEventListener("click", e => {
   else if (a === "carte-point") { const id = el.dataset.id;
                                    if (carteSel === id) { go("/lieu/" + id); }
                                    else { carteSel = id; rendre(true); } }
+  else if (a === "bascule-anim") { const v = Store.get("anim", "on") === "off" ? "on" : "off";
+                                   Store.set("anim", v);
+                                   document.documentElement.dataset.anim = v;
+                                   annoncer(v === "off" ? "Animations désactivées." : "Animations activées.");
+                                   rendre(true); }
+  else if (a === "suggestion") { filtres.q = el.dataset.q; const c = $("#q");
+                                  if (c) c.value = filtres.q; rendre(true); }
   else if (a === "carte-cat")   { filtres.cat = el.dataset.val || null; carteSel = null; rendre(true); }
   else if (a === "filtre")       { const c = el.dataset.champ, v = el.dataset.val;
                                    filtres[c] = (!v || filtres[c] === v) ? null : v; majListe(); }
@@ -1554,7 +1645,12 @@ $$(".onglet .ico").forEach((s, i) => { s.innerHTML = UI.icone(ICONES_ONGLETS[i])
 if ("scrollRestoration" in history) history.scrollRestoration = "manual";
 window.addEventListener("popstate", () => rendreSur());
 Store.sonder();
+/* L'interrupteur des animations survit au rechargement. */
+document.documentElement.dataset.anim = Store.get("anim", "on");
+Store.set("ouvertures", Store.get("ouvertures", 0) + 1);
 rendreSur();
+/* On laisse l'utilisateur arriver avant de lui proposer quoi que ce soit. */
+setTimeout(bandeauInstall, 4000);
 
 /* ------------------------------------------------------- 17. HORS CONNEXION */
 if ("serviceWorker" in navigator) {
@@ -1578,6 +1674,47 @@ if ("serviceWorker" in navigator) {
       location.reload();
     });
   });
+}
+
+/* L'invitation à installer.
+
+   Sur Android, le navigateur propose lui-même l'installation par
+   `beforeinstallprompt` : on capte l'événement et on l'offre au bon moment.
+   Sur iOS cet événement n'existe pas — il faut expliquer le geste, et c'est la
+   seule façon d'y arriver. On n'affiche rien avant la troisième ouverture :
+   proposer d'installer à quelqu'un qui découvre l'application est le meilleur
+   moyen de le faire fuir. */
+let _promptInstall = null;
+window.addEventListener("beforeinstallprompt", e => { e.preventDefault(); _promptInstall = e; });
+
+function peutProposerInstall() {
+  const deja = matchMedia("(display-mode: standalone)").matches || navigator.standalone;
+  if (deja || Store.get("install-refuse", false)) return false;
+  const n = Store.get("ouvertures", 0);
+  return n >= 3;
+}
+
+function bandeauInstall() {
+  if ($("#install") || !peutProposerInstall()) return;
+  const ios = /iphone|ipad|ipod/i.test(navigator.userAgent);
+  if (!_promptInstall && !ios) return;
+  const d = document.createElement("div");
+  d.id = "install";
+  d.className = "bandeau-maj bandeau-install";
+  d.innerHTML = ios
+    ? `<span>Installer sur l'écran d'accueil : touchez <b>Partager</b>, puis
+       <b>« Sur l'écran d'accueil »</b>. L'application marchera alors sans réseau.</span>
+       <button class="btn btn--mini" data-i="non">Plus tard</button>`
+    : `<span>Installer Karibu Maoré sur votre téléphone ? Elle marchera sans réseau.</span>
+       <button class="btn btn--mini" data-i="oui">Installer</button>
+       <button class="btn btn--mini btn--fantome" data-i="non">Plus tard</button>`;
+  d.addEventListener("click", e => {
+    const b = e.target.closest("[data-i]"); if (!b) return;
+    if (b.dataset.i === "oui" && _promptInstall) { _promptInstall.prompt(); _promptInstall = null; }
+    else Store.set("install-refuse", true);
+    d.remove();
+  });
+  document.body.appendChild(d);
 }
 
 function bandeauMaj(reg) {

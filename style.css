@@ -1025,3 +1025,19 @@ body{font-weight:420;font-synthesis-weight:none}
 /* La carte est lourde à peindre : on ne la dessine que lorsqu'elle approche
    de l'écran, et on réserve sa place pour que rien ne sautille. */
 .carte-cadre{ content-visibility:auto; contain-intrinsic-size:auto 480px }
+
+/* La requête relue : l'utilisateur voit ce que l'application a compris de sa
+   phrase. C'est ce qui transforme une recherche opaque en dialogue. */
+.lu-comme{display:flex;align-items:center;gap:var(--s2);margin-top:var(--s3);
+  color:var(--accent);font-size:var(--fs-sm)}
+.lu-comme svg{flex:0 0 auto}
+.filtres--suggestions{flex-wrap:wrap;overflow:visible;padding-bottom:0}
+.filtres--suggestions .filtre{white-space:normal;text-align:left}
+
+/* L'invitation à installer : discrète, refusable, et jamais avant la
+   troisième ouverture. */
+.bandeau-install{align-items:flex-start;line-height:1.45}
+.bandeau-install span{flex:1}
+.bandeau-install .btn--mini{flex:0 0 auto;white-space:nowrap}
+.btn--fantome{background:transparent;color:var(--sable);
+  border:1px solid rgba(244,237,226,.4)}

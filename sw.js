@@ -20,7 +20,7 @@
    réponse 200, même origine, et type de contenu conforme à l'extension.
    ========================================================================== */
 
-const CACHE = "karibu-maore-v11";
+const CACHE = "karibu-maore-v12";
 const CACHE_PHOTOS = "karibu-maore-photos-v1";
 
 const FICHIERS = [
