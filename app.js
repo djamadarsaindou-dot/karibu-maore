@@ -791,6 +791,8 @@ function vueLieu(id) {
         ${ico("coeur")} ${fav ? "Retirer de mon carnet" : "Ajouter à mon carnet"}</button>
       <button class="btn btn--secondaire" data-action="partager" data-id="${l.id}">
         ${ico("partager")} Partager</button>
+      <button class="btn btn--secondaire" data-action="postale" data-id="${l.id}">
+        ${ico("appareil")} Faire une carte postale</button>
       <button class="btn btn--discret" data-action="signaler" data-id="${l.id}">
         ${ico("drapeau")} Signaler une erreur ou une fermeture</button>
     </div>
@@ -1626,6 +1628,25 @@ async function partager(id) {
     text: `${l.nom} (${l.commune}) : ${l.resume}`,
     url: location.href
   };
+
+  /* UNE IMAGE PLUTÔT QU'UNE LIGNE DE TEXTE. Dans une conversation WhatsApp,
+     un lien se perd entre deux messages ; une carte postale se regarde et se
+     retransmet. On l'essaie d'abord, et seulement si le téléphone accepte de
+     partager un fichier — `canShare` avec les fichiers, pas `canShare` tout
+     court, qui répond oui à peu près toujours.
+
+     Et on ne bloque pas le partage sur le dessin : si la carte postale rate
+     ou tarde, le partage en texte part quand même. */
+  if (navigator.canShare && navigator.share && typeof POSTALE !== "undefined") {
+    try {
+      const f = await POSTALE.fichier(l);
+      if (f && navigator.canShare({ files: [f] })) {
+        await navigator.share({ ...donnees, files: [f] });
+        return;
+      }
+    } catch (e) { if (e && e.name === "AbortError") return; }
+  }
+
   /* AbortError = l'utilisateur a fermé la feuille de partage, c'est normal.
      Toute autre erreur signifie que RIEN n'est parti : on ne peut pas laisser
      croire le contraire, on retombe sur la copie. */
@@ -1639,6 +1660,37 @@ async function partager(id) {
   } catch {
     feuille({ titre: "À partager", copiable: true, texteLong: `${donnees.text}\n${donnees.url}` });
   }
+}
+
+/* La carte postale demandée explicitement : on la MONTRE avant de proposer
+   d'en faire quelque chose. Partager à l'aveugle une image qu'on n'a pas vue
+   est le genre de chose qu'on ne fait qu'une fois. */
+async function carteAEnvoyer(id) {
+  const l = lieu(id); if (!l || typeof POSTALE === "undefined") return;
+  annoncer("Fabrication de la carte postale…");
+  const f = await POSTALE.fichier(l);
+  if (!f) { feuille({ titre: "Carte postale impossible",
+    texte: "Le dessin n'a pas abouti sur cet appareil. Le partage en texte, lui, marche." });
+    return; }
+  const url = URL.createObjectURL(f);
+  const peutPartager = !!(navigator.canShare && navigator.share && navigator.canShare({ files: [f] }));
+  const actions = [];
+  if (peutPartager) actions.push({ libelle: "Envoyer l'image", faire: async () => {
+    try { await navigator.share({ title: l.nom + " — Karibu Maoré", files: [f] }); }
+    catch (e) { if (!e || e.name !== "AbortError") feuille({ titre: "Rien n'est parti",
+      texte: "Le partage a échoué. L'image reste enregistrable." }); }
+  } });
+  actions.push({ libelle: "Enregistrer l'image", style: "secondaire", faire: () => {
+    const a = document.createElement("a");
+    a.href = url; a.download = f.name;
+    document.body.appendChild(a); a.click(); a.remove();
+  } });
+
+  const d = $("#feuille");
+  await feuille({ titre: "Carte postale",
+    texte: peutPartager ? "Prête à envoyer." : "Prête à enregistrer, puis à envoyer vous-même.",
+    actions });
+  URL.revokeObjectURL(url);
 }
 
 function signaler(id) {
@@ -1837,6 +1889,7 @@ document.addEventListener("click", e => {
   else if (a === "resa")         { envoyerResa(el.dataset.id, el.dataset.mode); }
   else if (a === "envoyer-pro")  { envoyerPro(); }
   else if (a === "partager")     { partager(el.dataset.id); }
+  else if (a === "postale")      { carteAEnvoyer(el.dataset.id); }
   else if (a === "signaler")     { signaler(el.dataset.id); }
   else if (a === "vider-demandes"){ viderDemandes(); }
   else if (a === "imprimer")     { window.print(); }

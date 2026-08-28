@@ -27,6 +27,7 @@ const APP = {
   version: "0.9.0",
   maj: "2026-08-28",
   // Numéro de contact, format international sans + ni espaces (0639 40 69 48)
+  url: "https://djamadarsaindou-dot.github.io/karibu-maore/",
   contactWhatsApp: "262639406948",
   contactMail: "djamadar.saindou@gmail.com"
 };

@@ -20,12 +20,12 @@
    réponse 200, même origine, et type de contenu conforme à l'extension.
    ========================================================================== */
 
-const CACHE = "karibu-maore-v18";
+const CACHE = "karibu-maore-v20";
 const CACHE_PHOTOS = "karibu-maore-photos-v1";
 
 const FICHIERS = [
   "./", "./index.html", "./style.css",
-  "./data.js", "./data-resa.js", "./photos.js", "./carte.js", "./carte-vue.js", "./contours.js", "./recherche.js", "./intentions.js", "./astro.js", "./hijri.js", "./marees.js", "./ui.js", "./app.js",
+  "./data.js", "./data-resa.js", "./photos.js", "./carte.js", "./carte-vue.js", "./postale.js", "./contours.js", "./recherche.js", "./intentions.js", "./astro.js", "./hijri.js", "./marees.js", "./ui.js", "./app.js",
   "./manifest.webmanifest", "./icone.svg", "./icone-masque.svg",
   "./icone-192.png", "./icone-512.png", "./icone-maskable-512.png",
   "./apple-touch-icon.png", "./favicon-32.png",
