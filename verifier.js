@@ -123,6 +123,58 @@ if (!/^\d{9,15}$/.test(APP.contactWhatsApp))
 if (!LEXIQUE.length) A(`LEXIQUE vide`);
 if (!INFOS.length) A(`INFOS vides`);
 
+/* ================= LES PAGES D'APERÇU DE PARTAGE ==========================
+   Elles sont fabriquées par outils/og.py à partir de data.js. Rien ne les
+   régénère automatiquement : une fiche ajoutée sans relancer le script
+   partirait avec un lien mort. Ce contrôle est là pour ça, et il bloque.
+
+   On vérifie aussi les ORPHELINES : une fiche renommée laisse derrière elle
+   une page qui redirige vers un identifiant qui n'existe plus, et l'aperçu
+   continue de circuler dans les conversations longtemps après. */
+{
+  const fs = require("fs"), path = require("path");
+  const ici = __dirname;
+  const dirHtml = path.join(ici, "l"), dirImg = path.join(ici, "og");
+  const lu = d => fs.existsSync(d) ? fs.readdirSync(d) : null;
+  const pages = lu(dirHtml), images = lu(dirImg);
+
+  if (!pages || !images) {
+    A("dossiers l/ et og/ absents — lancer `python outils/og.py`");
+  } else {
+    const attendus = new Set(LIEUX.map(l => l.id));
+    for (const l of LIEUX) {
+      if (!pages.includes(l.id + ".html")) E(`page d'aperçu manquante : l/${l.id}.html`);
+      if (!images.includes(l.id + ".jpg")) E(`image d'aperçu manquante : og/${l.id}.jpg`);
+    }
+    for (const f of pages) {
+      const id = f.replace(/\.html$/, "");
+      if (!attendus.has(id)) E(`page d'aperçu orpheline : l/${f} (aucune fiche « ${id} »)`);
+    }
+    for (const f of images) {
+      const id = f.replace(/\.jpg$/, "");
+      if (!attendus.has(id)) E(`image d'aperçu orpheline : og/${f}`);
+    }
+    /* Le contenu doit suivre la fiche, pas seulement exister. */
+    for (const l of LIEUX.slice(0, 400)) {
+      const p = path.join(dirHtml, l.id + ".html");
+      if (!fs.existsSync(p)) continue;
+      const t = fs.readFileSync(p, "utf8");
+      const m = t.match(/<meta property="og:title" content="([^"]*)"/);
+      /* On DÉCODE avant de comparer plutôt que de ré-encoder : le générateur
+         échappe l'apostrophe en &#x27;, ce qui est parfaitement légal dans un
+         attribut, et une comparaison naïve criait au faux positif sur les
+         trois fiches qui en portent une. */
+      const decoder = x => x.replace(/&#x27;|&#39;/g, "'").replace(/&quot;/g, '"')
+        .replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&amp;/g, "&");
+      if (m && decoder(m[1]) !== l.nom) {
+        E(`l/${l.id}.html annonce « ${decoder(m[1])} » au lieu de « ${l.nom} » — relancer outils/og.py`);
+      }
+      if (!t.includes(`../#/lieu/${l.id}`)) E(`l/${l.id}.html ne redirige pas vers sa fiche`);
+    }
+    infos.push(`${pages.length} pages d'aperçu de partage, ${images.length} images`);
+  }
+}
+
 /* ------------------------------------------------------------------ BILAN */
 const nonVerifies = PRESTATAIRES.filter(p => !p.verifie).length;
 const sansSource  = LIEUX.filter(l => !l.sources?.length).length;

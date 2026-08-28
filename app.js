@@ -1626,7 +1626,13 @@ async function partager(id) {
   const donnees = {
     title: l.nom + " — Karibu Maoré",
     text: `${l.nom} (${l.commune}) : ${l.resume}`,
-    url: location.href
+    /* ON PARTAGE LA PAGE D'APERÇU, PAS L'ADRESSE DU NAVIGATEUR. La route de
+       l'application est dans le fragment (#/lieu/…), et un fragment n'est
+       JAMAIS envoyé au serveur : les robots d'aperçu de WhatsApp ou Facebook
+       ne le voient pas, et affichaient donc le même aperçu pour les 44 fiches.
+       `l/<id>.html` est une vraie page, avec ses balises Open Graph, qui
+       redirige la personne vers l'application. */
+    url: lienPartage(l.id)
   };
 
   /* UNE IMAGE PLUTÔT QU'UNE LIGNE DE TEXTE. Dans une conversation WhatsApp,
@@ -1660,6 +1666,13 @@ async function partager(id) {
   } catch {
     feuille({ titre: "À partager", copiable: true, texteLong: `${donnees.text}\n${donnees.url}` });
   }
+}
+
+/* L'adresse à faire circuler pour une fiche. Hors ligne comme en ligne, elle
+   pointe sur le site public : un lien vers 127.0.0.1 ne sert à personne. */
+function lienPartage(id) {
+  const base = (APP.url || location.origin + location.pathname).replace(/\/?$/, "/");
+  return base + "l/" + id + ".html";
 }
 
 /* La carte postale demandée explicitement : on la MONTRE avant de proposer
