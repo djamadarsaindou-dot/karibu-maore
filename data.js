@@ -24,7 +24,7 @@
 const APP = {
   nom: "Karibu Maoré",
   baseline: "Tout ce qu'il y a à faire à Mayotte — et comment le réserver",
-  version: "0.9.0",
+  version: "1.0.0",
   maj: "2026-08-28",
   // Numéro de contact, format international sans + ni espaces (0639 40 69 48)
   url: "https://djamadarsaindou-dot.github.io/karibu-maore/",
