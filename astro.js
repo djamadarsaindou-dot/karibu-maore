@@ -108,9 +108,17 @@ const SOLEIL = (() => {
   /* Les seuils de hauteur qui définissent chaque moment de la journée */
   const SEUILS = { doree: 6, lever: -0.833, bleue: -4, civil: -6, nautique: -12, nuit: -18 };
 
-  const min2h = mn => mn == null ? null
-    : String(Math.floor(((mn % 1440) + 1440) % 1440 / 60)).padStart(2, "0") + " h " +
-      String(Math.round(((mn % 1440) + 1440) % 1440 % 60)).padStart(2, "0");
+  /* ON ARRONDIT LES MINUTES TOTALES, PUIS ON DÉCOUPE. L'inverse — plancher
+     sur les heures, arrondi sur les minutes, chacun de son côté — produit
+     « 11 h 60 » pour 719,7 minutes et « 23 h 60 » pour 1439,7. Le midi solaire
+     tombant régulièrement à quelques dixièmes de 12 h, l'application affichait
+     une heure qui n'existe pas plusieurs jours par mois. */
+  const min2h = mn => {
+    if (mn == null) return null;
+    const t = ((Math.round(mn) % 1440) + 1440) % 1440;
+    return String(Math.floor(t / 60)).padStart(2, "0") + " h " +
+           String(t % 60).padStart(2, "0");
+  };
 
   /* Toute la journée d'un coup, en minutes locales */
   function journee(date) {
@@ -476,8 +484,32 @@ if (typeof module !== "undefined" && require.main === module) {
               `   (référence 01 h 50 / 13 h 24)
 `);
 
-  const ok = pire <= 90 && luneOk;
-  console.log(ok ? `  ✓ Conforme à la NOAA (écart max ${pire.toFixed(0)} s)\n`
-                 : `  ✗ ÉCART ANORMAL : ${pire.toFixed(0)} s\n`);
+  /* LE FORMATAGE DES HEURES, verrouillé. Arrondir les minutes sans toucher aux
+     heures écrivait « 11 h 60 » pour 719,7 minutes — et le midi solaire tombe
+     à quelques dixièmes de midi plusieurs jours par mois, donc ça s'affichait
+     vraiment. Le même piège dormait dans marees.js et dans la durée du jour. */
+  const CAS_H = [[719.7, "12 h 00"], [719.4, "11 h 59"], [1439.7, "00 h 00"],
+                 [0, "00 h 00"], [-0.3, "00 h 00"], [365.5, "06 h 06"], [1080, "18 h 00"]];
+  let heuresOk = true;
+  console.log(["", "  Formatage des heures"].join(String.fromCharCode(10)));
+  for (const [v, attendu] of CAS_H) {
+    const r = SOLEIL.min2h(v), bon = r === attendu;
+    heuresOk = heuresOk && bon;
+    if (!bon) console.log(`   ✗ SOLEIL.min2h(${v}) rend « ${r} » au lieu de « ${attendu} »`);
+  }
+  console.log(heuresOk ? "   ✓ 7 cas limites justes" + String.fromCharCode(10) : "");
+
+  const ok = pire <= 90 && luneOk && heuresOk;
+  /* Le verdict NOMME ce qui a lâché. Un premier jet annonçait « écart anormal :
+     5 s » alors que c'était le formatage des heures qui échouait — un test qui
+     ment sur sa cause fait perdre plus de temps qu'il n'en fait gagner. */
+  if (ok) {
+    console.log("  ✓ Conforme à la NOAA (écart max " + pire.toFixed(0) + " s)" + String.fromCharCode(10));
+  } else {
+    const quoi = [pire > 90 ? "soleil (" + pire.toFixed(0) + " s d'écart)" : null,
+                  luneOk ? null : "lune",
+                  heuresOk ? null : "formatage des heures"].filter(Boolean).join(", ");
+    console.log("  ✗ ÉCHEC : " + quoi + String.fromCharCode(10));
+  }
   process.exit(ok ? 0 : 1);
 }

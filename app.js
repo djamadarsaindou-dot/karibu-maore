@@ -198,7 +198,10 @@ function vueAccueil() {
           if (mn > s.civil) return `<span class="stat__val">${SOLEIL.min2h(s.lever)}</span>
             <span class="stat__sous">lever demain · nuit noire</span>`;
           const r = (s.civil - mn) / 60;
-          const reste = r > 1 ? `encore ${Math.floor(r)} h ${String(Math.round((r % 1) * 60)).padStart(2, "0")} de jour`
+          /* Même piège qu'ailleurs : arrondir les minutes sans toucher aux
+             heures écrit « 8 h 60 ». On arrondit la durée en minutes d'abord. */
+          const rm = Math.round(r * 60);
+          const reste = r > 1 ? `encore ${Math.floor(rm / 60)} h ${String(rm % 60).padStart(2, "0")} de jour`
                      : r > .1 ? `plus que ${Math.round(r * 60)} min de jour`
                      : "la nuit tombe";
           const doree = mn >= s.doreeDebut - 45 && mn <= s.coucher
@@ -217,6 +220,7 @@ function vueAccueil() {
 
   ${blocSansOmbre()}
   ${blocUV()}
+  ${blocEnvies()}
 
   <section class="section">
     <h2 class="section__titre">Aujourd'hui <span class="oeil">${suggestions.length} idées</span></h2>
@@ -1266,6 +1270,53 @@ function vueSecours() {
    On annonce l'obscurité de la plage — jamais la ponte. La corrélation entre
    ponte et lune est débattue, et l'application y perdrait exactement la
    crédibilité que lui donnent ses sources de terrain. */
+/* ========================== PARCOURIR PAR ENVIE ===========================
+   DEUX AXES, ET ILS NE SE REMPLACENT PAS. Les catégories disent ce QU'EST une
+   activité — une plage, une rando, un restaurant. Les envies disent ce QU'ON
+   CHERCHE : gratuit, avec les petits, sans voiture, un jour de pluie. On ne
+   choisit pas de la même façon selon qu'on prépare un séjour ou qu'on regarde
+   par la fenêtre à quinze heures un samedi.
+
+   AUCUN NOUVEAU MOTEUR. Chaque envie est simplement une PHRASE envoyée à la
+   recherche par intentions — celle qui comprend déjà « que faire quand il
+   pleut » ou « sans voiture ». Toucher une tuile revient exactement à taper
+   la phrase. Un seul chemin de code, déjà éprouvé, et la bannière « ce que
+   j'ai compris » explique le résultat sans qu'on ait rien à écrire de plus.
+
+   CE QUI N'EST PAS ICI, ET POURQUOI. Pas de « romantique » : rien dans les
+   fiches ne permet de le calculer, et le décréter serait de l'invention. Pas
+   de « promos » ni de « shopping » : il faudrait de vrais commerçants, avec
+   leur accord — c'est le même sujet que les prestataires, et il se règle sur
+   le terrain, pas dans le code.
+
+   CHAQUE TUILE A ÉTÉ COMPTÉE avant d'être écrite. La plus maigre en rend
+   huit. Une rubrique vide serait pire que pas de rubrique. */
+const ENVIES = [
+  { q: "gratuit",            nom: "Gratuit",          ico: "etiquette", sous: "sans dépenser un euro" },
+  { q: "avec les enfants",   nom: "Avec les petits",  ico: "gens",      sous: "sûr et court" },
+  { q: "sans voiture",       nom: "Sans voiture",     ico: "bus",       sous: "à pied, en bus, en barge" },
+  { q: "quand il pleut",     nom: "Il pleut",         ico: "goutte",    sous: "à l'abri" },
+  { q: "a l ombre",          nom: "Il fait chaud",    ico: "soleil",    sous: "de l'ombre, de l'eau" },
+  { q: "le soir",            nom: "Le soir",          ico: "lune",      sous: "après le travail" },
+  { q: "sport",              nom: "Ça grimpe",        ico: "montagne",  sous: "du dénivelé" },
+  { q: "reserver",           nom: "Avec un guide",    ico: "message",   sous: "encadré, à réserver" }
+];
+
+function blocEnvies(titre = true) {
+  return `
+  <section class="section section--serree">
+    ${titre ? `<h2 class="section__titre">Par envie</h2>
+    <p class="section__note">Pas « c'est quoi », mais « j'ai envie de quoi ».</p>` : ""}
+    <div class="envies" role="group" aria-label="Parcourir par envie">
+      ${ENVIES.map(e => `<button class="envie" data-action="envie" data-q="${attr(e.q)}">
+        <span class="envie__ico">${ico(e.ico)}</span>
+        <span class="envie__nom">${esc(e.nom)}</span>
+        <span class="envie__sous">${esc(e.sous)}</span>
+      </button>`).join("")}
+    </div>
+  </section>`;
+}
+
 /* ====================== LE SOLEIL QUI BRÛLE ===============================
    L'information la plus utile de toute l'application, et la moins connue.
    Sous cette latitude l'indice UV dépasse 11 — « extrême » au sens de l'OMS —
@@ -1827,6 +1878,15 @@ document.addEventListener("click", e => {
                                    document.documentElement.dataset.anim = v;
                                    annoncer(v === "off" ? "Animations désactivées." : "Animations activées.");
                                    rendre(true); }
+  else if (a === "envie") {
+      /* On NAVIGUE d'abord, on filtre ensuite : poser la requête sans changer
+         d'écran laisserait l'utilisateur sur l'accueil, persuadé que rien ne
+         s'est passé. */
+      filtres.cat = ""; filtres.zone = ""; filtres.budget = ""; filtres.tag = "";
+      filtres.q = el.dataset.q;
+      const c = $("#q"); if (c) c.value = filtres.q;
+      if (!location.hash.startsWith("#/explorer")) go("/explorer"); else rendre(true);
+    }
   else if (a === "suggestion") { filtres.q = el.dataset.q; const c = $("#q");
                                   if (c) c.value = filtres.q; rendre(true); }
   else if (a === "credits") { aller("/credits"); }

@@ -128,10 +128,14 @@ const MAREES = (() => {
     };
   }
 
+  /* On arrondit en MINUTES ENTIÈRES avant de découper. Arrondir les minutes
+     sans toucher aux heures rend « 11 h 60 » ; reporter sans replier à minuit
+     rend « 24 h 00 ». Les deux se produisent, rarement, et se lisent comme un
+     bug. Une étale à 23 h 59,7 s'affiche donc « 00 h 00 ». */
   const fmt = h => {
-    const hh = Math.floor(h), mm = Math.round((h - hh) * 60);
-    const H = mm === 60 ? hh + 1 : hh, M = mm === 60 ? 0 : mm;
-    return String(H).padStart(2, "0") + " h " + String(M).padStart(2, "0");
+    const t = ((Math.round(h * 60) % 1440) + 1440) % 1440;
+    return String(Math.floor(t / 60)).padStart(2, "0") + " h " +
+           String(t % 60).padStart(2, "0");
   };
 
   /* Pleines et basses mers du jour local, pas de 1 minute.

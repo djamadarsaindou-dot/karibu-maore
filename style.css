@@ -1223,3 +1223,32 @@ body{font-weight:420;font-synthesis-weight:none}
 @media (prefers-reduced-motion:reduce){
   .topbar__titre{transition:none;transform:none}
 }
+
+
+/* ========================= PARCOURIR PAR ENVIE ============================
+   Une grille de deux colonnes sur téléphone, quatre dès qu'il y a la place.
+   Pas un défilement horizontal : ces huit entrées sont le sommaire de
+   l'application, et un sommaire dont la moitié est cachée hors de l'écran
+   n'est pas un sommaire. */
+.envies{
+  display:grid;gap:var(--s2);
+  grid-template-columns:repeat(auto-fill, minmax(9.5rem, 1fr));
+}
+.envie{
+  display:grid;gap:.15rem;justify-items:start;text-align:left;
+  padding:var(--s3);min-height:5.5rem;cursor:pointer;
+  background:var(--surface);color:var(--ink);
+  border:1px solid var(--line);border-radius:var(--r-l);
+  box-shadow:var(--e1);font-family:inherit;
+  transition:transform var(--t-rapide), box-shadow var(--t-rapide),
+             border-color var(--t-rapide);
+}
+.envie:hover{border-color:var(--platier-grave);box-shadow:var(--e2);transform:translateY(-2px)}
+.envie:active{transform:translateY(0)}
+.envie:focus-visible{outline:2px solid var(--platier-grave);outline-offset:2px}
+.envie__ico{display:grid;place-items:center;width:2rem;height:2rem;margin-bottom:.25rem;
+  border-radius:var(--r-m);background:var(--sable-2);color:var(--platier-grave)}
+.envie__ico svg{width:1.15rem;height:1.15rem}
+.envie__nom{font-family:var(--titre);font-size:var(--fs-md);font-weight:650;line-height:1.2}
+.envie__sous{font-size:var(--fs-xs);color:var(--muted);line-height:1.35}
+@media (prefers-reduced-motion:reduce){ .envie{transition:none} .envie:hover{transform:none} }
