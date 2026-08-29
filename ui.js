@@ -721,17 +721,32 @@ const UI = (() => {
   }
 
   /* ------------------------------------------------------------------ LOGO */
-  function logo() {
-    return `<svg viewBox="0 0 48 48" aria-hidden="true" focusable="false">
-      <defs><linearGradient id="lgk" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0" stop-color="#3ec2ce"/><stop offset="1" stop-color="#0a626c"/>
-      </linearGradient></defs>
-      <rect width="48" height="48" rx="13" fill="url(#lgk)"/>
-      <circle cx="24" cy="27" r="16" fill="none" stroke="#a9f0f4" stroke-width="1.5" opacity=".45"/>
-      <path fill="#f7f1e3" d="M19 11c3 2 5.5 5 5.5 8.5 3 3 5 6 4 9-1 4-4 7-8 8-3 1-6-1-6-5
-        -3-3-4-6-2-9-2-3-2-6 1-8 1-2 3-3.5 5.5-3.5z"/>
-      <circle cx="34" cy="19" r="5" fill="#f7f1e3"/>
-      <circle cx="34" cy="19" r="2.1" fill="#e8a317"/>
+  /* LA MARQUE, ET IL N'Y EN A QU'UNE. Cette fonction dessinait auparavant une
+     île à la main : une forme approximative qui ne ressemblait pas à Mayotte,
+     et qui ne ressemblait pas non plus à l'icône de l'écran d'accueil, laquelle
+     dessinait encore sa propre version. Trois dessins pour une seule marque,
+     déjà divergents. Tout part maintenant de `marque.js` — la vraie silhouette,
+     retracée depuis les contours IGN des communes puis simplifiée à cent points.
+
+     Le repli garde un carré aux bonnes couleurs : si marque.js manquait, une
+     tache colorée vaut mieux qu'un trou dans l'en-tête. */
+  function logo(taille = 48) {
+    const T = taille;
+    if (typeof MARQUE === "undefined" || !MARQUE.ile) {
+      return `<svg viewBox="0 0 ${T} ${T}" aria-hidden="true" focusable="false">
+        <rect width="${T}" height="${T}" rx="${(T * 0.27).toFixed(1)}" fill="#0a3a57"/></svg>`;
+    }
+    const E = 0.56 * T / 100, ox = T / 2 - 50 * E, oy = T * 0.11;
+    const d = T * 0.115;
+    return `<svg viewBox="0 0 ${T} ${T}" aria-hidden="true" focusable="false">
+      <rect width="${T}" height="${T}" rx="${(T * 0.27).toFixed(1)}" fill="#0a3a57"/>
+      <g transform="translate(${ox.toFixed(2)} ${oy.toFixed(2)}) scale(${E.toFixed(4)})">
+        <path d="${MARQUE.ile}" fill="#f4ede2"/>
+        <circle cx="70.8" cy="37.8" r="5.2" fill="#0a3a57"/>
+        <circle cx="70.8" cy="37.8" r="3.6" fill="#c4b63e"/>
+      </g>
+      <path d="M${(T * 0.155).toFixed(2)} ${(T * 0.83).toFixed(2)}q${(d / 2).toFixed(2)} -${(T * 0.062).toFixed(2)} ${d.toFixed(2)} 0t${d.toFixed(2)} 0 ${d.toFixed(2)} 0 ${d.toFixed(2)} 0 ${d.toFixed(2)} 0"
+        fill="none" stroke="#1da9a2" stroke-width="${(T * 0.052).toFixed(2)}" stroke-linecap="round"/>
     </svg>`;
   }
 
