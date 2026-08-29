@@ -1,5 +1,5 @@
 /* =============================================================================
-   KARIBU MAORÉ — la carte postale
+   MAORÉ QUEST — la carte postale
    -----------------------------------------------------------------------------
    POURQUOI. Partager une fiche envoie aujourd'hui une ligne de texte et un
    lien. Dans une conversation WhatsApp, ça se perd entre deux messages. Une
@@ -221,7 +221,7 @@ const POSTALE = (() => {
 
     ctx.fillStyle = BASALTE;
     ctx.font = '650 34px "Karibu Sans", system-ui, sans-serif';
-    ctx.fillText("Karibu Maoré", M, H - 74);
+    ctx.fillText(APP.nom, M, H - 74);
     ctx.fillStyle = VASE;
     ctx.font = '400 27px "Karibu Sans", system-ui, sans-serif';
     /* L'adresse publique, pas celle du navigateur : une carte postale

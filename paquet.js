@@ -1,5 +1,5 @@
 /* =============================================================================
-   KARIBU MAORÉ — assembleur de version partageable
+   MAORÉ QUEST — assembleur de version partageable
    -----------------------------------------------------------------------------
        node paquet.js
 
@@ -75,7 +75,7 @@ const style = "<style>\n" + lire("style.css") + "\n</style>";
 /* Le titre nomme la page dans la galerie : on garde le nom seul, sans
    sous-titre explicatif — l'explication va dans la description au moment
    de la publication. */
-const titre = "Karibu Maoré";
+const titre = "Maoré Quest";
 const fragment =
   `<title>${titre}</title>\n` +
   `<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">\n` +

@@ -1,5 +1,5 @@
 /* =============================================================================
-   KARIBU MAORÉ — le soleil, calculé à bord
+   MAORÉ QUEST — le soleil, calculé à bord
    -----------------------------------------------------------------------------
    POURQUOI CE FICHIER EXISTE. L'application codait « 18 h » en dur comme fin de
    journée. À Mayotte le coucher réel va de 17 h 39 fin mai à 18 h 33 fin

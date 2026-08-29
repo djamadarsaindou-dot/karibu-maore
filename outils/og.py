@@ -176,7 +176,7 @@ def image(l, photos):
     if res:
         d.text((M, H - 66), res[0], font=f_res, fill=(226, 220, 210))
     f_sig = police("karibu-sans", 26)
-    sig = "Karibu Maoré"
+    sig = "Maoré Quest"
     d.text((L - M - d.textlength(sig, font=f_sig), H - 66), sig, font=f_sig, fill=(255, 255, 255))
     return im
 
@@ -186,11 +186,11 @@ GABARIT = """<!doctype html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>{titre} — Karibu Maoré</title>
+<title>{titre} — Maoré Quest</title>
 <link rel="canonical" href="{url}">
 <meta name="description" content="{desc}">
 <meta property="og:type" content="article">
-<meta property="og:site_name" content="Karibu Maoré">
+<meta property="og:site_name" content="Maoré Quest">
 <meta property="og:locale" content="fr_FR">
 <meta property="og:title" content="{titre}">
 <meta property="og:description" content="{desc}">
@@ -225,7 +225,7 @@ GABARIT = """<!doctype html>
   <h1>{titre}</h1>
   <p>{desc}</p>
   <!-- 3. et pour tout le reste, un lien qu'on voit -->
-  <p><a href="../#/lieu/{id}">Ouvrir dans Karibu Maoré</a></p>
+  <p><a href="../#/lieu/{id}">Ouvrir dans Maoré Quest</a></p>
 </main>
 </body>
 </html>

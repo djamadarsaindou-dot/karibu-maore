@@ -1,5 +1,5 @@
 /* =============================================================================
-   KARIBU MAORÉ — logique de l'application
+   MAORÉ QUEST — logique de l'application
    Statique, sans framework, sans build. Rendu par chaînes, routage par hash,
    événements par délégation (aucun gestionnaire en ligne dans le HTML).
    ========================================================================== */
@@ -893,7 +893,7 @@ function messageResa(l) {
   const d = date ? new Date(date + "T12:00:00") : null;
   const dateFr = d && !isNaN(d) ? `${d.getDate()} ${MOIS[d.getMonth()]}` : "(date à préciser)";
 
-  let t = `Bonjour, je vous contacte via l'application Karibu Maoré.\n\n`;
+  let t = `Bonjour, je vous contacte via l'application ${APP.nom}.\n\n`;
   t += `Je souhaiterais réserver : ${l.nom}\n`;
   t += `Date souhaitée : ${dateFr}\n`;
   t += `Nombre de personnes : ${nb}\n`;
@@ -920,7 +920,7 @@ async function envoyerResa(id, mode) {
   const direct = p && p.verifie && p.tel;
   const numero = direct ? p.tel : APP.contactWhatsApp;
   const entete = direct ? "" :
-    `[Le contact direct de ce prestataire n'est pas encore vérifié dans l'application — message adressé à la rédaction de Karibu Maoré.]\n\n`;
+    `[Le contact direct de ce prestataire n'est pas encore vérifié dans l'application — message adressé à la rédaction de ${APP.nom}.]\n\n`;
   ouvrirWhatsApp(numero, entete + texte);
   go("/carnet");
 }
@@ -1111,7 +1111,7 @@ function vuePro() {
 function envoyerPro() {
   const g = i => ($("#p-" + i)?.value || "").trim();
   if (!g("nom")) { feuille({ titre: "Il manque le nom", texte: "Indiquez au moins le nom de votre activité." }); return; }
-  const t = `Nouvelle inscription prestataire — Karibu Maoré\n\n` +
+  const t = `Nouvelle inscription prestataire — ${APP.nom}\n\n` +
     `Activité : ${g("nom")}\nType : ${$("#p-type").value}\nCommune : ${g("commune")}\n` +
     `WhatsApp : ${g("tel")}\n\nOffre :\n${g("offre")}\n\n` +
     `J'accepte que ces informations soient publiées dans l'application.`;
@@ -1675,7 +1675,7 @@ function ajouterItineraire(id) {
 async function partager(id) {
   const l = lieu(id); if (!l) return;
   const donnees = {
-    title: l.nom + " — Karibu Maoré",
+    title: l.nom + " — " + APP.nom,
     text: `${l.nom} (${l.commune}) : ${l.resume}`,
     /* ON PARTAGE LA PAGE D'APERÇU, PAS L'ADRESSE DU NAVIGATEUR. La route de
        l'application est dans le fragment (#/lieu/…), et un fragment n'est
@@ -1740,7 +1740,7 @@ async function carteAEnvoyer(id) {
   const peutPartager = !!(navigator.canShare && navigator.share && navigator.canShare({ files: [f] }));
   const actions = [];
   if (peutPartager) actions.push({ libelle: "Envoyer l'image", faire: async () => {
-    try { await navigator.share({ title: l.nom + " — Karibu Maoré", files: [f] }); }
+    try { await navigator.share({ title: l.nom + " — " + APP.nom, files: [f] }); }
     catch (e) { if (!e || e.name !== "AbortError") feuille({ titre: "Rien n'est parti",
       texte: "Le partage a échoué. L'image reste enregistrable." }); }
   } });
@@ -1759,7 +1759,7 @@ async function carteAEnvoyer(id) {
 
 function signaler(id) {
   const l = id ? lieu(id) : null;
-  const t = `Signalement — Karibu Maoré\n\n` +
+  const t = `Signalement — ${APP.nom}\n\n` +
     (l ? `Fiche : ${l.nom} (${l.commune})\n\n` : "") +
     `Ce qui ne va pas :\n`;
   ouvrirWhatsApp(APP.contactWhatsApp, t);
@@ -1801,7 +1801,7 @@ function rendre(sansScroll) {
   const seg = chemin.split("/").filter(Boolean);
   const vue = $("#vue");
 
-  let html, titre = "Karibu Maoré";
+  let html, titre = APP.nom;
   switch (seg[0]) {
     case undefined:     html = vueAccueil();            titre = "Aujourd'hui"; break;
     case "explorer":    html = vueExplorer(params);     titre = "Explorer"; break;
@@ -1827,7 +1827,7 @@ function rendre(sansScroll) {
   if (derniereRoute && derniereRoute !== brut) positions.set(derniereRoute, window.scrollY);
 
   vue.innerHTML = html;
-  document.title = titre + " — Karibu Maoré";
+  document.title = titre === APP.nom ? APP.nom : titre + " — " + APP.nom;
 
   $$(".onglet").forEach(a => {
     const racine = PARENT[seg[0]] || ("/" + (seg[0] || ""));
@@ -2311,7 +2311,7 @@ function bandeauInstall() {
     ? `<span>Installer sur l'écran d'accueil : touchez <b>Partager</b>, puis
        <b>« Sur l'écran d'accueil »</b>. L'application marchera alors sans réseau.</span>
        <button class="btn btn--mini" data-i="non">Plus tard</button>`
-    : `<span>Installer Karibu Maoré sur votre téléphone ? Elle marchera sans réseau.</span>
+    : `<span>Installer ${APP.nom} sur votre téléphone ? Elle marchera sans réseau.</span>
        <button class="btn btn--mini" data-i="oui">Installer</button>
        <button class="btn btn--mini btn--fantome" data-i="non">Plus tard</button>`;
   d.addEventListener("click", e => {

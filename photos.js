@@ -1,5 +1,5 @@
 /* =============================================================================
-   KARIBU MAORÉ — photographies
+   MAORÉ QUEST — photographies
    -----------------------------------------------------------------------------
    RÈGLE ABSOLUE : une photo ne figure ici que si elle montre VRAIMENT le lieu
    de la fiche. Une belle plage tropicale générique posée sur « N'Gouja » serait

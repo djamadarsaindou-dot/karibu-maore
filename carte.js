@@ -1,5 +1,5 @@
 /* =============================================================================
-   KARIBU MAORÉ — géométrie de l'île
+   MAORÉ QUEST — géométrie de l'île
    ---------------------------------------------------------------------------
    Fabriqué par C:/pdtmp/kgeo/carte.py. Ne pas éditer à la main.
 

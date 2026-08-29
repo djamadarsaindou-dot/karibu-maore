@@ -1,5 +1,5 @@
 /* =============================================================================
-   KARIBU MAORÉ — le calendrier de l'hégire
+   MAORÉ QUEST — le calendrier de l'hégire
    -----------------------------------------------------------------------------
    POURQUOI. C'est le calendrier qui gouverne réellement l'année à Mayotte.
    Pendant le ramadan, les horaires de travail changent, les restaurants

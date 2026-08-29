@@ -1,5 +1,5 @@
 /* =============================================================================
-   KARIBU MAORÉ — les intentions
+   MAORÉ QUEST — les intentions
    -----------------------------------------------------------------------------
    Ce que les gens tapent, ce ne sont pas des mots-clés : c'est « que faire
    quand il pleut », « avec les enfants », « sans voiture », « où voir des

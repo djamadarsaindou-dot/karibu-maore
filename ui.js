@@ -1,5 +1,5 @@
 /* =============================================================================
-   KARIBU MAORÉ — bibliothèque visuelle
+   MAORÉ QUEST — bibliothèque visuelle
    -----------------------------------------------------------------------------
    L'appli doit fonctionner hors connexion et rester légère : pas une seule image
    bitmap, pas une seule police externe. Tout ce qui est illustré ici est du SVG

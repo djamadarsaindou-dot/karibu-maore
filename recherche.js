@@ -1,5 +1,5 @@
 /* =============================================================================
-   KARIBU MAORÉ — la recherche
+   MAORÉ QUEST — la recherche
    -----------------------------------------------------------------------------
    Avant : un `texte.includes(requête)`. « chougnui » ne trouvait rien, et
    « tortue » rendait quatre fiches dans l'ordre du fichier, sans classement.

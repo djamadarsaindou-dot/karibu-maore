@@ -1,5 +1,5 @@
 /* ============================================================
-   KARIBU MAORÉ — base de contenu
+   MAORÉ QUEST — base de contenu
    Ce fichier est le SEUL à modifier pour mettre à jour l'appli.
    Aucun build, aucun npm : on édite, on enregistre, on pousse.
    ------------------------------------------------------------
@@ -22,7 +22,7 @@
    ============================================================ */
 
 const APP = {
-  nom: "Karibu Maoré",
+  nom: "Maoré Quest",
   baseline: "Tout ce qu'il y a à faire à Mayotte — et comment le réserver",
   version: "1.0.0",
   maj: "2026-08-28",

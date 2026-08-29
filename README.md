@@ -1,4 +1,4 @@
-# Karibu Maoré — mode d'emploi technique
+# Maoré Quest — mode d'emploi technique
 
 **En ligne : https://djamadarsaindou-dot.github.io/karibu-maore/**
 

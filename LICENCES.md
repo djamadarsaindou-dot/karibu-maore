@@ -1,6 +1,6 @@
 # Licences des ressources embarquées
 
-Karibu Maoré n'appelle aucun service externe : tout ce qu'affiche l'application
+Maoré Quest n'appelle aucun service externe : tout ce qu'affiche l'application
 est dans ce dépôt. Les ressources ci-dessous sont libres, et leurs licences
 imposent de citer leurs auteurs. C'est l'objet de ce fichier.
 

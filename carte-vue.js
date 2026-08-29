@@ -1,5 +1,5 @@
 /* =============================================================================
-   KARIBU MAORÉ — la carte, vivante
+   MAORÉ QUEST — la carte, vivante
    -----------------------------------------------------------------------------
    Zoom, déplacement, sélection, position de l'utilisateur. Aucune bibliothèque,
    aucune requête réseau, aucune tuile.

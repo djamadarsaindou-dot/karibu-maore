@@ -1,7 +1,7 @@
 {
   "id": "/karibu-maore/",
-  "name": "Karibu Maoré — que faire à Mayotte",
-  "short_name": "Karibu Maoré",
+  "name": "Maoré Quest — que faire à Mayotte",
+  "short_name": "Maoré Quest",
   "description": "Tout ce qu'il y a à faire à Mayotte et comment le réserver : activités, marées, saisons, conseils de terrain. Fonctionne hors connexion.",
   "lang": "fr",
   "dir": "ltr",
@@ -101,7 +101,7 @@
       "sizes": "1280x800",
       "type": "image/webp",
       "form_factor": "wide",
-      "label": "Karibu Maoré sur grand écran."
+      "label": "Maoré Quest sur grand écran."
     }
   ]
 }

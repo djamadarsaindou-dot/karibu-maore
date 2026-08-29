@@ -1,5 +1,5 @@
 /* ============================================================
-   KARIBU MAORÉ — prestataires, agenda, itinéraires, lexique
+   MAORÉ QUEST — prestataires, agenda, itinéraires, lexique
    ------------------------------------------------------------
    ⚠️ IMPORTANT — LIRE AVANT DE PUBLIER
    Aucun numéro de téléphone, aucun nom commercial n'a été inventé.

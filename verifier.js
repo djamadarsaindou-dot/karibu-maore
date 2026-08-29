@@ -1,5 +1,5 @@
 /* =============================================================================
-   KARIBU MAORÉ — vérificateur de contenu
+   MAORÉ QUEST — vérificateur de contenu
    -----------------------------------------------------------------------------
    À lancer après chaque modification de data.js ou data-resa.js :
 
@@ -123,6 +123,34 @@ if (!/^\d{9,15}$/.test(APP.contactWhatsApp))
 if (!LEXIQUE.length) A(`LEXIQUE vide`);
 if (!INFOS.length) A(`INFOS vides`);
 
+/* ===================== LE NOM DE L'APPLICATION ============================
+   Le nom vit dans APP.nom, et tout le code s'y réfère. Deux fichiers ne
+   PEUVENT PAS le lire : index.html et le manifeste sont analysés avant que le
+   moindre script ne tourne. Ils gardent donc une copie littérale — et une
+   copie non surveillée finit toujours par diverger. Celle-ci l'est.
+
+   L'adresse publique, le nom de la police et la clé du cache gardent
+   volontairement l'ancien nom : ce sont des identifiants techniques que
+   personne ne lit, et les changer casserait des liens déjà partagés ou
+   obligerait à refabriquer la police sous sa notice OFL. */
+{
+  const fs = require("fs"), path = require("path");
+  const nom = APP.nom;
+  const html = fs.readFileSync(path.join(__dirname, "index.html"), "utf8");
+  const man = JSON.parse(fs.readFileSync(path.join(__dirname, "manifest.webmanifest"), "utf8"));
+
+  if (!html.includes("<title>" + nom)) E(`index.html : le <title> ne commence pas par « ${nom} »`);
+  const marque = html.match(/id="marque"[\s\S]*?<span>([^<]+)<\/span>/);
+  if (marque && marque[1].trim() !== nom) {
+    E(`index.html : l'en-tête affiche « ${marque[1].trim() }» au lieu de « ${nom} »`);
+  }
+  const apple = html.match(/apple-mobile-web-app-title" content="([^"]*)"/);
+  if (apple && apple[1] !== nom) E(`index.html : apple-mobile-web-app-title = « ${apple[1]} »`);
+  if (man.short_name !== nom) E(`manifest : short_name = « ${man.short_name} » au lieu de « ${nom} »`);
+  if (!man.name.startsWith(nom)) E(`manifest : name = « ${man.name} » ne commence pas par « ${nom} »`);
+  infos.push(`nom de l'application : « ${nom} » — index.html et manifeste concordent`);
+}
+
 /* ================= LES PAGES D'APERÇU DE PARTAGE ==========================
    Elles sont fabriquées par outils/og.py à partir de data.js. Rien ne les
    régénère automatiquement : une fiche ajoutée sans relancer le script
@@ -183,7 +211,7 @@ infos.push(`${LIEUX.length} fiches · ${PRESTATAIRES.length} prestataires (${non
 infos.push(`${sansSource} fiche(s) sans source citée`);
 
 const couleur = (c, t) => process.stdout.isTTY ? `\x1b[${c}m${t}\x1b[0m` : t;
-console.log("\n" + couleur(36, "— KARIBU MAORÉ · vérification du contenu —"));
+console.log("\n" + couleur(36, `— ${APP.nom.toUpperCase()} · vérification du contenu —`));
 infos.forEach(i => console.log("  " + i));
 if (alertes.length) {
   console.log("\n" + couleur(33, `${alertes.length} point(s) d'attention`));
